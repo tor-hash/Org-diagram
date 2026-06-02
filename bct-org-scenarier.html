@@ -1,0 +1,2179 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BCT · Organisationsscenarier</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --bg: #0d1117;
+  --bg-card: #161b22;
+  --bg-card-hover: #1c2128;
+  --border: #2a3038;
+  --text: #e6edf3;
+  --text-muted: #8b949e;
+  --gold: #d4a655;
+  --gold-dim: #8a6c30;
+  --bronze: #b8763a;
+  --danger: #e06c75;
+
+  --c-exec: #d4a655;
+  --c-commercial: #e06c75;
+  --c-marketing: #e5a86b;
+  --c-solution: #c678dd;
+  --c-delivery: #61afef;
+  --c-tech: #56b6c2;
+  --c-product: #d678a8;
+  --c-liveops: #98c379;
+  --c-operations: #7d8590;
+  --c-people: #e5c07b;
+  --c-finance: #8aaa6e;
+  --c-ai: #00d4ff;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  min-height: 100vh;
+  background-image:
+    radial-gradient(circle at 15% 8%, rgba(212, 166, 85, 0.05) 0%, transparent 38%),
+    radial-gradient(circle at 85% 92%, rgba(86, 182, 194, 0.04) 0%, transparent 38%);
+}
+
+header {
+  border-bottom: 1px solid var(--border);
+  background: rgba(13, 17, 23, 0.92);
+  backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 14px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.brand { display: flex; align-items: center; gap: 14px; }
+.brand-mark {
+  width: 32px; height: 32px;
+  border: 1.5px solid var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  transform: rotate(45deg);
+  position: relative;
+}
+.brand-mark::after {
+  content: ""; width: 10px; height: 10px;
+  background: var(--gold);
+}
+.brand-text {
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.brand-text strong { color: var(--gold); font-weight: 600; }
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.toggle {
+  display: flex;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 4px;
+}
+.toggle button {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+.toggle button.active {
+  background: linear-gradient(180deg, #e5b96b, var(--gold));
+  color: #0d1117;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(212, 166, 85, 0.25);
+}
+.toggle button:hover:not(.active) { color: var(--text); }
+
+.btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn:hover { border-color: var(--gold-dim); color: var(--gold); }
+.btn.primary {
+  background: var(--c-ai);
+  color: #0d1117;
+  border-color: var(--c-ai);
+  font-weight: 600;
+}
+.btn.primary:hover { background: #4de2ff; color: #0d1117; }
+.btn.primary.active { background: var(--gold); border-color: var(--gold); }
+.btn.danger:hover { border-color: var(--danger); color: var(--danger); }
+
+.save-indicator {
+  font-size: 11px;
+  color: var(--text-muted);
+  padding: 0 4px;
+}
+.save-indicator.saved { color: var(--c-liveops); }
+
+.cloud-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+.cloud-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+.cloud-status.online .cloud-dot { background: var(--c-liveops); box-shadow: 0 0 8px var(--c-liveops); }
+.cloud-status.offline .cloud-dot { background: var(--text-muted); }
+.cloud-status.syncing .cloud-dot { background: var(--c-ai); animation: pulse 1s infinite; }
+.cloud-status.error .cloud-dot { background: var(--danger); }
+.cloud-status.online { color: var(--c-liveops); border-color: var(--c-liveops); }
+@keyframes pulse { 50% { opacity: 0.4; } }
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--bg-card);
+  border: 1px solid var(--c-ai);
+  color: var(--text);
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  z-index: 300;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  transition: transform 0.3s ease;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+.versions-panel {
+  display: none;
+  position: fixed;
+  right: 24px;
+  top: 80px;
+  width: 360px;
+  max-height: calc(100vh - 100px);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  z-index: 90;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+  overflow-y: auto;
+}
+.versions-panel.open { display: block; }
+.versions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.versions-header h3 { font-size: 14px; }
+.version-item {
+  padding: 10px 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+.version-item-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.version-name { font-weight: 600; color: var(--text); }
+.version-date { font-size: 10px; color: var(--text-muted); }
+.version-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+.version-actions button {
+  flex: 1;
+  font-size: 11px;
+  padding: 5px 8px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.version-actions button:hover { border-color: var(--gold); color: var(--gold); }
+.version-actions button.danger:hover { border-color: var(--danger); color: var(--danger); }
+.versions-empty {
+  text-align: center;
+  padding: 24px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-style: italic;
+}
+
+.setup-needed {
+  display: none;
+  background: linear-gradient(135deg, rgba(212, 166, 85, 0.1), rgba(0, 212, 255, 0.05));
+  border: 1px solid var(--gold);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  font-size: 13px;
+}
+.setup-needed.show { display: block; }
+.setup-needed strong { color: var(--gold); }
+.setup-needed code {
+  background: var(--bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: var(--c-ai);
+}
+
+main { max-width: 1400px; margin: 0 auto; padding: 32px 40px; }
+
+.hero { text-align: center; padding: 30px 0 36px; }
+.kicker {
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+h1 {
+  font-size: 42px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  letter-spacing: -0.02em;
+}
+.subtitle {
+  font-size: 16px;
+  color: var(--text-muted);
+  max-width: 740px;
+  margin: 0 auto;
+}
+.divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin: 24px 0 32px;
+}
+.divider::before, .divider::after {
+  content: ""; height: 1px; flex: 1; max-width: 180px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+}
+.rune {
+  font-size: 14px;
+  letter-spacing: 10px;
+  color: var(--gold);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 14px;
+  margin-bottom: 48px;
+}
+.stat {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+  text-align: center;
+  transition: all 0.2s;
+}
+.stat:hover { border-color: var(--gold-dim); }
+.stat-value {
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1;
+}
+.stat-label {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-top: 8px;
+}
+
+.hierarchy {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  align-items: center;
+}
+
+.ceo-card {
+  background: linear-gradient(180deg, var(--bg-card), #1a1410);
+  border: 1.5px solid var(--gold);
+  border-radius: 12px;
+  padding: 20px 40px;
+  text-align: center;
+  min-width: 300px;
+  position: relative;
+  box-shadow: 0 10px 38px rgba(212, 166, 85, 0.12);
+}
+.ceo-card::before {
+  content: "";
+  position: absolute;
+  top: -9px; left: -9px; right: -9px; bottom: -9px;
+  border: 1px dashed var(--gold-dim);
+  border-radius: 16px;
+  opacity: 0.35;
+  pointer-events: none;
+}
+.ceo-role {
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+.ceo-name { font-size: 20px; font-weight: 600; }
+.ceo-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 8px;
+  letter-spacing: 0.04em;
+}
+
+.connector {
+  width: 2px; height: 22px;
+  background: linear-gradient(180deg, var(--gold), transparent);
+}
+
+.exec-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  width: 100%;
+}
+.exec-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  text-align: center;
+  border-top: 3px solid var(--c-exec);
+  transition: all 0.2s;
+}
+.exec-card:hover { transform: translateY(-2px); border-color: var(--c-exec); }
+.exec-card .role { font-size: 15px; font-weight: 600; }
+.exec-card .label {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  letter-spacing: 0.06em;
+}
+
+.functions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+  width: 100%;
+  margin-top: 18px;
+}
+.func-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  transition: all 0.2s;
+  position: relative;
+  overflow: visible;
+}
+.func-card.drag-target {
+  border-color: var(--c-ai);
+  background: rgba(0, 212, 255, 0.04);
+  box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.2);
+}
+.func-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--func-color, var(--gold));
+  border-radius: 12px 12px 0 0;
+}
+.func-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.func-name {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--func-color);
+  font-weight: 600;
+  flex: 1;
+}
+.func-name[contenteditable="true"] {
+  outline: 1px dashed var(--func-color);
+  border-radius: 4px;
+  padding: 2px 4px;
+}
+.func-count {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+  white-space: nowrap;
+}
+.func-count small {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 400;
+  margin-left: 3px;
+}
+.func-purpose {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 8px 0 12px;
+  line-height: 1.5;
+  font-style: italic;
+}
+.func-purpose[contenteditable="true"] {
+  outline: 1px dashed var(--text-muted);
+  border-radius: 4px;
+  padding: 4px 6px;
+  font-style: normal;
+  color: var(--text);
+}
+.roles-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 20px;
+}
+.role-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  background: rgba(255,255,255,0.025);
+  border-radius: 6px;
+  font-size: 12.5px;
+  border-left: 2px solid transparent;
+  transition: all 0.15s;
+}
+.role-item:hover {
+  background: rgba(255,255,255,0.05);
+  border-left-color: var(--func-color);
+}
+.role-item.dragging {
+  opacity: 0.4;
+  transform: scale(0.98);
+}
+.role-title {
+  color: var(--text);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.role-title[contenteditable="true"] {
+  outline: 1px dashed var(--func-color);
+  border-radius: 4px;
+  padding: 2px 5px;
+  white-space: nowrap;
+}
+.role-count {
+  color: var(--func-color);
+  font-weight: 600;
+  font-size: 12px;
+  padding: 1px 8px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 4px;
+  min-width: 32px;
+  text-align: center;
+}
+.role-divider {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--func-color);
+  opacity: 0.7;
+  padding: 8px 4px 2px;
+  font-weight: 600;
+}
+
+/* Edit mode controls */
+.role-controls {
+  display: none;
+  align-items: center;
+  gap: 4px;
+}
+body.edit-mode .role-controls { display: inline-flex; }
+body.edit-mode .role-item { cursor: grab; }
+body.edit-mode .role-item:active { cursor: grabbing; }
+.role-handle {
+  color: var(--text-muted);
+  font-size: 12px;
+  cursor: grab;
+  padding: 0 2px;
+  user-select: none;
+}
+.role-handle:hover { color: var(--text); }
+.role-count-edit {
+  display: none;
+  align-items: center;
+  gap: 2px;
+}
+body.edit-mode .role-count-edit { display: inline-flex; }
+body.edit-mode .role-count { display: none; }
+.count-btn {
+  width: 22px;
+  height: 22px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.count-btn:hover { border-color: var(--func-color); color: var(--func-color); }
+.count-input {
+  width: 38px;
+  height: 22px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--func-color);
+  font-weight: 600;
+  text-align: center;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 12px;
+}
+.count-input:focus { outline: 1px solid var(--func-color); border-color: var(--func-color); }
+.del-btn {
+  width: 22px;
+  height: 22px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.del-btn:hover { border-color: var(--danger); color: var(--danger); }
+
+.add-role-btn {
+  display: none;
+  width: 100%;
+  margin-top: 8px;
+  padding: 8px;
+  background: transparent;
+  border: 1px dashed var(--border);
+  color: var(--text-muted);
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  transition: all 0.2s;
+}
+body.edit-mode .add-role-btn { display: block; }
+.add-role-btn:hover { border-color: var(--func-color); color: var(--func-color); }
+
+.func-actions {
+  display: none;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border);
+  justify-content: space-between;
+  gap: 6px;
+}
+body.edit-mode .func-actions { display: flex; }
+.divider-add-btn {
+  background: transparent;
+  border: 1px dashed var(--border);
+  color: var(--text-muted);
+  padding: 4px 8px;
+  font-size: 11px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.divider-add-btn:hover { border-color: var(--func-color); color: var(--func-color); }
+
+.add-function-card {
+  display: none;
+  background: rgba(255,255,255,0.02);
+  border: 1.5px dashed var(--border);
+  border-radius: 12px;
+  padding: 32px;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-height: 200px;
+  text-align: center;
+}
+body.edit-mode .add-function-card { display: flex; }
+.add-function-card:hover { border-color: var(--gold); color: var(--gold); }
+
+.edit-banner {
+  display: none;
+  background: linear-gradient(90deg, rgba(0, 212, 255, 0.1), rgba(212, 166, 85, 0.05));
+  border: 1px solid var(--c-ai);
+  border-radius: 10px;
+  padding: 12px 18px;
+  margin-bottom: 24px;
+  font-size: 13px;
+  color: var(--text);
+  align-items: center;
+  gap: 12px;
+}
+body.edit-mode .edit-banner { display: flex; }
+.edit-banner strong { color: var(--c-ai); }
+
+.section {
+  margin-top: 56px;
+  padding: 32px;
+  background: var(--bg-card);
+  border-radius: 14px;
+  border: 1px solid var(--border);
+}
+.section-title { text-align: center; margin-bottom: 24px; }
+.section-title h2 {
+  font-size: 22px;
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
+}
+.section-title p { color: var(--text-muted); font-size: 13px; }
+
+.flow-chain {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 8px 0;
+}
+.flow-step {
+  flex: 1;
+  min-width: 130px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 12px;
+  text-align: center;
+  border-top: 3px solid var(--c-step, var(--gold));
+}
+.flow-step .num { font-size: 9px; letter-spacing: 0.22em; color: var(--text-muted); }
+.flow-step .name { font-size: 14px; font-weight: 600; margin-top: 4px; color: var(--c-step); }
+.flow-step .desc { font-size: 11px; color: var(--text-muted); margin-top: 5px; line-height: 1.4; }
+.flow-arrow { display: flex; align-items: center; color: var(--gold-dim); font-size: 16px; padding: 0 2px; }
+
+.tracks {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+.track {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+}
+.track-label {
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--track-color);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.track-sub { font-size: 12px; color: var(--text-muted); margin-bottom: 14px; font-style: italic; }
+.callout {
+  background: rgba(212, 166, 85, 0.06);
+  border: 1px solid var(--gold-dim);
+  border-radius: 10px;
+  padding: 14px 18px;
+  font-size: 13px;
+  line-height: 1.7;
+  margin-top: 16px;
+}
+.callout strong { color: var(--gold); }
+
+.ladder {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 4px;
+  overflow-x: auto;
+  padding: 8px 0;
+}
+.ladder-rung {
+  flex: 1;
+  min-width: 100px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 8px;
+  text-align: center;
+  border-bottom: 3px solid var(--c-rung, var(--c-tech));
+  position: relative;
+}
+.ladder-rung.h1 { min-height: 76px; opacity: 0.65; }
+.ladder-rung.h2 { min-height: 90px; opacity: 0.75; }
+.ladder-rung.h3 { min-height: 104px; opacity: 0.85; }
+.ladder-rung.h4 { min-height: 118px; opacity: 0.92; }
+.ladder-rung.h5 { min-height: 132px; opacity: 1; }
+.ladder-rung.h6 { min-height: 146px; opacity: 1; background: linear-gradient(180deg, rgba(212,166,85,0.08), var(--bg)); border-color: var(--gold-dim); border-bottom-color: var(--gold); }
+.ladder-rung .lvl { font-size: 9px; letter-spacing: 0.2em; color: var(--text-muted); }
+.ladder-rung .title { font-size: 12.5px; font-weight: 600; margin-top: 4px; color: var(--c-rung, var(--c-tech)); }
+.ladder-rung.h6 .title { color: var(--gold); }
+.ladder-rung .what { font-size: 10.5px; color: var(--text-muted); margin-top: 4px; line-height: 1.4; }
+
+.ai-section {
+  border: 1px solid rgba(0, 212, 255, 0.25);
+  background: linear-gradient(180deg, var(--bg-card), rgba(0, 212, 255, 0.02));
+}
+.ai-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+}
+.ai-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--c-fn);
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+.ai-fn {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-fn);
+  margin-bottom: 4px;
+}
+.ai-use { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+.ai-thesis {
+  margin-top: 22px;
+  padding: 18px 22px;
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.08), rgba(212, 166, 85, 0.05));
+  border: 1px solid var(--c-ai);
+  border-radius: 10px;
+}
+.ai-thesis-label {
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: var(--c-ai);
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.ai-thesis-text { font-size: 14px; line-height: 1.6; }
+.ai-thesis-text strong { color: var(--c-ai); }
+
+.layers { display: flex; flex-direction: column; gap: 8px; }
+.layer {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 16px;
+  align-items: center;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 18px;
+  border-left: 3px solid var(--layer-color);
+}
+.layer-label {
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--layer-color);
+  font-weight: 600;
+}
+.layer-roles { font-size: 13px; color: var(--text-muted); }
+.layer-roles strong { color: var(--text); font-weight: 500; }
+
+.principles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+}
+.principle {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  border-left: 3px solid var(--gold);
+}
+.principle-num { font-size: 10px; letter-spacing: 0.25em; color: var(--gold); margin-bottom: 6px; }
+.principle h3 { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+.principle p { font-size: 12px; color: var(--text-muted); line-height: 1.55; }
+
+footer {
+  text-align: center;
+  padding: 50px 40px 30px;
+  color: var(--text-muted);
+  font-size: 12px;
+  border-top: 1px solid var(--border);
+  margin-top: 56px;
+}
+footer .motto {
+  margin-top: 8px;
+  opacity: 0.7;
+  font-style: italic;
+  color: var(--gold);
+  letter-spacing: 0.04em;
+}
+
+.scenario { display: none; }
+.scenario.active { display: block; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Detail modal */
+.modal-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 8, 12, 0.78);
+  backdrop-filter: blur(6px);
+  z-index: 200;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 60px 20px;
+  overflow-y: auto;
+}
+.modal-backdrop.open { display: flex; animation: fadeIn 0.2s ease; }
+.modal {
+  background: var(--bg-card);
+  border: 1px solid var(--modal-color, var(--gold));
+  border-radius: 14px;
+  max-width: 680px;
+  width: 100%;
+  padding: 32px;
+  position: relative;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04);
+}
+.modal::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: var(--modal-color, var(--gold));
+  border-radius: 14px 14px 0 0;
+}
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px; height: 32px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-muted);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-family: inherit;
+}
+.modal-close:hover { color: var(--danger); border-color: var(--danger); }
+.modal-kicker {
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--modal-color, var(--gold));
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.modal-title {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+.modal-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+}
+.modal-section { margin-bottom: 18px; }
+.modal-section h4 {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--modal-color, var(--gold));
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.modal-text {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text);
+  white-space: pre-wrap;
+}
+.modal-text.muted { color: var(--text-muted); font-style: italic; font-size: 13px; }
+.modal-textarea {
+  width: 100%;
+  min-height: 120px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 13.5px;
+  line-height: 1.6;
+  padding: 12px 14px;
+  border-radius: 8px;
+  resize: vertical;
+}
+.modal-textarea:focus { outline: 1px solid var(--modal-color, var(--gold)); border-color: var(--modal-color, var(--gold)); }
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 18px;
+  justify-content: flex-end;
+}
+.role-title { cursor: pointer; }
+.role-title:hover { color: var(--func-color); }
+body.edit-mode .role-title { cursor: text; }
+.exec-card, .ceo-card { cursor: pointer; }
+
+@media (max-width: 880px) {
+  h1 { font-size: 28px; }
+  main { padding: 20px 16px; }
+  .exec-row { grid-template-columns: 1fr 1fr; }
+  .header-inner { padding: 12px 18px; }
+  .layer { grid-template-columns: 1fr; gap: 4px; }
+  .tracks { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div class="brand-text">Black Capital <strong>Technology</strong> · Tribe Architecture</div>
+    </div>
+    <div class="controls">
+      <div class="cloud-status offline" id="cloud-status" title="Cloud-status">
+        <span class="cloud-dot"></span>
+        <span id="cloud-status-text">Lokal</span>
+      </div>
+      <div class="toggle">
+        <button id="btn-dream" class="active" onclick="switchScenario('dream')">Drøm</button>
+        <button id="btn-real" onclick="switchScenario('real')">Realistisk</button>
+      </div>
+      <button id="btn-edit" class="btn primary" onclick="toggleEditMode()">✎ Rediger</button>
+      <button class="btn" onclick="toggleVersions()" title="Versioner">⎘ Versioner</button>
+      <button class="btn" onclick="importJSON()" title="Importér JSON">⬆ Import</button>
+      <button class="btn" onclick="exportJSON()" title="Download som JSON">⬇ Export</button>
+      <button class="btn danger" onclick="resetData()" title="Nulstil til standard">↺ Nulstil</button>
+      <span class="save-indicator" id="save-indicator">●</span>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <div class="setup-needed" id="setup-banner">
+    <strong>⚙ Cloud ikke konfigureret</strong> — siden kører lokalt i din browser. For at dele ændringer med teamet skal Supabase-config tilføjes. Se <code>SETUP.md</code> eller åbn DevTools og kør <code>setupCloud(url, key, passphrase)</code>.
+  </div>
+
+  <div class="edit-banner">
+    <span style="font-size: 16px;">✎</span>
+    <div><strong>Rediger-tilstand</strong> — klik på antal, navne eller formål for at ændre dem. Brug +/− til antal. <strong>Træk roller</strong> mellem funktioner for at flytte dem. Ændringer gemmes automatisk.</div>
+  </div>
+
+  <!-- DREAM SCENARIO -->
+  <div id="scenario-dream" class="scenario active">
+    <section class="hero">
+      <div class="kicker">Scenario I · Målarkitektur</div>
+      <h1>Drømmescenariet</h1>
+      <div class="divider"><span class="rune">◆ ◇ ◆</span></div>
+      <p class="subtitle">Den fuldt modne, skalerbare og systemdrevne BCT. AI er ikke en rolle, men et lag der gennemsyrer alt. Et målarkitektur-billede — ikke en ansættelsesplan.</p>
+    </section>
+
+    <div class="stats" id="dream-stats"></div>
+
+    <div class="hierarchy">
+      <div class="ceo-card" onclick="openExecModal('CEO')">
+        <div class="ceo-role">Höfðingi · Chieftain</div>
+        <div class="ceo-name">CEO / Managing Director</div>
+        <div class="ceo-desc">Vision · Strategi · Kultur · Retning</div>
+      </div>
+      <div class="connector"></div>
+
+      <div class="exec-row">
+        <div class="exec-card" onclick="openExecModal('COO')"><div class="role">COO</div><div class="label">Operations & Skala</div></div>
+        <div class="exec-card" onclick="openExecModal('CTO')"><div class="role">CTO</div><div class="label">Teknik & Arkitektur</div></div>
+        <div class="exec-card" onclick="openExecModal('CCO')"><div class="role">CCO</div><div class="label">Commercial & Vækst</div></div>
+        <div class="exec-card" onclick="openExecModal('CFO')"><div class="role">CFO</div><div class="label">Økonomi & Margin</div></div>
+      </div>
+
+      <div class="functions-grid" id="dream-functions"></div>
+    </div>
+  </div>
+
+  <!-- REALISTIC SCENARIO -->
+  <div id="scenario-real" class="scenario">
+    <section class="hero">
+      <div class="kicker">Scenario II · ~100 medarbejdere</div>
+      <h1>Realistisk Skaleringsmodel</h1>
+      <div class="divider"><span class="rune">◆ ◇ ◆</span></div>
+      <p class="subtitle">Ambitiøs men ikke overdesignet. AI-first og lav-bureaukratisk: support- og adminfunktioner skalerer <em>ikke</em> lineært. Tech, solution og delivery vægter tungest — det er der værdi skabes.</p>
+    </section>
+
+    <div class="stats" id="real-stats"></div>
+
+    <div class="hierarchy">
+      <div class="ceo-card" onclick="openExecModal('CEO')">
+        <div class="ceo-role">Höfðingi · Chieftain</div>
+        <div class="ceo-name">CEO / Managing Director</div>
+        <div class="ceo-desc">Vision · Strategi · Kultur · Retning</div>
+      </div>
+      <div class="connector"></div>
+
+      <div class="exec-row">
+        <div class="exec-card" onclick="openExecModal('COO')"><div class="role">COO</div><div class="label">Operations · 1</div></div>
+        <div class="exec-card" onclick="openExecModal('CTO')"><div class="role">CTO</div><div class="label">Technology · 1</div></div>
+        <div class="exec-card" onclick="openExecModal('CCO')"><div class="role">CCO</div><div class="label">Commercial · 1</div></div>
+        <div class="exec-card" onclick="openExecModal('CFO')"><div class="role">CFO</div><div class="label">Finance · 1</div></div>
+      </div>
+
+      <div class="functions-grid" id="real-functions"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">
+        <h2>Værdiflowet</h2>
+        <p>Sales → Solution → Delivery → LiveOps → Customer Success · klar handover, ingen huller</p>
+      </div>
+      <div class="flow-chain">
+        <div class="flow-step" style="--c-step: var(--c-commercial);"><div class="num">01</div><div class="name">Sales</div><div class="desc">Pipeline · Closing · Forecast</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step" style="--c-step: var(--c-solution);"><div class="num">02</div><div class="name">Solution</div><div class="desc">Shadow Walk · Scope · Estimat</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step" style="--c-step: var(--c-delivery);"><div class="num">03</div><div class="name">Delivery</div><div class="desc">Pulse · Tech Lead · QA</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step" style="--c-step: var(--c-liveops);"><div class="num">04</div><div class="name">LiveOps</div><div class="desc">SLA · Support · Stabilitet</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step" style="--c-step: var(--c-commercial);"><div class="num">05</div><div class="name">Customer Success</div><div class="desc">Mersalg · Relation · Renewal</div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">
+        <h2>To karrierespor i Engineering</h2>
+        <p>Specialist og Leadership er <em>parallelle</em> spor — samme status, forskellig ansvarsprofil. Senior ≠ Tech Lead.</p>
+      </div>
+      <div class="tracks">
+        <div class="track">
+          <div class="track-label" style="--track-color: var(--c-tech);">Specialist Track</div>
+          <div class="track-sub">Faglig dybde · Arkitektur · Kompleksitet</div>
+          <div class="ladder">
+            <div class="ladder-rung h1" style="--c-rung: var(--c-tech);"><div class="lvl">L0</div><div class="title">Praktikant</div><div class="what">Læring & støtte</div></div>
+            <div class="ladder-rung h2" style="--c-rung: var(--c-tech);"><div class="lvl">L1</div><div class="title">Junior</div><div class="what">Gradvis selvstændighed</div></div>
+            <div class="ladder-rung h3" style="--c-rung: var(--c-tech);"><div class="lvl">L2</div><div class="title">Developer</div><div class="what">Selvstændig levering</div></div>
+            <div class="ladder-rung h4" style="--c-rung: var(--c-tech);"><div class="lvl">L3</div><div class="title">Senior</div><div class="what">Kompleksitet, mentoring</div></div>
+            <div class="ladder-rung h5" style="--c-rung: var(--c-tech);"><div class="lvl">L4</div><div class="title">Staff Engineer</div><div class="what">System-arkitektur</div></div>
+            <div class="ladder-rung h6"><div class="lvl">L5</div><div class="title">Principal Engineer</div><div class="what">Dyb teknisk autoritet</div></div>
+          </div>
+        </div>
+        <div class="track">
+          <div class="track-label" style="--track-color: var(--gold);">Leadership / Delivery Track</div>
+          <div class="track-sub">Leveranceansvar · Pulse · Mennesker</div>
+          <div class="ladder">
+            <div class="ladder-rung h1" style="--c-rung: var(--c-delivery);"><div class="lvl">L0</div><div class="title">Praktikant</div><div class="what">Læring & støtte</div></div>
+            <div class="ladder-rung h2" style="--c-rung: var(--c-delivery);"><div class="lvl">L1</div><div class="title">Junior</div><div class="what">Gradvis selvstændighed</div></div>
+            <div class="ladder-rung h3" style="--c-rung: var(--c-delivery);"><div class="lvl">L2</div><div class="title">Developer / Senior</div><div class="what">Faglig basis</div></div>
+            <div class="ladder-rung h4" style="--c-rung: var(--c-delivery);"><div class="lvl">L3</div><div class="title">Tech Lead</div><div class="what">Projektets Pulse · kundedialog</div></div>
+            <div class="ladder-rung h5" style="--c-rung: var(--c-delivery);"><div class="lvl">L4</div><div class="title">Engineering Manager</div><div class="what">Mennesker · portefølje</div></div>
+            <div class="ladder-rung h6"><div class="lvl">L5</div><div class="title">CTO</div><div class="what">Tech som system · standarder</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="callout">
+        <strong>Tech Lead ejer projektets Pulse</strong> — kickoff, scope, Monday planning, standups, Friday demo, intern summary, kundeupdate.<br>
+        <strong>Delivery / PMO understøtter</strong> — porteføljeoverblik, ressourcekoordinering, risiko, budget, QA-flow, tværgående transparens. <em>Overtager ikke projektledelsen.</em>
+      </div>
+    </div>
+
+    <div class="section ai-section">
+      <div class="section-title">
+        <h2><span style="color: var(--c-ai);">⚡</span> AI Enablement Layer</h2>
+        <p>På tværs af hele organisationen — gør hver funktion mere effektiv frem for at lade den skalere lineært</p>
+      </div>
+      <div class="ai-grid">
+        <div class="ai-card" style="--c-fn: var(--c-commercial);"><div class="ai-fn">Sales</div><div class="ai-use">CRM-hygiejne · lead research · outreach · forecast assist</div></div>
+        <div class="ai-card" style="--c-fn: var(--c-marketing);"><div class="ai-fn">Marketing</div><div class="ai-use">Content draft · SEO · kampagne-variants · case studies</div></div>
+        <div class="ai-card" style="--c-fn: var(--c-solution);"><div class="ai-fn">Solution & Value</div><div class="ai-use">Proposal writing · scope · estimat · Shadow Walk-rapporter</div></div>
+        <div class="ai-card" style="--c-fn: var(--c-delivery);"><div class="ai-fn">Delivery</div><div class="ai-use">Project reporting · risk scoring · status digests · QA-assist</div></div>
+        <div class="ai-card" style="--c-fn: var(--c-tech);"><div class="ai-fn">Engineering</div><div class="ai-use">Code gen · review · test · docs · debug · refactor</div></div>
+        <div class="ai-card" style="--c-fn: var(--c-liveops);"><div class="ai-fn">LiveOps</div><div class="ai-use">Triage · runbook lookup · incident summary · auto-responses</div></div>
+        <div class="ai-card" style="--c-fn: var(--c-operations);"><div class="ai-fn">Operations</div><div class="ai-use">Meeting summaries · knowledge management · process docs</div></div>
+        <div class="ai-card" style="--c-fn: var(--c-people);"><div class="ai-fn">People</div><div class="ai-use">Onboarding flows · learning paths · feedback synthesis</div></div>
+        <div class="ai-card" style="--c-fn: var(--c-finance);"><div class="ai-fn">Finance / Admin</div><div class="ai-use">Bogføring · fakturering · kontraktanalyse · vendor-tracking</div></div>
+      </div>
+      <div class="ai-thesis">
+        <div class="ai-thesis-label">Strategisk pointe</div>
+        <div class="ai-thesis-text">BCT skal <strong>ikke vokse</strong> ved at ansætte flere mennesker i alle funktioner. BCT skal vokse ved at gøre <strong>hver funktion mere effektiv</strong> — gennem AI, automation, klare roller, Pulse, bedre onboarding, genbrugelige templates og tydeligt ejerskab.</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">
+        <h2>Ledelseslag</h2>
+        <p>Fra strategisk retning til daglig udførelse — seks tydelige lag</p>
+      </div>
+      <div class="layers">
+        <div class="layer" style="--layer-color: var(--c-exec);"><div class="layer-label">Executive</div><div class="layer-roles"><strong>CEO · COO · CTO · CCO · CFO</strong> — vision, strategi, kultur, organisatorisk retning</div></div>
+        <div class="layer" style="--layer-color: var(--c-commercial);"><div class="layer-label">Functional Leads</div><div class="layer-roles"><strong>Head of Sales · Marketing · Solutions · Delivery · LiveOps · People · Productisation</strong> — funktionsejerskab og leveranceperformance</div></div>
+        <div class="layer" style="--layer-color: var(--c-delivery);"><div class="layer-label">Team / Project Owners</div><div class="layer-roles"><strong>Tech Leads · Delivery Managers · Product Owners · Account Executives</strong> — ejerskab på projekt-, kunde- og teamniveau</div></div>
+        <div class="layer" style="--layer-color: var(--c-tech);"><div class="layer-label">Specialists</div><div class="layer-roles"><strong>Principal Engineers · Solution Architects · Senior Developers · AI Consultants · QA Leads</strong> — dyb faglighed og kvalitet</div></div>
+        <div class="layer" style="--layer-color: var(--c-product);"><div class="layer-label">Contributors</div><div class="layer-roles"><strong>Developers · Project Coordinators · Support Engineers · Operations Coordinators · BDR</strong> — daglig udførelse og fremdrift</div></div>
+        <div class="layer" style="--layer-color: var(--c-people);"><div class="layer-label">Learning Roles</div><div class="layer-roles"><strong>Junior Developers · Praktikanter · Student Roles</strong> — kapacitetsopbygning og fremtidens BCT</div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">
+        <h2>Otte Bærende Principper</h2>
+        <p>Tribens kodeks · Hvorfor modellen ser sådan ud</p>
+      </div>
+      <div class="principles-grid">
+        <div class="principle"><div class="principle-num">PRINCIP I</div><h3>Funktion før titel</h3><p>Definér først hvilke funktioner organisationen skal bære. Dernæst hvilke personer der ejer dem.</p></div>
+        <div class="principle"><div class="principle-num">PRINCIP II</div><h3>Tech Lead ≠ Senior Developer</h3><p>Senior = faglig kompleksitet. Tech Lead = leveranceansvar, struktur, fremdrift og projektets puls.</p></div>
+        <div class="principle"><div class="principle-num">PRINCIP III</div><h3>CTO er ikke flaskehals</h3><p>CTO ejer standarder, kvalitet og tech som system — ikke daglig brandslukning på alle projekter.</p></div>
+        <div class="principle"><div class="principle-num">PRINCIP IV</div><h3>Solution er kritisk</h3><p>Solution-laget lukker hullet mellem salg og delivery — gode indsigter bliver til leverbare projekter.</p></div>
+        <div class="principle"><div class="principle-num">PRINCIP V</div><h3>Delivery støtter Tech Leads</h3><p>Tech Leads ejer pulsen. Delivery/PMO ejer portefølje, ressourcer, risiko og scope-kvalitet.</p></div>
+        <div class="principle"><div class="principle-num">PRINCIP VI</div><h3>Operations er skaleringsmotor</h3><p>Systemer, processer, dokumentation og governance — så organisationen ikke afhænger af implicit viden.</p></div>
+        <div class="principle"><div class="principle-num">PRINCIP VII</div><h3>People udvikler kapabilitet</h3><p>Onboarding og learning paths er strategisk nødvendige. Vi kan ikke kun skalere på færdige top-talenter.</p></div>
+        <div class="principle"><div class="principle-num">PRINCIP VIII</div><h3>Pulse er projektets rytme</h3><p>Kickoff · Monday planning · standups · Friday demo · summary · kundeupdate. Lavt bureaukrati.</p></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div>Black Capital Technology · Tribe Architecture · 2026</div>
+  <div class="motto">"Funktion før titel · Pulse før proces · System før helt"</div>
+</footer>
+
+<!-- Versions Panel -->
+<div class="versions-panel" id="versions-panel">
+  <div class="versions-header">
+    <h3>Versioner</h3>
+    <button class="del-btn" onclick="toggleVersions()" style="background: var(--bg);">×</button>
+  </div>
+  <button class="btn primary" style="width: 100%; justify-content: center; margin-bottom: 8px;" onclick="saveCurrentVersion()">+ Gem nuværende som version</button>
+  <button class="btn" style="width: 100%; justify-content: center; margin-bottom: 12px;" onclick="pushToLive()" id="push-live-btn">⬆ Skub nuværende til LIVE</button>
+  <div id="versions-list"></div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Detail Modal -->
+<div class="modal-backdrop" id="modal-backdrop" onclick="if(event.target===this) closeModal()">
+  <div class="modal" id="modal" style="--modal-color: var(--gold);">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div class="modal-kicker" id="modal-kicker">Rolle</div>
+    <h2 class="modal-title" id="modal-title">—</h2>
+    <div class="modal-sub" id="modal-sub">—</div>
+
+    <div class="modal-section" id="modal-func-section">
+      <h4>Funktionens formål</h4>
+      <div class="modal-text" id="modal-func-text"></div>
+    </div>
+
+    <div class="modal-section">
+      <h4>Hvad denne rolle reelt laver</h4>
+      <div id="modal-role-view">
+        <div class="modal-text" id="modal-role-text"></div>
+      </div>
+      <textarea class="modal-textarea" id="modal-role-edit" style="display:none;"
+        placeholder="Beskriv hvad personen i denne rolle præcist skal lave..."></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn" id="modal-edit-btn" onclick="toggleModalEdit()">✎ Rediger beskrivelse</button>
+      <button class="btn primary" id="modal-save-btn" onclick="saveModalEdit()" style="display:none;">Gem</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const EXEC_DESCRIPTIONS = {
+  'CEO': {
+    title: 'CEO / Managing Director',
+    sub: 'Höfðingi · Chieftain · Strategisk samlingspunkt',
+    color: 'var(--gold)',
+    text: `CEO'en ejer den overordnede retning for BCT: vision, strategi, kultur og prioritering. Rollen skal sikre, at organisationen ikke kun vokser i størrelse, men også i sammenhængskraft, kvalitet og kommerciel klarhed. CEO'en sætter rammen for, hvor virksomheden skal hen, hvilke markeder der prioriteres, og hvilke principper organisationen skal bygges på.
+
+I den realistiske model skal CEO'en ikke være flaskehals i den daglige drift, men fungere som strategisk samlingspunkt for ledergruppen. Rollen binder kommerciel vækst, teknologisk retning, økonomisk ansvarlighed og organisatorisk udvikling sammen.`
+  },
+  'COO': {
+    title: 'COO / Head of Operations',
+    sub: 'Operationel skalering · Bindeleddet mellem strategi og drift',
+    color: 'var(--c-operations)',
+    text: `COO'en ejer den operationelle skalering af BCT. Rollen sikrer, at virksomheden fungerer som ét samlet system på tværs af salg, delivery, interne processer, onboarding, systemejerskab og ledelsesrytmer. Fokus er at reducere friktion, skabe tydelige ansvarsområder og sikre, at vækst ikke skaber unødigt kaos.
+
+COO'en er bindeleddet mellem strategi og daglig drift. Rollen skal ikke eje alle detaljer, men sikre at de rigtige processer, rytmer og ejerskaber findes, så organisationen kan vokse uden at blive afhængig af enkelte nøglepersoner.`
+  },
+  'CTO': {
+    title: 'CTO / Technology',
+    sub: 'Teknologisk retning · Engineering-kultur · Mindre key-person risk',
+    color: 'var(--c-tech)',
+    text: `CTO'en ejer den teknologiske retning og modenhed i BCT. Rollen har ansvar for arkitekturprincipper, tekniske standarder, kvalitet, stack-valg, engineering-kultur og udvikling af Tech Lead- og specialistlaget. CTO'en skal sikre, at teknologien understøtter både kundeleverancer, produktisering og intern skalering.
+
+CTO'en skal ikke være den nye centrale brandslukker på alle projekter. Rollen skal i stedet bygge systemet omkring engineering, så ansvar kan bæres af Tech Leads, teams, fælles standarder og teknisk governance fremfor enkeltpersoner. Det matcher behovet for en reel CTO-funktion og mindre key-person risk.`
+  },
+  'CCO': {
+    title: 'CCO / Commercial',
+    sub: 'Kommerciel motor · Pipeline · Go-to-market',
+    color: 'var(--c-commercial)',
+    text: `CCO'en ejer den kommercielle motor: pipeline, salg, go-to-market, kundemodning, account-strategi og vækst. Rollen skal sikre, at BCT ikke kun skaber interesse, men konverterer de rigtige kunder til de rigtige engagementer med den rigtige forventningsstyring.
+
+CCO'en arbejder tæt sammen med Solution & Value Design, fordi BCT's salg ikke blot handler om at lukke deals, men om at modne kunden, forstå behovet og gøre løsningen købsbar. Det er særligt vigtigt, fordi der historisk har manglet et stærkt formaliseret overgangsled mellem salg og delivery.`
+  },
+  'CFO': {
+    title: 'CFO / Finance',
+    sub: 'Økonomi · Margin · Sund vækst',
+    color: 'var(--c-finance)',
+    text: `CFO'en ejer økonomi, margin, budgettering, forecast, cashflow og finansiel styring. Rollen skal sikre, at BCT kan vokse sundt — ikke kun målt på omsætning, men også på lønsomhed, kapacitetsudnyttelse og økonomisk robusthed.
+
+CFO'en skal være tæt koblet på både salg og delivery, fordi projektøkonomi, scope, bemanding og margin hænger direkte sammen. I en mere projekt- og leverancebaseret model bliver CFO'en en vigtig sparringspartner i forhold til prissætning, risikostyring og beslutningsgrundlag.`
+  }
+};
+
+const FUNCTION_DESCRIPTIONS = {
+  'sales': `Sales ejer pipeline, relationer, kommercielle muligheder og lukning af nye aftaler. Funktionen skal skabe struktureret fremdrift fra lead til dialog, Shadow Walk, projekt og videre kundeudvikling. Rollen er ikke kun at sælge en løsning, men at skabe tillid, genkendelse og kommerciel relevans hos kunden.
+
+Sales arbejder tæt sammen med Marketing, Solution & Value Design og Customer Success. Hvor Sales åbner døren og driver den kommercielle proces, skal Solution & Value hjælpe med at gøre behovet konkret og købbart, så der ikke opstår hul mellem salg og levering.`,
+
+  'marketing': `Marketing ejer BCT's synlighed, positionering, thought leadership og lead-understøttende aktiviteter. Funktionen skal hjælpe markedet med at forstå AI, automatisering og digital transformation på en konkret og jordnær måde — særligt fordi mange kunder endnu ikke er modne nok til selv at definere behovet.
+
+Marketing skal være lille, men slagkraftig. AI kan løfte meget af contentproduktion, kampagnearbejde, research og SEO, så funktionen bør ikke skaleres lineært med headcount. Dens vigtigste rolle er at modne markedet og gøre Sales' arbejde lettere.`,
+
+  'solution': `Solution & Value Design er det strategiske bindeled mellem Sales og Delivery. Funktionen tager indsigter fra dialog, Shadow Walk og kundens forretning og omsætter dem til klare, køb-bare projektoplæg, løsningsdesign, scope, estimater og business value.
+
+Det er en af de vigtigste funktioner i modellen, fordi BCT's værdi ligger i kombinationen af forretningsforståelse og teknisk eksekvering. Funktionen reducerer risikoen for, at gode salgsdialoger eller Shadow Walks taber momentum, fordi ingen får oversat indsigten til en tydelig leverance. Den rolle er også identificeret som et kritisk gap i BCT's operating model.`,
+
+  'delivery': `Delivery-funktionen sikrer, at projekter drives med struktur, transparens og kvalitet på tværs af organisationen. Funktionen understøtter Tech Leads med porteføljeoverblik, projektmodel, risikostyring, koordinering, QA, release management og forventningsstyring.
+
+Delivery skal ikke overtage projektledelsen fra Tech Leads, men give dem en stærkere ramme at lykkes i. Funktionen skal sikre, at projekter ikke bliver styret på mavefornemmelse, timer og enkeltpersoner, men gennem klare scopes, tydelige roller, realistisk planlægning og løbende fremdrift.`,
+
+  'tech': `Technology / Engineering er kernen i BCT's værdiskabelse. Funktionen bygger de løsninger, der skaber reel effekt for kunderne, og skal rumme både specialister, seniorudviklere, mid-level udviklere, juniorer, praktikanter, Tech Leads, DevOps/platform og AI/ML-profiler.
+
+I den realistiske model skal engineering kunne skalere gennem teams, standarder, onboarding og tydelige karrierespor — ikke kun gennem jagten på ekstraordinære enkeltpersoner. Tech Leads ejer projektets daglige Pulse og skal fungere som projektbærende profiler, mens CTO og Engineering Manager-laget sikrer teknisk retning, udvikling og kvalitet på tværs.`,
+
+  'product': `Productisation ejer arbejdet med at gøre gentagende kundebehov genbrugelige. Funktionen identificerer mønstre fra Shadow Walks og projekter og omsætter dem til templates, moduler, standardiserede løsningspakker eller produktspor, som kan sælges og leveres hurtigere.
+
+Funktionen skal ikke erstatte specialudvikling, men skabe et stærkere mellemtrin mellem rådgivning og store projekter. Formålet er at reducere salgsfriktion, øge genbrug, sænke leveranceomkostninger og gøre det lettere for kunder at købe ind på en konkret første løsning.`,
+
+  'liveops': `LiveOps ejer den løbende drift, support, stabilitet og videreudvikling af løsninger efter launch. Funktionen skal sikre, at BCT's løsninger ikke bare afleveres og glemmes, men fortsat skaber værdi, performance og tryghed for kunden.
+
+LiveOps er samtidig et vigtigt recurring revenue-spor. Funktionen arbejder tæt sammen med Delivery, Engineering og Customer Success, fordi driftserfaringer ofte afslører nye behov, tekniske forbedringer og kommercielle muligheder. Rollen er at gøre BCT til en langsigtet partner — ikke kun en projektleverandør.`,
+
+  'operations': `Operations ejer de interne systemer, processer, dokumentationsstandarder og arbejdsgange, der får organisationen til at hænge sammen. Funktionen skal sikre klarhed i source of truth, systemejerskab, interne rytmer, beslutningsflow og praktisk skalering.
+
+I den realistiske model bør Operations være relativt lille, fordi AI, automation og klare systemer kan reducere behovet for klassisk administration. Funktionen skal derfor ikke være en stor admin-afdeling, men et stærkt enablement-lag, der fjerner friktion og gør det lettere for resten af organisationen at arbejde effektivt.`,
+
+  'people': `People / Talent ejer rekruttering, onboarding, medarbejderudvikling, performance, trivsel og kulturforankring. Funktionen skal sikre, at BCT ikke kun ansætter stærke profiler, men også kan udvikle dem systematisk og gøre flere typer medarbejdere produktive hurtigere.
+
+Rollen er strategisk vigtig, fordi BCT ikke kan skalere på top-talenter alene. Hvis virksomheden vil vokse, skal den kunne onboarde juniorer, solide seniorer og specialister ind i en fælles operating model. People-funktionen skal derfor kobles tæt til onboarding, karrierespor, Tech Lead-udvikling og kultur.`,
+
+  'finance': `Finance / Admin ejer den finansielle og administrative basis: fakturering, bogføring, løn, rapportering, vendor management, kontraktadministration og økonomisk datakvalitet. Funktionen skal sikre, at økonomien er korrekt, gennemskuelig og beslutningsklar.
+
+I en AI-first organisation bør Finance / Admin ikke vokse tungt. Mange opgaver kan understøttes af automatisering, AI-assisteret kontraktgennemgang, bedre dataflows og klare processer. Funktionen skal give ledelsen et præcist økonomisk billede uden at skabe unødig administrativ tyngde.`,
+
+  'ai': `AI Enablement er ikke én isoleret afdeling, men et lag på tværs af hele organisationen. Formålet er at gøre hver funktion mere effektiv gennem AI, automation, templates, bedre dokumentation og smartere workflows.
+
+AI skal bruges forskelligt i hver funktion: Sales kan bruge det til research og account prep, Solution til procesmapping og løsningsudkast, Engineering til code review og test, LiveOps til triage og runbooks, People til onboarding og Finance til kontrakt- og fakturaunderstøttelse. Den strategiske pointe er, at BCT ikke skal skalere ved at ansætte flere i alle funktioner, men ved at gøre hver funktion mere kapabel.`
+};
+
+function matchFunctionDescription(funcName) {
+  const n = funcName.toLowerCase();
+  if (n.includes('ai enablement') || n.startsWith('ai ')) return FUNCTION_DESCRIPTIONS.ai;
+  if (n.includes('marketing')) return FUNCTION_DESCRIPTIONS.marketing;
+  if (n.includes('solution') || n.includes('value design')) return FUNCTION_DESCRIPTIONS.solution;
+  if (n.includes('delivery') || n.includes('project')) return FUNCTION_DESCRIPTIONS.delivery;
+  if (n.includes('tech') || n.includes('engineering')) return FUNCTION_DESCRIPTIONS.tech;
+  if (n.includes('productisation') || n.includes('product')) return FUNCTION_DESCRIPTIONS.product;
+  if (n.includes('liveops') || n.includes('drift') || n.includes('support')) return FUNCTION_DESCRIPTIONS.liveops;
+  if (n.includes('operations')) return FUNCTION_DESCRIPTIONS.operations;
+  if (n.includes('people') || n.includes('culture') || n.includes('talent')) return FUNCTION_DESCRIPTIONS.people;
+  if (n.includes('finance') || n.includes('legal') || n.includes('admin')) return FUNCTION_DESCRIPTIONS.finance;
+  if (n.includes('sales') || n.includes('commercial') || n.includes('customer')) return FUNCTION_DESCRIPTIONS.sales;
+  return '';
+}
+
+const DEFAULT_DREAM = [
+  { name: 'Commercial / Sales', color: 'var(--c-commercial)', purpose: 'Pipeline, revenue og kommercielle relationer.', roles: [
+    { name: 'Head of Sales', count: null }, { name: 'Strategic Account Lead', count: null },
+    { name: 'Account Executive', count: null }, { name: 'Business Developer', count: null },
+    { name: 'Account Manager / CS', count: null }, { name: 'CRM / Sales Ops Owner', count: null }
+  ]},
+  { name: 'Marketing', color: 'var(--c-marketing)', purpose: 'Brand, demand, market education og positionering.', roles: [
+    { name: 'Head of Marketing / Growth', count: null }, { name: 'Content & Thought Leadership', count: null },
+    { name: 'Campaign / Event Lead', count: null }, { name: 'Website / Conversion Owner', count: null }
+  ]},
+  { name: 'Solution & Value Design', color: 'var(--c-solution)', purpose: 'Bro mellem salg og delivery — scope, estimat, arkitektur.', roles: [
+    { name: 'Head of Solution & Value', count: null }, { name: 'Solution Architect', count: null },
+    { name: 'AI / Process Consultant', count: null }, { name: 'Shadow Walk Lead', count: null },
+    { name: 'Value Engineer', count: null }, { name: 'Proposal / Bid Manager', count: null }
+  ]},
+  { name: 'Delivery / Project', color: 'var(--c-delivery)', purpose: 'Projektkvalitet, portefølje og tværgående fremdrift.', roles: [
+    { name: 'Head of Delivery', count: null }, { name: 'Delivery Manager / PMO Lead', count: null },
+    { name: 'Engineering Manager', count: null }, { name: 'Product Owner', count: null },
+    { name: 'Project Coordinator', count: null }, { name: 'QA / Release Lead', count: null }
+  ]},
+  { name: 'Technology / Engineering', color: 'var(--c-tech)', purpose: 'To karrierespor: Specialist og Leadership. Tech Lead ejer Pulse.', roles: [
+    { name: '— Specialist Track —', count: null, divider: true },
+    { name: 'Principal Engineer', count: null }, { name: 'Staff Engineer', count: null },
+    { name: 'Senior Developer', count: null }, { name: 'Developer', count: null },
+    { name: 'Junior Developer', count: null }, { name: 'Praktikant', count: null },
+    { name: '— Leadership Track —', count: null, divider: true },
+    { name: 'Engineering Manager', count: null }, { name: 'Tech Lead', count: null },
+    { name: '— Domain Specialists —', count: null, divider: true },
+    { name: 'AI / ML Engineer', count: null }, { name: 'DevOps / Platform', count: null },
+    { name: 'Frontend Specialist', count: null }, { name: 'Backend Specialist', count: null }
+  ]},
+  { name: 'Productisation', color: 'var(--c-product)', purpose: 'Templates, reusable assets og produktiserede løsninger.', roles: [
+    { name: 'Head of Productisation', count: null }, { name: 'Product Manager', count: null },
+    { name: 'Product Tech Lead', count: null }, { name: 'Product Designer', count: null },
+    { name: 'Product Marketing Lead', count: null }
+  ]},
+  { name: 'LiveOps / Drift', color: 'var(--c-liveops)', purpose: 'Drift, support, SLA og recurring revenue.', roles: [
+    { name: 'Head of LiveOps', count: null }, { name: 'Service Delivery Manager', count: null },
+    { name: 'Support Engineer', count: null }, { name: 'Reliability / Platform Engineer', count: null },
+    { name: 'LiveOps Account Owner', count: null }
+  ]},
+  { name: 'Operations', color: 'var(--c-operations)', purpose: 'Operating model, systemer, viden og governance.', roles: [
+    { name: 'COO / Head of Operations', count: null }, { name: 'Business Operations Manager', count: null },
+    { name: 'Systems Owner', count: null }, { name: 'Documentation / Knowledge Manager', count: null },
+    { name: 'Tooling & Automation Lead', count: null }
+  ]},
+  { name: 'People & Culture', color: 'var(--c-people)', purpose: 'Kultur, trivsel, capability og medarbejderudvikling.', roles: [
+    { name: 'Head of People & Culture', count: null }, { name: 'Talent Acquisition Lead', count: null },
+    { name: 'Onboarding Lead', count: null }, { name: 'Learning & Capability Lead', count: null },
+    { name: 'Culture / Engagement Lead', count: null }
+  ]},
+  { name: 'Finance / Legal / Admin', color: 'var(--c-finance)', purpose: 'Budget, margin, kontrakter og finansiel styring.', roles: [
+    { name: 'CFO / Finance Lead', count: null }, { name: 'Controller', count: null },
+    { name: 'Billing / Admin Specialist', count: null }, { name: 'Contract Manager', count: null },
+    { name: 'Vendor / Supplier Manager', count: null }
+  ]},
+  { name: 'AI Enablement', color: 'var(--c-ai)', purpose: 'På tværs af alle funktioner — gør hver funktion mere effektiv.', roles: [
+    { name: 'Head of AI Enablement', count: null }, { name: 'AI Workflow Designer', count: null },
+    { name: 'AI Ops / Prompt Engineer', count: null }, { name: 'Internal Tooling Lead', count: null },
+    { name: 'Knowledge / RAG Engineer', count: null }
+  ]}
+];
+
+const DEFAULT_REAL = [
+  { name: 'Commercial / Sales / CS', color: 'var(--c-commercial)', purpose: 'Salg skal ikke være personbåret. AI hjælper CRM, research og outreach.', roles: [
+    { name: 'Head of Sales', count: 1 }, { name: 'Account Executives', count: 2 },
+    { name: 'Business Developers', count: 2 }, { name: 'Account Managers / CS', count: 3 },
+    { name: 'CRM / Sales Ops Owner', count: 1 }
+  ]},
+  { name: 'Marketing', color: 'var(--c-marketing)', purpose: 'Lille, slagkraftigt — AI accelererer content, kampagner og SEO.', roles: [
+    { name: 'Head of Marketing / Growth', count: 1 }, { name: 'Content & Thought Leadership', count: 1 },
+    { name: 'Web / SEO / Campaign Lead', count: 1 }
+  ]},
+  { name: 'Solution & Value Design', color: 'var(--c-solution)', purpose: 'Strategisk kerneled mellem Sales og Delivery — Shadow Walk → købbart projekt.', roles: [
+    { name: 'Head of Solution & Value', count: 1 }, { name: 'Solution Architects', count: 3 },
+    { name: 'AI / Process Consultants', count: 3 }, { name: 'Shadow Walk Lead', count: 1 },
+    { name: 'Proposal / Bid Manager', count: 1 }
+  ]},
+  { name: 'Delivery / Project', color: 'var(--c-delivery)', purpose: 'Understøtter Tech Leads — overtager IKKE projektledelsen. Portefølje, risiko, QA.', roles: [
+    { name: 'Head of Delivery', count: 1 }, { name: 'Delivery Managers / PMO', count: 2 },
+    { name: 'Project Coordinator', count: 1 }, { name: 'Product Owners / BAs', count: 2 },
+    { name: 'QA / Release Leads', count: 2 }
+  ]},
+  { name: 'Technology / Engineering', color: 'var(--c-tech)', purpose: 'Kernen i BCT. To karrierespor: Specialist og Leadership.', roles: [
+    { name: '— Specialist Track —', count: null, divider: true },
+    { name: 'Principal Engineers', count: 2 }, { name: 'Staff Engineers', count: 2 },
+    { name: 'Senior Developers', count: 11 }, { name: 'Developers / Mid-level', count: 14 },
+    { name: 'Junior Developers', count: 5 }, { name: 'Praktikanter', count: 3 },
+    { name: '— Leadership Track —', count: null, divider: true },
+    { name: 'Engineering Manager', count: 1 }, { name: 'Tech Leads', count: 7 },
+    { name: '— Domain Specialists —', count: null, divider: true },
+    { name: 'DevOps / Platform', count: 2 }, { name: 'AI / ML Engineers', count: 2 }
+  ]},
+  { name: 'Productisation', color: 'var(--c-product)', purpose: 'Genbrug, hurtigere salg, lavere leveranceomkostninger.', roles: [
+    { name: 'Productisation Lead', count: 1 }, { name: 'Product Manager', count: 1 },
+    { name: 'Product Tech Lead', count: 1 }, { name: 'Product Designer', count: 1 },
+    { name: 'Product Marketing / Enablement', count: 1 }
+  ]},
+  { name: 'LiveOps / Drift', color: 'var(--c-liveops)', purpose: 'Recurring revenue — løsninger bliver ikke afleveret og glemt.', roles: [
+    { name: 'Head of LiveOps', count: 1 }, { name: 'Support Engineers', count: 2 },
+    { name: 'Reliability / Platform', count: 1 }, { name: 'LiveOps Account Owner', count: 1 }
+  ]},
+  { name: 'Operations', color: 'var(--c-operations)', purpose: 'AI gør operations let — systemejerskab, ikke admin-bemanding.', roles: [
+    { name: 'Business Operations Manager', count: 1 }, { name: 'Systems & Tooling Owner', count: 1 },
+    { name: 'Documentation / Knowledge', count: 1 }
+  ]},
+  { name: 'People & Culture', color: 'var(--c-people)', purpose: 'Lille team — AI assisterer onboarding, learning og people ops.', roles: [
+    { name: 'Head of People & Culture', count: 1 }, { name: 'Talent / Onboarding / Learning Lead', count: 1 }
+  ]},
+  { name: 'Finance / Legal / Admin', color: 'var(--c-finance)', purpose: 'Automation håndterer bogføring, fakturering og kontrakter — minimum bemanding.', roles: [
+    { name: 'CFO / Controller', count: 1 }, { name: 'Billing / Contracts / Admin Specialist', count: 1 }
+  ]}
+];
+
+// ════════════════════════════════════════════════════════════════
+// CLOUD CONFIGURATION
+// Fill these in for shared editing. Leave empty for local-only mode.
+// You can also call setupCloud(url, key, passphrase) from DevTools.
+// ════════════════════════════════════════════════════════════════
+const CLOUD_CONFIG = {
+  supabaseUrl: localStorage.getItem('bct-supabase-url') || '',
+  supabaseAnonKey: localStorage.getItem('bct-supabase-key') || '',
+  passphrase: localStorage.getItem('bct-passphrase') || '', // optional shared passphrase
+  documentId: 'main'
+};
+
+window.setupCloud = function(url, key, passphrase) {
+  localStorage.setItem('bct-supabase-url', url || '');
+  localStorage.setItem('bct-supabase-key', key || '');
+  if (passphrase !== undefined) localStorage.setItem('bct-passphrase', passphrase || '');
+  showToast('Cloud-config gemt. Genindlæser...');
+  setTimeout(() => location.reload(), 800);
+};
+
+const STORAGE_KEY = 'bct-org-v2';
+const VERSIONS_KEY = 'bct-org-versions';
+
+let supabaseClient = null;
+let cloudConnected = false;
+let lastSyncedHash = '';
+let isApplyingRemote = false;
+
+let state = {
+  scenario: 'dream',
+  editMode: false,
+  dream: clone(DEFAULT_DREAM),
+  real: clone(DEFAULT_REAL)
+};
+
+function clone(o) { return JSON.parse(JSON.stringify(o)); }
+
+function loadLocal() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed.dream) state.dream = parsed.dream;
+      if (parsed.real) state.real = parsed.real;
+    }
+  } catch (e) { console.warn('Load failed', e); }
+}
+
+function saveLocal() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ dream: state.dream, real: state.real }));
+  } catch (e) { console.warn('Save failed', e); }
+}
+
+function save() {
+  if (isApplyingRemote) return; // don't save when applying remote update
+  saveLocal();
+  flashSaveIndicator('● Gemt lokalt');
+  if (cloudConnected) debounceCloudSave();
+}
+
+function flashSaveIndicator(text) {
+  const ind = document.getElementById('save-indicator');
+  ind.textContent = text;
+  ind.classList.add('saved');
+  clearTimeout(window._saveTimer);
+  window._saveTimer = setTimeout(() => {
+    ind.textContent = '●';
+    ind.classList.remove('saved');
+  }, 1800);
+}
+
+// ─── Cloud sync ──────────────────────────────────────────────
+function setCloudStatus(cls, text) {
+  const el = document.getElementById('cloud-status');
+  el.className = 'cloud-status ' + cls;
+  document.getElementById('cloud-status-text').textContent = text;
+}
+
+async function initCloud() {
+  if (!CLOUD_CONFIG.supabaseUrl || !CLOUD_CONFIG.supabaseAnonKey) {
+    setCloudStatus('offline', 'Lokal');
+    document.getElementById('setup-banner').classList.add('show');
+    return;
+  }
+  if (!window.supabase) {
+    setTimeout(initCloud, 200);
+    return;
+  }
+  setCloudStatus('syncing', 'Forbinder...');
+  try {
+    supabaseClient = window.supabase.createClient(CLOUD_CONFIG.supabaseUrl, CLOUD_CONFIG.supabaseAnonKey);
+    await loadFromCloud();
+    subscribeToCloud();
+    cloudConnected = true;
+    setCloudStatus('online', 'Live · synkroniseret');
+  } catch (e) {
+    console.error('Cloud init failed', e);
+    setCloudStatus('error', 'Cloud fejl');
+  }
+}
+
+async function loadFromCloud() {
+  if (!supabaseClient) return;
+  setCloudStatus('syncing', 'Henter...');
+  const { data, error } = await supabaseClient
+    .from('org_state')
+    .select('*')
+    .eq('id', CLOUD_CONFIG.documentId)
+    .maybeSingle();
+  if (error) { console.warn('Cloud load failed', error); setCloudStatus('error', 'Hente-fejl'); return; }
+  if (data && data.data) {
+    isApplyingRemote = true;
+    if (data.data.dream) state.dream = data.data.dream;
+    if (data.data.real) state.real = data.data.real;
+    lastSyncedHash = JSON.stringify(data.data);
+    renderAll();
+    isApplyingRemote = false;
+    if (data.updated_by) flashSaveIndicator('● Hentet (af ' + data.updated_by + ')');
+  } else {
+    // Empty - push current state up
+    await saveToCloud();
+  }
+  setCloudStatus('online', 'Live · synkroniseret');
+}
+
+let cloudSaveTimer = null;
+function debounceCloudSave() {
+  setCloudStatus('syncing', 'Gemmer...');
+  clearTimeout(cloudSaveTimer);
+  cloudSaveTimer = setTimeout(saveToCloud, 700);
+}
+
+async function saveToCloud() {
+  if (!supabaseClient) return;
+  const userName = localStorage.getItem('bct-user') || 'anonym';
+  const payload = { dream: state.dream, real: state.real };
+  const hash = JSON.stringify(payload);
+  if (hash === lastSyncedHash) { setCloudStatus('online', 'Live · synkroniseret'); return; }
+  const { error } = await supabaseClient
+    .from('org_state')
+    .upsert({
+      id: CLOUD_CONFIG.documentId,
+      data: payload,
+      updated_by: userName,
+      updated_at: new Date().toISOString()
+    });
+  if (error) {
+    console.error('Cloud save failed', error);
+    setCloudStatus('error', 'Gem-fejl');
+    showToast('Kunne ikke gemme til cloud: ' + error.message);
+  } else {
+    lastSyncedHash = hash;
+    setCloudStatus('online', 'Live · gemt');
+    flashSaveIndicator('● Gemt live');
+  }
+}
+
+function subscribeToCloud() {
+  if (!supabaseClient) return;
+  supabaseClient
+    .channel('org_state_' + CLOUD_CONFIG.documentId)
+    .on('postgres_changes',
+      { event: 'UPDATE', schema: 'public', table: 'org_state', filter: 'id=eq.' + CLOUD_CONFIG.documentId },
+      payload => {
+        const userName = localStorage.getItem('bct-user') || 'anonym';
+        if (payload.new && payload.new.updated_by !== userName) {
+          isApplyingRemote = true;
+          if (payload.new.data.dream) state.dream = payload.new.data.dream;
+          if (payload.new.data.real) state.real = payload.new.data.real;
+          lastSyncedHash = JSON.stringify(payload.new.data);
+          renderAll();
+          isApplyingRemote = false;
+          showToast(payload.new.updated_by + ' lavede en ændring');
+        }
+      })
+    .subscribe();
+}
+
+// ─── Passphrase ──────────────────────────────────────────────
+function ensureAccess() {
+  if (!CLOUD_CONFIG.passphrase) return true;
+  if (sessionStorage.getItem('bct-auth-ok') === '1') return true;
+  const entered = prompt('Indtast kodeord for at redigere (delt med teamet):');
+  if (entered === null) return false;
+  if (entered === CLOUD_CONFIG.passphrase) {
+    sessionStorage.setItem('bct-auth-ok', '1');
+    return true;
+  }
+  alert('Forkert kodeord.');
+  return false;
+}
+
+// ─── Toast ──────────────────────────────────────────────
+function showToast(message, ms = 3000) {
+  const t = document.getElementById('toast');
+  t.textContent = message;
+  t.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => t.classList.remove('show'), ms);
+}
+
+// ─── Versions (local snapshots) ──────────────────────────────────────────────
+function getVersions() {
+  try { return JSON.parse(localStorage.getItem(VERSIONS_KEY) || '[]'); }
+  catch { return []; }
+}
+function setVersions(v) { localStorage.setItem(VERSIONS_KEY, JSON.stringify(v.slice(0, 50))); }
+
+function saveCurrentVersion() {
+  const name = prompt('Navn på versionen (fx "Min idé til Q3"):');
+  if (!name) return;
+  const versions = getVersions();
+  versions.unshift({
+    name: name.trim(),
+    createdAt: new Date().toISOString(),
+    author: localStorage.getItem('bct-user') || 'anonym',
+    data: { dream: clone(state.dream), real: clone(state.real) }
+  });
+  setVersions(versions);
+  renderVersions();
+  showToast('Version "' + name + '" gemt lokalt');
+}
+
+function loadVersion(idx) {
+  const v = getVersions()[idx];
+  if (!v) return;
+  if (!confirm('Indlæs "' + v.name + '"? Dine nuværende ændringer overskrives lokalt (LIVE røres ikke).')) return;
+  isApplyingRemote = true; // prevent cloud overwrite
+  state.dream = clone(v.data.dream);
+  state.real = clone(v.data.real);
+  saveLocal();
+  renderAll();
+  isApplyingRemote = false;
+  showToast('Indlæste "' + v.name + '" lokalt');
+}
+
+function deleteVersion(idx) {
+  const v = getVersions()[idx];
+  if (!confirm('Slet version "' + v.name + '"?')) return;
+  const versions = getVersions();
+  versions.splice(idx, 1);
+  setVersions(versions);
+  renderVersions();
+}
+
+function exportVersion(idx) {
+  const v = getVersions()[idx];
+  if (!v) return;
+  downloadJSON(v, 'bct-' + slugify(v.name) + '.json');
+}
+
+function pushToLive() {
+  if (!cloudConnected) {
+    alert('Ingen cloud-forbindelse. Konfigurér Supabase først.');
+    return;
+  }
+  if (!ensureAccess()) return;
+  if (!confirm('Skub din nuværende version til LIVE? Alle andre vil se den.')) return;
+  lastSyncedHash = ''; // force save
+  saveToCloud();
+}
+
+function toggleVersions() { document.getElementById('versions-panel').classList.toggle('open'); renderVersions(); }
+
+function renderVersions() {
+  const list = document.getElementById('versions-list');
+  const versions = getVersions();
+  if (!versions.length) {
+    list.innerHTML = '<div class="versions-empty">Ingen versioner gemt endnu.<br>Gem en nu for at kunne vende tilbage.</div>';
+    return;
+  }
+  list.innerHTML = versions.map((v, i) => `
+    <div class="version-item">
+      <div class="version-item-head">
+        <span class="version-name">${escapeHtml(v.name)}</span>
+        <span class="version-date">${new Date(v.createdAt).toLocaleString('da-DK', {dateStyle:'short', timeStyle:'short'})}</span>
+      </div>
+      <div style="font-size: 10px; color: var(--text-muted);">af ${escapeHtml(v.author || 'anonym')}</div>
+      <div class="version-actions">
+        <button onclick="loadVersion(${i})">Indlæs</button>
+        <button onclick="exportVersion(${i})">Eksportér</button>
+        <button class="danger" onclick="deleteVersion(${i})">Slet</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function slugify(s) { return String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
+
+function downloadJSON(obj, filename) {
+  const blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importJSON() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'application/json';
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const obj = JSON.parse(ev.target.result);
+        // Detect format: full export, single version, or raw data
+        let data = obj.data ? obj.data : obj;
+        if (data.dream && data.real) {
+          if (!confirm('Importér denne fil og overskriv din lokale visning? LIVE røres ikke.')) return;
+          isApplyingRemote = true;
+          state.dream = clone(data.dream);
+          state.real = clone(data.real);
+          saveLocal();
+          renderAll();
+          isApplyingRemote = false;
+          showToast('Importeret lokalt');
+        } else {
+          alert('Filen ser ikke ud til at indeholde gyldig org-data.');
+        }
+      } catch (err) { alert('Kunne ikke læse filen: ' + err.message); }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+function sumFunc(f) {
+  return f.roles.reduce((sum, r) => sum + (typeof r.count === 'number' ? r.count : 0), 0);
+}
+function sumTotal(arr) {
+  return arr.reduce((s, f) => s + sumFunc(f), 0);
+}
+function countRoles(arr) {
+  return arr.reduce((s, f) => s + f.roles.filter(r => !r.divider).length, 0);
+}
+
+function renderStats() {
+  const dreamTotal = countRoles(state.dream);
+  document.getElementById('dream-stats').innerHTML = `
+    <div class="stat"><div class="stat-value">${state.dream.length}</div><div class="stat-label">Hovedfunktioner</div></div>
+    <div class="stat"><div class="stat-value">${dreamTotal}</div><div class="stat-label">Distinkte roller</div></div>
+    <div class="stat"><div class="stat-value">5</div><div class="stat-label">C-level ejerskaber</div></div>
+    <div class="stat" style="border-color: var(--c-ai);"><div class="stat-value" style="color: var(--c-ai);">AI</div><div class="stat-label">Enablement Layer</div></div>
+  `;
+
+  const total = sumTotal(state.real);
+  const eng = sumFunc(state.real.find(f => f.name.toLowerCase().includes('engineering')) || { roles: [] });
+  const sol = sumFunc(state.real.find(f => f.name.toLowerCase().includes('solution')) || { roles: [] });
+  document.getElementById('real-stats').innerHTML = `
+    <div class="stat"><div class="stat-value">${total}</div><div class="stat-label">Medarbejdere</div></div>
+    <div class="stat"><div class="stat-value">${eng}</div><div class="stat-label">Engineering</div></div>
+    <div class="stat"><div class="stat-value">${sol}</div><div class="stat-label">Solution & Value</div></div>
+    <div class="stat" style="border-color: var(--c-ai);"><div class="stat-value" style="color: var(--c-ai);">AI</div><div class="stat-label">På tværs af alt</div></div>
+  `;
+}
+
+function renderFunction(f, fIdx, isReal) {
+  const count = isReal ? sumFunc(f) : null;
+  const rolesHTML = f.roles.map((r, rIdx) => {
+    if (r.divider) {
+      return `<li class="role-divider" data-divider="1">${escapeHtml(r.name)}
+        <button class="del-btn role-controls" style="float:right;" onclick="deleteRole(${fIdx},${rIdx},${isReal})" title="Slet skillelinje">×</button>
+      </li>`;
+    }
+    return `
+      <li class="role-item" draggable="true"
+          data-fidx="${fIdx}" data-ridx="${rIdx}"
+          ondragstart="onDragStart(event)" ondragend="onDragEnd(event)">
+        <span class="role-handle" title="Træk for at flytte">⋮⋮</span>
+        <span class="role-title" contenteditable="${state.editMode}"
+              onclick="if(!state.editMode){event.stopPropagation();openRoleModal(${fIdx},${rIdx},${isReal});}"
+              onblur="updateRoleName(${fIdx},${rIdx},${isReal},this.textContent)"
+              onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">${escapeHtml(r.name)}</span>
+        ${isReal ? `
+          <span class="role-count">${r.count}</span>
+          <span class="role-count-edit">
+            <button class="count-btn" onclick="changeCount(${fIdx},${rIdx},-1)">−</button>
+            <input type="number" class="count-input" value="${r.count}" min="0"
+                   onchange="setCount(${fIdx},${rIdx},this.value)"
+                   onclick="this.select()">
+            <button class="count-btn" onclick="changeCount(${fIdx},${rIdx},1)">+</button>
+          </span>
+        ` : ''}
+        <span class="role-controls">
+          <button class="del-btn" onclick="deleteRole(${fIdx},${rIdx},${isReal})" title="Slet rolle">×</button>
+        </span>
+      </li>
+    `;
+  }).join('');
+
+  return `
+    <div class="func-card" style="--func-color: ${f.color};"
+         data-fidx="${fIdx}"
+         ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event,${isReal})">
+      <div class="func-header">
+        <div class="func-name" contenteditable="${state.editMode}"
+             onblur="updateFuncName(${fIdx},${isReal},this.textContent)"
+             onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">${escapeHtml(f.name)}</div>
+        ${isReal ? `<div class="func-count">${count}<small>pers</small></div>` : ''}
+      </div>
+      <div class="func-purpose" contenteditable="${state.editMode}"
+           onblur="updateFuncPurpose(${fIdx},${isReal},this.textContent)"
+           onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">${escapeHtml(f.purpose)}</div>
+      <ul class="roles-list">${rolesHTML}</ul>
+      <button class="add-role-btn" onclick="addRole(${fIdx},${isReal})">+ Tilføj rolle</button>
+      <div class="func-actions">
+        <button class="divider-add-btn" onclick="addDivider(${fIdx},${isReal})">+ Skillelinje</button>
+        <button class="divider-add-btn" style="border-color: var(--danger); color: var(--danger);" onclick="deleteFunction(${fIdx},${isReal})">Slet funktion</button>
+      </div>
+    </div>
+  `;
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function renderDream() {
+  const html = state.dream.map((f, i) => renderFunction(f, i, false)).join('');
+  document.getElementById('dream-functions').innerHTML = html + addFunctionCardHTML('dream');
+}
+function renderReal() {
+  const html = state.real.map((f, i) => renderFunction(f, i, true)).join('');
+  document.getElementById('real-functions').innerHTML = html + addFunctionCardHTML('real');
+}
+function addFunctionCardHTML(which) {
+  return `<div class="add-function-card" onclick="addFunction('${which}')">+ Tilføj funktion</div>`;
+}
+
+function renderAll() {
+  renderDream();
+  renderReal();
+  renderStats();
+}
+
+// Mutators
+function changeCount(fIdx, rIdx, delta) {
+  const r = state.real[fIdx].roles[rIdx];
+  r.count = Math.max(0, (r.count || 0) + delta);
+  save(); renderAll();
+}
+function setCount(fIdx, rIdx, val) {
+  const n = parseInt(val, 10);
+  state.real[fIdx].roles[rIdx].count = isNaN(n) ? 0 : Math.max(0, n);
+  save(); renderAll();
+}
+function updateRoleName(fIdx, rIdx, isReal, name) {
+  const arr = isReal ? state.real : state.dream;
+  const trimmed = name.trim();
+  if (trimmed) arr[fIdx].roles[rIdx].name = trimmed;
+  save(); renderAll();
+}
+function updateFuncName(fIdx, isReal, name) {
+  const arr = isReal ? state.real : state.dream;
+  const trimmed = name.trim();
+  if (trimmed) arr[fIdx].name = trimmed;
+  save(); renderAll();
+}
+function updateFuncPurpose(fIdx, isReal, txt) {
+  const arr = isReal ? state.real : state.dream;
+  arr[fIdx].purpose = txt.trim();
+  save();
+}
+function deleteRole(fIdx, rIdx, isReal) {
+  const arr = isReal ? state.real : state.dream;
+  if (confirm('Slet rolle: "' + arr[fIdx].roles[rIdx].name + '"?')) {
+    arr[fIdx].roles.splice(rIdx, 1);
+    save(); renderAll();
+  }
+}
+function addRole(fIdx, isReal) {
+  const arr = isReal ? state.real : state.dream;
+  const name = prompt('Navn på ny rolle:');
+  if (!name) return;
+  const role = { name: name.trim() };
+  if (isReal) role.count = 1;
+  else role.count = null;
+  arr[fIdx].roles.push(role);
+  save(); renderAll();
+}
+function addDivider(fIdx, isReal) {
+  const arr = isReal ? state.real : state.dream;
+  const label = prompt('Skillelinje-tekst (fx "— Specialist Track —"):');
+  if (!label) return;
+  arr[fIdx].roles.push({ name: label.trim(), count: null, divider: true });
+  save(); renderAll();
+}
+function deleteFunction(fIdx, isReal) {
+  const arr = isReal ? state.real : state.dream;
+  if (confirm('Slet hele funktionen "' + arr[fIdx].name + '" og alle dens roller?')) {
+    arr.splice(fIdx, 1);
+    save(); renderAll();
+  }
+}
+function addFunction(which) {
+  const arr = which === 'real' ? state.real : state.dream;
+  const name = prompt('Navn på ny funktion:');
+  if (!name) return;
+  const colors = ['var(--c-commercial)','var(--c-marketing)','var(--c-solution)','var(--c-delivery)','var(--c-tech)','var(--c-product)','var(--c-liveops)','var(--c-operations)','var(--c-people)','var(--c-finance)','var(--c-ai)'];
+  arr.push({
+    name: name.trim(),
+    color: colors[arr.length % colors.length],
+    purpose: 'Beskriv formålet med denne funktion...',
+    roles: []
+  });
+  save(); renderAll();
+}
+
+// Drag & drop
+let dragData = null;
+function onDragStart(e) {
+  if (!state.editMode) { e.preventDefault(); return; }
+  const li = e.currentTarget;
+  dragData = { fIdx: +li.dataset.fidx, rIdx: +li.dataset.ridx };
+  li.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+}
+function onDragEnd(e) {
+  e.currentTarget.classList.remove('dragging');
+  document.querySelectorAll('.func-card.drag-target').forEach(c => c.classList.remove('drag-target'));
+  dragData = null;
+}
+function onDragOver(e) {
+  if (!dragData) return;
+  e.preventDefault();
+  e.currentTarget.classList.add('drag-target');
+}
+function onDragLeave(e) {
+  if (e.currentTarget.contains(e.relatedTarget)) return;
+  e.currentTarget.classList.remove('drag-target');
+}
+function onDrop(e, isReal) {
+  if (!dragData) return;
+  e.preventDefault();
+  const targetFIdx = +e.currentTarget.dataset.fidx;
+  const arr = isReal ? state.real : state.dream;
+  if (dragData.fIdx === targetFIdx) return;
+  const role = arr[dragData.fIdx].roles.splice(dragData.rIdx, 1)[0];
+  arr[targetFIdx].roles.push(role);
+  save(); renderAll();
+}
+
+// Mode + scenario
+function toggleEditMode() {
+  if (!state.editMode) {
+    // Entering edit mode: check passphrase and name
+    if (!ensureAccess()) return;
+    if (!localStorage.getItem('bct-user')) {
+      const name = prompt('Hvad hedder du? (vises i historik når du redigerer)');
+      if (name && name.trim()) localStorage.setItem('bct-user', name.trim());
+    }
+  }
+  state.editMode = !state.editMode;
+  document.body.classList.toggle('edit-mode', state.editMode);
+  const btn = document.getElementById('btn-edit');
+  btn.textContent = state.editMode ? '✓ Færdig' : '✎ Rediger';
+  btn.classList.toggle('active', state.editMode);
+  renderAll();
+}
+function switchScenario(s) {
+  state.scenario = s;
+  document.getElementById('scenario-dream').classList.toggle('active', s === 'dream');
+  document.getElementById('scenario-real').classList.toggle('active', s === 'real');
+  document.getElementById('btn-dream').classList.toggle('active', s === 'dream');
+  document.getElementById('btn-real').classList.toggle('active', s === 'real');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function resetData() {
+  if (!confirm('Nulstil alle ændringer til standard? Dine redigeringer slettes.')) return;
+  state.dream = clone(DEFAULT_DREAM);
+  state.real = clone(DEFAULT_REAL);
+  save(); renderAll();
+}
+function exportJSON() {
+  downloadJSON(
+    { exported: new Date().toISOString(), name: 'Live snapshot', data: { dream: state.dream, real: state.real } },
+    'bct-org-' + new Date().toISOString().slice(0,10) + '.json'
+  );
+}
+
+// Modal logic
+let modalContext = null;
+
+function openExecModal(key) {
+  const d = EXEC_DESCRIPTIONS[key];
+  if (!d) return;
+  modalContext = { type: 'exec', key };
+  const modal = document.getElementById('modal');
+  modal.style.setProperty('--modal-color', d.color);
+  document.getElementById('modal-kicker').textContent = 'Executive Leadership';
+  document.getElementById('modal-kicker').style.color = d.color;
+  document.getElementById('modal-title').textContent = d.title;
+  document.getElementById('modal-sub').textContent = d.sub;
+  document.getElementById('modal-func-section').style.display = 'none';
+  document.getElementById('modal-role-text').textContent = d.text;
+  document.getElementById('modal-role-view').style.display = 'block';
+  document.getElementById('modal-role-edit').style.display = 'none';
+  document.getElementById('modal-edit-btn').style.display = 'none';
+  document.getElementById('modal-save-btn').style.display = 'none';
+  document.getElementById('modal-backdrop').classList.add('open');
+}
+
+function openRoleModal(fIdx, rIdx, isReal) {
+  const arr = isReal ? state.real : state.dream;
+  const func = arr[fIdx];
+  const role = func.roles[rIdx];
+  if (role.divider) return;
+
+  modalContext = { type: 'role', fIdx, rIdx, isReal };
+
+  // Check if this role is actually a known executive
+  const upperName = role.name.toUpperCase();
+  for (const key of ['CEO', 'COO', 'CTO', 'CCO', 'CFO']) {
+    if (upperName.includes(key) && !upperName.includes('CFO/CONTROLLER')) {
+      openExecModal(key);
+      return;
+    }
+  }
+
+  const modal = document.getElementById('modal');
+  modal.style.setProperty('--modal-color', func.color);
+  const kicker = document.getElementById('modal-kicker');
+  kicker.textContent = func.name;
+  kicker.style.color = func.color;
+  document.getElementById('modal-title').textContent = role.name;
+  document.getElementById('modal-sub').textContent =
+    (isReal && typeof role.count === 'number' ? role.count + ' personer · ' : '') + func.purpose;
+
+  document.getElementById('modal-func-section').style.display = 'block';
+  document.getElementById('modal-func-text').textContent = matchFunctionDescription(func.name) || 'Ingen funktionsbeskrivelse endnu.';
+
+  const roleText = role.description || '';
+  const view = document.getElementById('modal-role-view');
+  const textEl = document.getElementById('modal-role-text');
+  if (roleText) {
+    textEl.textContent = roleText;
+    textEl.classList.remove('muted');
+  } else {
+    textEl.textContent = 'Ingen specifik beskrivelse endnu. Klik "Rediger beskrivelse" for at tilføje en.';
+    textEl.classList.add('muted');
+  }
+  view.style.display = 'block';
+  document.getElementById('modal-role-edit').style.display = 'none';
+  document.getElementById('modal-role-edit').value = roleText;
+  document.getElementById('modal-edit-btn').style.display = 'inline-flex';
+  document.getElementById('modal-edit-btn').textContent = '✎ Rediger beskrivelse';
+  document.getElementById('modal-save-btn').style.display = 'none';
+  document.getElementById('modal-backdrop').classList.add('open');
+}
+
+function toggleModalEdit() {
+  if (!modalContext || modalContext.type !== 'role') return;
+  document.getElementById('modal-role-view').style.display = 'none';
+  document.getElementById('modal-role-edit').style.display = 'block';
+  document.getElementById('modal-edit-btn').style.display = 'none';
+  document.getElementById('modal-save-btn').style.display = 'inline-flex';
+  document.getElementById('modal-role-edit').focus();
+}
+
+function saveModalEdit() {
+  if (!modalContext || modalContext.type !== 'role') return;
+  const { fIdx, rIdx, isReal } = modalContext;
+  const arr = isReal ? state.real : state.dream;
+  arr[fIdx].roles[rIdx].description = document.getElementById('modal-role-edit').value.trim();
+  save();
+  openRoleModal(fIdx, rIdx, isReal); // re-render modal
+  renderAll();
+}
+
+function closeModal() {
+  document.getElementById('modal-backdrop').classList.remove('open');
+  modalContext = null;
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeModal();
+});
+
+loadLocal();
+renderAll();
+initCloud();
+</script>
+</body>
+</html>
