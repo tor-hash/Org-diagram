@@ -1002,6 +1002,49 @@ footer .motto {
 body.edit-mode .role-title { cursor: text; }
 .exec-card, .ceo-card { cursor: pointer; }
 
+/* Print styles */
+@media print {
+  @page { size: A4 landscape; margin: 12mm; }
+  body {
+    background: white !important;
+    color: black !important;
+    background-image: none !important;
+  }
+  header, .controls, .add-role-btn, .add-function-card, .func-actions,
+  .versions-panel, .modal-backdrop, .toast, .edit-banner, .setup-needed,
+  .role-handle, .role-controls, .role-count-edit { display: none !important; }
+  .scenario:not(.active) { display: none !important; }
+  main { padding: 0 !important; max-width: 100% !important; }
+  .hero { padding: 0 0 20px !important; }
+  h1 { color: black !important; font-size: 24pt !important; }
+  .subtitle, .kicker { color: #444 !important; }
+  .divider::before, .divider::after { background: #ccc !important; }
+  .rune { color: #888 !important; }
+  .stat, .ceo-card, .exec-card, .func-card, .section, .flow-step,
+  .track, .ladder-rung, .layer, .principle, .ai-card, .callout {
+    background: white !important;
+    color: black !important;
+    border-color: #ddd !important;
+    box-shadow: none !important;
+    page-break-inside: avoid;
+  }
+  .role-item { background: #f7f7f7 !important; color: black !important; }
+  .role-title, .role-count, .func-name, .func-count, .func-purpose,
+  .ceo-name, .ceo-role, .ceo-desc, .stat-value, .stat-label,
+  .exec-card .role, .exec-card .label, .role-divider,
+  .ai-fn, .ai-use, .ai-thesis-text, .ai-thesis-label,
+  h2, h3, h4, p, .section-title p, .flow-step .name, .flow-step .desc, .flow-step .num,
+  .ladder-rung .title, .ladder-rung .what, .ladder-rung .lvl,
+  .layer-label, .layer-roles, .principle-num, .principle h3 {
+    color: black !important;
+  }
+  .func-card::before, .stat, .ceo-card { border-top-color: #888 !important; }
+  .functions-grid { display: grid !important; grid-template-columns: 1fr 1fr 1fr !important; }
+  .section { page-break-inside: avoid; margin-top: 16px !important; padding: 16px !important; }
+  footer { color: #666 !important; border-top-color: #ddd !important; }
+  footer .motto { color: #888 !important; }
+}
+
 @media (max-width: 880px) {
   h1 { font-size: 28px; }
   main { padding: 20px 16px; }
@@ -1031,6 +1074,8 @@ body.edit-mode .role-title { cursor: text; }
       </div>
       <button id="btn-edit" class="btn primary" onclick="toggleEditMode()">✎ Rediger</button>
       <button class="btn" onclick="toggleVersions()" title="Versioner">⎘ Versioner</button>
+      <button class="btn" onclick="printPage()" title="Print / PDF">⎙ Print</button>
+      <button class="btn" onclick="exportMarkdown()" title="Eksportér som Markdown">📄 MD</button>
       <button class="btn" onclick="importJSON()" title="Importér JSON">⬆ Import</button>
       <button class="btn" onclick="exportJSON()" title="Download som JSON">⬇ Export</button>
       <button class="btn danger" onclick="resetData()" title="Nulstil til standard">↺ Nulstil</button>
@@ -1042,7 +1087,7 @@ body.edit-mode .role-title { cursor: text; }
 <main>
 
   <div class="setup-needed" id="setup-banner">
-    <strong>⚙ Cloud ikke konfigureret</strong> — siden kører lokalt i din browser. For at dele ændringer med teamet skal Supabase-config tilføjes. Se <code>SETUP.md</code> eller åbn DevTools og kør <code>setupCloud(url, key, passphrase)</code>.
+    <strong>⚙ Cloud ikke forbundet</strong> — siden kører kun lokalt i din browser. Værdier mangler i <code>CLOUD_DEFAULTS</code> i HTML'en, eller Supabase er midlertidigt utilgængelig.
   </div>
 
   <div class="edit-banner">
@@ -1490,14 +1535,27 @@ const DEFAULT_REAL = [
 ];
 
 // ════════════════════════════════════════════════════════════════
-// CLOUD CONFIGURATION
-// Fill these in for shared editing. Leave empty for local-only mode.
-// You can also call setupCloud(url, key, passphrase) from DevTools.
+// CLOUD CONFIGURATION — fyld disse 3 værdier ind én gang.
+// Når de står her i koden, er enhver der åbner siden auto-forbundet.
+// Ingen DevTools, ingen setupCloud(), ingen prompts undtagen edit-gate.
+//
+//   supabaseUrl     — Project URL fra Supabase (Data API-siden)
+//   supabaseAnonKey — Publishable key (sb_publishable_...)
+//                     DESIGNET til at ligge i browseren — sikker når RLS er sat op
+//   passphrase      — Delt kode for at åbne edit-mode.
+//                     Sæt til '' (tom streng) for at lade alle med linket redigere
 // ════════════════════════════════════════════════════════════════
+const CLOUD_DEFAULTS = {
+  supabaseUrl:     'https://xgenwrwuctzyssldtjim.supabase.co',
+  supabaseAnonKey: 'sb_publishable_hoZhxcwGxeqyhJmO870TIQ_pVlDsunq',
+  passphrase:      'pulse-tribe-2026'  // sæt til '' for at lade alle med linket redigere
+};
+
+// Avanceret: setupCloud(url, key, passphrase) i DevTools overrider via localStorage
 const CLOUD_CONFIG = {
-  supabaseUrl: localStorage.getItem('bct-supabase-url') || '',
-  supabaseAnonKey: localStorage.getItem('bct-supabase-key') || '',
-  passphrase: localStorage.getItem('bct-passphrase') || '', // optional shared passphrase
+  supabaseUrl:     localStorage.getItem('bct-supabase-url') || CLOUD_DEFAULTS.supabaseUrl,
+  supabaseAnonKey: localStorage.getItem('bct-supabase-key') || CLOUD_DEFAULTS.supabaseAnonKey,
+  passphrase:      localStorage.getItem('bct-passphrase')   || CLOUD_DEFAULTS.passphrase,
   documentId: 'main'
 };
 
@@ -1787,6 +1845,99 @@ function downloadJSON(obj, filename) {
   URL.revokeObjectURL(url);
 }
 
+function downloadText(text, filename, mime = 'text/plain') {
+  const blob = new Blob([text], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function printPage() {
+  // Exit edit mode first so controls hide cleanly
+  if (state.editMode) toggleEditMode();
+  setTimeout(() => window.print(), 200);
+}
+
+function exportMarkdown() {
+  const today = new Date().toLocaleDateString('da-DK', { year: 'numeric', month: 'long', day: 'numeric' });
+  let md = '# BCT Organisationsscenarier\n\n';
+  md += '_Eksporteret ' + today + ' fra org-planneren_\n\n';
+  md += '---\n\n';
+
+  // Dream scenario
+  md += '## I. Drømmescenariet\n\n';
+  md += '> Den fuldt modne, skalerbare og systemdrevne BCT — målarkitektur, ikke en ansættelsesplan.\n\n';
+  md += '**Hovedfunktioner:** ' + state.dream.length + '   ·   **Distinkte roller:** ' + countRoles(state.dream) + '\n\n';
+  md += '### Executive Leadership\n\n';
+  md += '- **CEO / Managing Director** — Vision, strategi, kultur, retning\n';
+  md += '- **COO** — Operations & skala\n';
+  md += '- **CTO** — Teknik & arkitektur\n';
+  md += '- **CCO** — Commercial & vækst\n';
+  md += '- **CFO** — Økonomi & margin\n\n';
+  state.dream.forEach(f => {
+    md += '### ' + f.name + '\n\n';
+    if (f.purpose) md += '_' + f.purpose + '_\n\n';
+    f.roles.forEach(r => {
+      if (r.divider) {
+        md += '\n**' + r.name.replace(/^—\s*|\s*—$/g, '').trim() + '**\n\n';
+      } else {
+        md += '- ' + r.name + (r.description ? '\n    - ' + r.description.replace(/\n/g, '\n    - ') : '') + '\n';
+      }
+    });
+    md += '\n';
+  });
+
+  md += '---\n\n';
+
+  // Realistic scenario
+  md += '## II. Realistisk Skaleringsmodel\n\n';
+  md += '> Ambitiøs men ikke overdesignet. AI-first og lav-bureaukratisk: support- og adminfunktioner skalerer ikke lineært. Tech, solution og delivery vægter tungest.\n\n';
+  const total = sumTotal(state.real);
+  const eng = sumFunc(state.real.find(f => /engineering|tech/i.test(f.name)) || { roles: [] });
+  const sol = sumFunc(state.real.find(f => /solution|value/i.test(f.name)) || { roles: [] });
+  md += '**Total medarbejdere:** ' + total + '   ·   **Engineering:** ' + eng + '   ·   **Solution & Value:** ' + sol + '\n\n';
+
+  md += '### Executive (5)\n\nCEO · COO · CTO · CCO · CFO\n\n';
+
+  md += '### Fordeling pr. funktion\n\n';
+  md += '| Funktion | Antal |\n|---|---:|\n';
+  state.real.forEach(f => {
+    md += '| ' + f.name + ' | ' + sumFunc(f) + ' |\n';
+  });
+  md += '| **Total** | **' + total + '** |\n\n';
+
+  state.real.forEach(f => {
+    const count = sumFunc(f);
+    md += '### ' + f.name + ' — ' + count + ' personer\n\n';
+    if (f.purpose) md += '_' + f.purpose + '_\n\n';
+    md += '| Rolle | Antal |\n|---|---:|\n';
+    f.roles.forEach(r => {
+      if (r.divider) {
+        md += '| **' + r.name.replace(/^—\s*|\s*—$/g, '').trim() + '** | |\n';
+      } else {
+        md += '| ' + r.name + ' | ' + (r.count !== undefined && r.count !== null ? r.count : '') + ' |\n';
+      }
+    });
+    md += '\n';
+    // Role descriptions if any
+    const withDesc = f.roles.filter(r => !r.divider && r.description);
+    if (withDesc.length) {
+      md += '**Rollebeskrivelser:**\n\n';
+      withDesc.forEach(r => {
+        md += '- **' + r.name + '** — ' + r.description.replace(/\n/g, ' ') + '\n';
+      });
+      md += '\n';
+    }
+  });
+
+  md += '---\n\n';
+  md += '_Black Capital Technology · Tribe Architecture · Funktion før titel · Pulse før proces · System før helt_\n';
+
+  downloadText(md, 'bct-org-' + new Date().toISOString().slice(0,10) + '.md', 'text/markdown');
+  showToast('Markdown eksporteret');
+}
+
 function importJSON() {
   const input = document.createElement('input');
   input.type = 'file';
@@ -1899,8 +2050,10 @@ function renderFunction(f, fIdx, isReal) {
       <ul class="roles-list">${rolesHTML}</ul>
       <button class="add-role-btn" onclick="addRole(${fIdx},${isReal})">+ Tilføj rolle</button>
       <div class="func-actions">
+        <button class="divider-add-btn" onclick="moveFunction(${fIdx},-1,${isReal})" title="Flyt venstre">◀</button>
+        <button class="divider-add-btn" onclick="moveFunction(${fIdx},1,${isReal})" title="Flyt højre">▶</button>
         <button class="divider-add-btn" onclick="addDivider(${fIdx},${isReal})">+ Skillelinje</button>
-        <button class="divider-add-btn" style="border-color: var(--danger); color: var(--danger);" onclick="deleteFunction(${fIdx},${isReal})">Slet funktion</button>
+        <button class="divider-add-btn" style="border-color: var(--danger); color: var(--danger);" onclick="deleteFunction(${fIdx},${isReal})">Slet</button>
       </div>
     </div>
   `;
@@ -1986,6 +2139,15 @@ function deleteFunction(fIdx, isReal) {
     arr.splice(fIdx, 1);
     save(); renderAll();
   }
+}
+
+function moveFunction(fIdx, delta, isReal) {
+  const arr = isReal ? state.real : state.dream;
+  const newIdx = fIdx + delta;
+  if (newIdx < 0 || newIdx >= arr.length) return;
+  const [item] = arr.splice(fIdx, 1);
+  arr.splice(newIdx, 0, item);
+  save(); renderAll();
 }
 function addFunction(which) {
   const arr = which === 'real' ? state.real : state.dream;
