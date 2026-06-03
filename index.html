@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BCT · Organisationsscenarier</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 :root {
   --bg: #0d1117;
@@ -185,7 +187,7 @@ header {
   padding: 12px 20px;
   border-radius: 8px;
   font-size: 13px;
-  z-index: 300;
+  z-index: 10000;
   box-shadow: 0 8px 32px rgba(0,0,0,0.5);
   transition: transform 0.3s ease;
 }
@@ -202,7 +204,7 @@ header {
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 18px;
-  z-index: 90;
+  z-index: 9990;
   box-shadow: 0 16px 48px rgba(0,0,0,0.5);
   overflow-y: auto;
 }
@@ -551,15 +553,48 @@ h1 {
   font-weight: 600;
 }
 
-/* Edit mode controls */
+/* Edit mode controls — works for both global edit-mode AND per-card edit */
 .role-controls {
   display: none;
   align-items: center;
   gap: 4px;
 }
-body.edit-mode .role-controls { display: inline-flex; }
-body.edit-mode .role-item { cursor: grab; }
-body.edit-mode .role-item:active { cursor: grabbing; }
+body.edit-mode .role-controls,
+.func-card.card-edit .role-controls { display: inline-flex; }
+body.edit-mode .role-item,
+.func-card.card-edit .role-item { cursor: grab; }
+body.edit-mode .role-item:active,
+.func-card.card-edit .role-item:active { cursor: grabbing; }
+
+/* Per-card edit button — inline in header (no overlap) */
+.card-edit-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 3px 8px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+  white-space: nowrap;
+  align-self: flex-start;
+  margin-left: 8px;
+}
+.card-edit-btn:hover {
+  border-color: var(--func-color);
+  color: var(--func-color);
+}
+.card-edit-btn.on {
+  background: var(--func-color);
+  color: #0d1117;
+  border-color: var(--func-color);
+  font-weight: 700;
+}
+.func-card.card-edit {
+  box-shadow: 0 0 0 2px var(--func-color), 0 8px 32px rgba(0,0,0,0.4);
+}
 .role-handle {
   color: var(--text-muted);
   font-size: 12px;
@@ -573,8 +608,10 @@ body.edit-mode .role-item:active { cursor: grabbing; }
   align-items: center;
   gap: 2px;
 }
-body.edit-mode .role-count-edit { display: inline-flex; }
-body.edit-mode .role-count { display: none; }
+body.edit-mode .role-count-edit,
+.func-card.card-edit .role-count-edit { display: inline-flex; }
+body.edit-mode .role-count,
+.func-card.card-edit .role-count { display: none; }
 .count-btn {
   width: 22px;
   height: 22px;
@@ -633,7 +670,8 @@ body.edit-mode .role-count { display: none; }
   font-size: 12px;
   transition: all 0.2s;
 }
-body.edit-mode .add-role-btn { display: block; }
+body.edit-mode .add-role-btn,
+.func-card.card-edit .add-role-btn { display: block; }
 .add-role-btn:hover { border-color: var(--func-color); color: var(--func-color); }
 
 .func-actions {
@@ -644,7 +682,8 @@ body.edit-mode .add-role-btn { display: block; }
   justify-content: space-between;
   gap: 6px;
 }
-body.edit-mode .func-actions { display: flex; }
+body.edit-mode .func-actions,
+.func-card.card-edit .func-actions { display: flex; }
 .divider-add-btn {
   background: transparent;
   border: 1px dashed var(--border);
@@ -901,7 +940,7 @@ footer .motto {
   inset: 0;
   background: rgba(5, 8, 12, 0.78);
   backdrop-filter: blur(6px);
-  z-index: 200;
+  z-index: 9999;  /* above Leaflet (which uses 400-700) */
   align-items: flex-start;
   justify-content: center;
   padding: 60px 20px;
@@ -1013,6 +1052,223 @@ footer .motto {
   letter-spacing: 0.15em;
 }
 
+/* World map */
+#world-map {
+  height: 460px;
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #0a0e14;
+  margin-bottom: 20px;
+}
+.leaflet-container {
+  background: #0a0e14;
+  font-family: inherit;
+}
+/* Dark-mode filter — gives OSM tiles a deep dark look matching the UI */
+.leaflet-tile {
+  filter: invert(0.92) hue-rotate(180deg) brightness(0.55) contrast(0.95) saturate(0.35);
+}
+.leaflet-control-attribution {
+  background: rgba(13, 17, 23, 0.7) !important;
+  color: var(--text-muted) !important;
+  font-size: 9px !important;
+}
+.leaflet-control-attribution a { color: var(--text-muted) !important; }
+.leaflet-control-zoom a {
+  background: var(--bg-card) !important;
+  border-color: var(--border) !important;
+  color: var(--text) !important;
+}
+.leaflet-control-zoom a:hover {
+  background: var(--bg-card-hover) !important;
+  color: var(--gold) !important;
+}
+
+/* Custom map markers */
+.map-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.map-marker:hover { transform: scale(1.1); }
+.map-marker.inactive { opacity: 0.35; }
+.map-marker-pin {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  border: 3px solid var(--m-color);
+  background: rgba(13, 17, 23, 0.85);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 4px rgba(0,0,0,0.4), 0 0 24px var(--m-color);
+  position: relative;
+}
+.map-marker-pin::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0; height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 12px solid var(--m-color);
+}
+.map-marker-pin.hq {
+  animation: pulse-ring 2s infinite;
+}
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 4px rgba(0,0,0,0.4), 0 0 0 0 var(--m-color); }
+  70% { box-shadow: 0 0 0 4px rgba(0,0,0,0.4), 0 0 0 14px transparent; }
+  100% { box-shadow: 0 0 0 4px rgba(0,0,0,0.4), 0 0 0 0 transparent; }
+}
+.map-marker-flag { font-size: 18px; line-height: 1; }
+.map-marker-count {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--m-color);
+  line-height: 1.2;
+}
+.map-marker-label {
+  margin-top: 14px;
+  padding: 3px 8px;
+  background: rgba(13, 17, 23, 0.85);
+  border: 1px solid var(--m-color);
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--m-color);
+  white-space: nowrap;
+}
+.map-marker-hq-badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background: var(--gold);
+  color: #0d1117;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+/* Compact office modal — accordion layout */
+.office-chips, .office-accordion { white-space: normal; }
+.office-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 6px 0 16px;
+}
+.office-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.office-chip .chip-tag {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 9px;
+  border: 1px solid var(--chip-color);
+  color: var(--chip-color);
+  background: rgba(255,255,255,0.02);
+  border-radius: 4px;
+  white-space: nowrap;
+}
+.office-chip .chip-num {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.office-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  line-height: 1.3;
+}
+.office-area-row {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--row-color);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.office-area-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 11px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s;
+  line-height: 1.3;
+}
+.office-area-head:hover { background: rgba(255,255,255,0.03); }
+.office-area-head .left {
+  display: flex; align-items: center; gap: 8px;
+}
+.office-area-head .caret {
+  color: var(--row-color);
+  font-size: 9px;
+  transition: transform 0.2s;
+  width: 10px;
+  line-height: 1;
+}
+.office-area-row.open .caret { transform: rotate(90deg); }
+.office-area-head .name {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--row-color);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+.office-area-head .count {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+}
+.office-area-body {
+  display: none;
+  padding: 6px 12px 8px 28px;
+  border-top: 1px dashed var(--border);
+  line-height: 1.3;
+}
+.office-area-row.open .office-area-body { display: block; }
+.office-role-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3px 0;
+  font-size: 12px;
+  line-height: 1.3;
+}
+.office-role-row .rn {
+  cursor: pointer;
+  color: var(--text);
+  display: inline-flex; align-items: center; gap: 6px;
+  line-height: 1.2;
+}
+.office-role-row .rn:hover { color: var(--row-color); }
+.office-role-row .ct {
+  color: var(--row-color);
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 1;
+}
+
 /* Office badges */
 .office-badges {
   display: inline-flex;
@@ -1037,10 +1293,13 @@ footer .motto {
 .office-badge .n { font-weight: 700; }
 
 body.edit-mode .ownership-badge,
-body.edit-mode .office-badges {
+body.edit-mode .office-badges,
+.func-card.card-edit .ownership-badge,
+.func-card.card-edit .office-badges {
   cursor: pointer;
 }
-body.edit-mode .ownership-badge:hover { box-shadow: 0 0 0 2px currentColor; }
+body.edit-mode .ownership-badge:hover,
+.func-card.card-edit .ownership-badge:hover { box-shadow: 0 0 0 2px currentColor; }
 
 /* Ownership popover */
 .ownership-popover {
@@ -1049,7 +1308,7 @@ body.edit-mode .ownership-badge:hover { box-shadow: 0 0 0 2px currentColor; }
   border: 1px solid var(--gold);
   border-radius: 10px;
   padding: 14px;
-  z-index: 250;
+  z-index: 10000;
   box-shadow: 0 16px 48px rgba(0,0,0,0.6);
   min-width: 280px;
 }
@@ -1180,6 +1439,7 @@ body.edit-mode .ownership-badge:hover { box-shadow: 0 0 0 2px currentColor; }
   align-items: baseline;
   justify-content: space-between;
   margin-bottom: 4px;
+  padding-left: 70px;  /* room for action buttons in top-left */
 }
 .geo-office-name {
   font-size: 15px;
@@ -1203,7 +1463,16 @@ body.edit-mode .ownership-badge:hover { box-shadow: 0 0 0 2px currentColor; }
   line-height: 1.6;
   max-height: 180px;
   overflow-y: auto;
+  padding-right: 10px;
+  scrollbar-gutter: stable;
 }
+.geo-office-roles::-webkit-scrollbar { width: 6px; }
+.geo-office-roles::-webkit-scrollbar-track { background: transparent; }
+.geo-office-roles::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+.geo-office-roles::-webkit-scrollbar-thumb:hover { background: var(--gold-dim); }
 .geo-office-roles .gr {
   display: flex;
   justify-content: space-between;
@@ -1213,32 +1482,35 @@ body.edit-mode .ownership-badge:hover { box-shadow: 0 0 0 2px currentColor; }
 .geo-office-roles .gr:last-child { border-bottom: none; }
 .geo-office-roles .gr-name { color: var(--text); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .geo-office-roles .gr-count { color: var(--office-color); font-weight: 600; margin-left: 8px; }
-.geo-office-toggle {
+.geo-office-actions {
   position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 36px;
-  height: 18px;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  gap: 4px;
+}
+.geo-action-btn {
+  width: 24px;
+  height: 24px;
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 5px;
   cursor: pointer;
-  display: none;
+  color: var(--text-muted);
+  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+  transition: all 0.15s;
 }
-body.edit-mode .geo-office-toggle { display: block; }
-.geo-office-toggle::after {
-  content: '';
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 12px; height: 12px;
-  background: var(--text-muted);
-  border-radius: 50%;
-  transition: left 0.2s, background 0.2s;
+.geo-action-btn:hover {
+  border-color: var(--office-color);
+  color: var(--office-color);
 }
-.geo-office.active .geo-office-toggle::after {
-  left: 20px;
-  background: var(--office-color);
+.geo-action-btn.danger:hover {
+  border-color: var(--danger);
+  color: var(--danger);
 }
 
 /* Operating model 3-column layout */
@@ -1573,13 +1845,19 @@ body.edit-mode .role-title { cursor: text; }
     <!-- Geographic Distribution — kontorer og lande -->
     <div class="section">
       <div class="section-title">
-        <h2>Geografi & kontorer</h2>
-        <p>Hvor sidder de 100 personer? Klik på et kontor for at se rollerne. Slå kontorer til/fra i edit-mode.</p>
+        <h2>Geografi & lokalitetsfordeling</h2>
+        <p>Realistisk fordeling af 100 medarbejdere på Danmark og Norge — Danmark som platform-/playbook-motor, Norge som selvstændigt markedskontor.</p>
       </div>
+      <div class="callout" style="margin-bottom: 20px; line-height: 1.7;">
+        <strong>Danmark</strong> fungerer som BCT's primære platform- og playbook-motor: operating model, Pulse, Shadow Walk-metode, pricing/value design, productisation, tech standards, business platform og interne AI-workflows udvikles og testes her.<br><br>
+        <strong>Norge</strong> fungerer som et selvstændigt markeds- og leverancekontor: lokal ledelse, salg, relationer, Shadow Walk execution, customer operations og egen delivery-kapacitet sikrer, at Norge ikke kun er afhængig af Danmark.<br><br>
+        Modellen er derfor <em>ikke HQ vs. filial</em>. Det er en platformmodel: Danmark udvikler og stabiliserer mange af systemerne, mens Norge lokaliserer dem og beviser, at de kan eksporteres.
+      </div>
+      <div id="world-map"></div>
       <div class="geo-totals" id="geo-totals"></div>
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
         <div style="font-size: 12px; color: var(--text-muted);" id="geo-summary"></div>
-        <button class="btn" onclick="addOffice()" style="display: none;" id="add-office-btn">+ Tilføj kontor</button>
+        <button class="btn" onclick="addOffice()">+ Tilføj kontor</button>
       </div>
       <div class="geo-grid" id="geo-grid"></div>
     </div>
@@ -1698,6 +1976,11 @@ body.edit-mode .role-title { cursor: text; }
     <div class="modal-section" id="modal-success-section">
       <h4>Success metrics</h4>
       <div id="modal-success-list" class="chip-list success"></div>
+    </div>
+
+    <div class="modal-section" id="modal-geo-section">
+      <h4>Geografisk logik</h4>
+      <div class="modal-text" id="modal-geo-text"></div>
     </div>
 
     <div class="modal-actions">
@@ -1900,6 +2183,8 @@ const DEFAULT_REAL = [
     deepPurpose: 'Executive Leadership ejer virksomhedens samlede retning, strategiske prioriteringer, kultur, økonomiske ansvar, tekniske retning og organisatoriske operating model. Rollen er ikke at være flaskehals i daglig drift, men at sætte rammerne, træffe de svære beslutninger og sikre, at organisationen kan skalere uden at miste kvalitet.',
     roles: [
       { id: 'executive-ceo', title: 'CEO / Managing Director', name: 'CEO / Managing Director', count: 1, area: 'Executive Leadership',
+        officeDistribution: { DK: 0, NO: 1 },
+        strategicLocationLogic: 'CEO-rollen kan i dette scenarie ligge i Norge, fordi international skalering og norsk ledelse er strategisk vigtig, samtidig med at Danmark fortsat bærer store dele af platform- og delivery-motoren.',
         rolePurpose: 'CEO\'en sikrer, at BCT har en klar samlet retning, stærk kultur og strategisk sammenhæng mellem marked, teknologi, organisation og økonomi. Rollen ejer ikke alle operationelle beslutninger, men sætter retning, prioriterer de største valg og sikrer, at vækst sker uden at udvande virksomhedens styrke.',
         shortDescription: 'Ejer virksomhedens overordnede vision, strategi, kultur og langsigtede retning.',
         detailedDescription: 'CEO\'en har det samlede ansvar for BCT\'s strategiske udvikling, markedsposition, kultur og overordnede beslutninger. Rollen skal sikre, at organisationen bevæger sig i én klar retning, og at vækst ikke sker på bekostning af kvalitet, kultur eller forretningsmæssig disciplin. CEO\'en skal ikke eje alle operationelle beslutninger, men skal sikre alignment mellem kommerciel retning, teknologisk retning, økonomi og organisation.',
@@ -1908,6 +2193,8 @@ const DEFAULT_REAL = [
         interfaces: ['COO', 'CTO', 'CCO', 'Finance Lead', 'Head of Solution & Value Design'],
         successMetrics: ['Strategisk fremdrift', 'Kultur og alignment', 'Vækst med kvalitet', 'Profitabel skalering'] },
       { id: 'executive-coo', title: 'COO / Head of Operations', name: 'COO / Head of Operations', count: 1, area: 'Executive Leadership',
+        officeDistribution: { DK: 1, NO: 0 },
+        strategicLocationLogic: 'COO ligger i Danmark, fordi Danmark fungerer som test- og modelmotor for operating model, Pulse, processer, governance og intern skalering.',
         rolePurpose: 'COO\'en sikrer, at BCT fungerer som én sammenhængende organisation i praksis. Rollen ejer operating model, processer, systemstruktur, governance og tværgående fremdrift, så organisationen ikke bliver afhængig af implicit viden eller enkelte nøglepersoner.',
         shortDescription: 'Ejer operating model, organisatorisk skalerbarhed, processer og tværgående fremdrift.',
         detailedDescription: 'COO\'en sikrer, at BCT fungerer som en sammenhængende organisation og ikke som en samling stærke enkeltpersoner. Rollen ejer operating model, systemstruktur, governance, kapacitet, tværgående processer og organisatorisk fremdrift. COO\'en skal sikre, at sales, solution, delivery, tech, customer operations og business platform hænger sammen i praksis.',
@@ -1916,6 +2203,8 @@ const DEFAULT_REAL = [
         interfaces: ['CEO', 'Head of Business Platform', 'Head of Delivery', 'CTO', 'Revenue & Market'],
         successMetrics: ['Mindre personafhængighed', 'Bedre tværgående flow', 'Højere transparens', 'Skalerbar drift'] },
       { id: 'executive-cto', title: 'CTO', name: 'CTO', count: 1, area: 'Executive Leadership',
+        officeDistribution: { DK: 1, NO: 0 },
+        strategicLocationLogic: 'CTO ligger i Danmark, fordi den primære tekniske standardisering, arkitektur, delivery-model og tech capability-building udvikles fra det mest modne marked.',
         rolePurpose: 'CTO\'en sikrer, at BCT\'s tekniske kvalitet, arkitektur og udviklingsorganisation kan skalere. Rollen ejer tech som system: standarder, stack, arkitekturprincipper, teknisk capability-building og sparring til Tech Leads — uden at blive daglig brandslukker på alle projekter.',
         shortDescription: 'Ejer teknisk retning, arkitekturprincipper, kvalitet, stack og tech-organisationen som system.',
         detailedDescription: 'CTO\'en skal ikke være den nye centrale brandslukker eller backup-projektleder på alle projekter. Rollen ejer tech-organisationen som system: tekniske standarder, arkitekturprincipper, stack-valg, kvalitet, kompetenceudvikling, sparring til Tech Leads og langsigtet teknologisk retning. CTO\'en skal reducere personafhængighed ved at gøre teknisk kvalitet gentagelig gennem standarder, playbooks og stærke Tech Leads.',
@@ -1924,6 +2213,8 @@ const DEFAULT_REAL = [
         interfaces: ['CEO', 'COO', 'Tech Leads', 'Principal Engineers', 'Solution Architects'],
         successMetrics: ['Teknisk kvalitet', 'Færre tekniske flaskehalse', 'Stærkere Tech Leads', 'Genbrugelige standarder'] },
       { id: 'executive-cco', title: 'CCO / Head of Commercial', name: 'CCO / Head of Commercial', count: 1, area: 'Executive Leadership',
+        officeDistribution: { DK: 0, NO: 1 },
+        strategicLocationLogic: 'CCO ligger i Norge, fordi den kommercielle tyngde i dette scenarie ligger tæt på norsk ledelse, international ekspansion og strategisk salgsudvikling.',
         rolePurpose: 'CCO\'en sikrer, at BCT har en struktureret og skalerbar kommerciel motor. Rollen ejer pipeline, revenue, forecast, partnerskaber og kommerciel retning, så salg ikke bliver personbåret, og markedet modnes systematisk.',
         shortDescription: 'Ejer kommerciel strategi, pipeline, revenue, partnerskaber og salgsperformance.',
         detailedDescription: 'CCO\'en har ansvar for, at BCT\'s kommercielle motor er struktureret, prioriteret og skalerbar. Rollen ejer pipeline, salgsstrategi, forecast, revenue targets, partnerskaber og kommerciel retning. CCO\'en skal sikre, at salg ikke er personbåret, og at markedet modnes gennem tydelig positioning, cases og value communication.',
@@ -1932,6 +2223,8 @@ const DEFAULT_REAL = [
         interfaces: ['CEO', 'Head of Revenue & Market', 'Solution & Value Design', 'Finance Lead'],
         successMetrics: ['Omsætning', 'Pipeline quality', 'Win rate', 'Forecast accuracy'] },
       { id: 'executive-finance-lead', title: 'Finance Lead / CFO-function', name: 'Finance Lead / CFO-function', count: 1, area: 'Executive Leadership',
+        officeDistribution: { DK: 1, NO: 0 },
+        strategicLocationLogic: 'Finance Lead ligger i Danmark, fordi finance governance, marginstyring, pricing support og projektøkonomi kobles tæt til den danske platform- og delivery-motor.',
         rolePurpose: 'Finance Lead / CFO-funktionen sikrer, at BCT har økonomisk overblik, sund marginstyring og et realistisk beslutningsgrundlag for vækst. Rollen er ikke tænkt som en tung finance-afdeling, men som en strategisk kontrolfunktion, hvor AI og automatisering reducerer manuelt arbejde, mens det menneskelige ansvar for økonomiske beslutninger, risiko og governance fastholdes.',
         shortDescription: 'Ejer økonomisk kontrol, cashflow, margin, forecast, pricing support og finansiel governance.',
         detailedDescription: 'Finance Lead/CFO-funktionen bliver ikke overflødig i en AI-first organisation. Den bliver mindre administrativ og mere strategisk. Rollen ejer økonomisk dømmekraft, budget, cashflow, margin, pricing support, projektøkonomi, forecast, vendor cost control og ledelsesrapportering. AI kan automatisere meget finance-arbejde, men ansvaret for økonomiske beslutninger, risiko og governance skal ligge hos et menneske.',
@@ -1947,6 +2240,8 @@ const DEFAULT_REAL = [
     deepPurpose: 'Revenue & Market samler salg, business development, account ownership, market education, revenue enablement og CRM/revops. Funktionen skal skabe pipeline, modne markedet, lukke deals og udvikle kunder uden at opbygge separate tunge marketing- og sales ops-afdelinger.',
     roles: [
       { id: 'revenue-head', title: 'Head of Revenue & Market', name: 'Head of Revenue & Market', count: 1, area: 'Revenue & Market',
+        officeDistribution: { DK: 0, NO: 1 },
+        strategicLocationLogic: 'Head of Revenue & Market ligger i Norge for at understøtte den stærke norske kommercielle ledelse og sikre at Norge bliver et reelt markedskontor, ikke kun en leverancefilial.',
         shortDescription: 'Ejer samlet kommerciel eksekvering på tværs af salg, marked, pipeline og revenue enablement.',
         detailedDescription: 'Head of Revenue & Market omsætter den kommercielle strategi til daglig eksekvering. Rollen sikrer, at pipeline, market education, account management, CRM og salgsunderstøttelse hænger sammen. Personen skal sikre, at BCT ikke bare genererer leads, men modner kunder til at forstå AI, Shadow Walk og investeringens forretningsværdi.',
         owns: 'Daglig kommerciel eksekvering, pipelinekvalitet, market education og salgsunderstøttelse.',
@@ -1954,6 +2249,8 @@ const DEFAULT_REAL = [
         interfaces: ['CCO', 'Account Executives', 'Solution Architects', 'Revenue Operations Owner'],
         successMetrics: ['Qualified pipeline', 'Conversion', 'Pipeline health', 'Commercial execution'] },
       { id: 'revenue-account-executives', title: 'Account Executives', name: 'Account Executives', count: 3, area: 'Revenue & Market',
+        officeDistribution: { DK: 2, NO: 1 },
+        strategicLocationLogic: 'Danmark har to Account Executives, fordi markedet er ældre og større. Norge har én lokal Account Executive, fordi salg kræver lokal relation, sprog og markedstillid.',
         shortDescription: 'Ejer nye deals fra kvalificeret mulighed til closing.',
         detailedDescription: 'Account Executives driver kundedialog, behovsafdækning, tilbud, forhandling og closing. De skal ikke alene sælge teknologi, men hjælpe kunden med at forstå problem, potentiale, investering og næste realistiske skridt. De arbejder tæt sammen med Solution & Value Design for at sikre, at salget bliver konkret, leverbart og økonomisk sundt.',
         owns: 'Kundedialog, deal progression, tilbud, forhandling og closing.',
@@ -1961,6 +2258,8 @@ const DEFAULT_REAL = [
         interfaces: ['Head of Revenue & Market', 'Solution Architects', 'Proposal / Bid Manager', 'Finance Lead'],
         successMetrics: ['Won deals', 'Deal velocity', 'Conversion rate', 'Average deal quality'] },
       { id: 'revenue-business-developers', title: 'Business Developers', name: 'Business Developers', count: 2, area: 'Revenue & Market',
+        officeDistribution: { DK: 1, NO: 1 },
+        strategicLocationLogic: 'Business Development deles mellem Danmark og Norge, fordi begge markeder skal kunne åbne nye muligheder, partnerskaber og lokale segmenter.',
         shortDescription: 'Ejer nye markedsåbninger, partnerskaber og kvalificeret leadgenerering.',
         detailedDescription: 'Business Developers arbejder med at finde og modne nye muligheder, partnerskaber og segmenter. Rollen er ikke bare outbound salg, men systematisk markedsudvikling: hvem skal BCT tale med, hvorfor nu, og hvilket problem kan BCT gøre konkret for dem?',
         owns: 'Leadgenerering, partnerskaber, segmentudvikling og første kommercielle åbninger.',
@@ -1968,6 +2267,8 @@ const DEFAULT_REAL = [
         interfaces: ['Head of Revenue & Market', 'Revenue Enablement', 'Account Executives'],
         successMetrics: ['Qualified meetings', 'New opportunities', 'Partner leads', 'Segment traction'] },
       { id: 'revenue-account-managers', title: 'Account Managers / Customer Growth', name: 'Account Managers / Customer Growth', count: 2, area: 'Revenue & Market',
+        officeDistribution: { DK: 1, NO: 1 },
+        strategicLocationLogic: 'Account management deles lokalt, fordi eksisterende kunder kræver nærhed, relation og markedsforståelse i begge lande.',
         shortDescription: 'Ejer udvikling af eksisterende kunder og kommerciel videreudvikling efter første projekt.',
         detailedDescription: 'Account Managers sikrer, at eksisterende kunder udvikles kommercielt og relationelt. Rollen arbejder tæt med Customer Operations og Delivery for at identificere nye behov, udvide samarbejdet, sikre renewal og skabe sammenhæng mellem leveret værdi og næste mulighed.',
         owns: 'Kundeudvikling, mersalg, relation, renewal-input og kommerciel kontinuitet.',
@@ -1975,6 +2276,8 @@ const DEFAULT_REAL = [
         interfaces: ['Customer Operations', 'Service Delivery Managers', 'Revenue & Market', 'Solution Architects'],
         successMetrics: ['Expansion revenue', 'Retention', 'Renewals', 'Customer health'] },
       { id: 'revenue-enablement-lead', title: 'Revenue Enablement Lead', name: 'Revenue Enablement Lead', count: 1, area: 'Revenue & Market',
+        officeDistribution: { DK: 0, NO: 1 },
+        strategicLocationLogic: 'Revenue Enablement ligger i Norge, fordi marketing-/sales enablement-tyngden i dette scenarie ligger tæt på CCO/frontline sales. Funktionen er central i ansvar, men kan fysisk ligge i Norge.',
         shortDescription: 'Ejer salgsmateriale, cases, market education, kampagneinput og kommercielle assets.',
         detailedDescription: 'Revenue Enablement kombinerer klassisk marketing, sales ops og salgsunderstøttelse. Rollen sikrer, at BCT har de rigtige cases, pitch-materialer, one-pagers, kampagnebudskaber, AI-formidling og content assets til at modne markedet og understøtte salg. Funktionen skal være tæt på både Sales og Solution.',
         owns: 'Cases, pitchmateriale, market education, salgsunderstøttelse og kommercielle assets.',
@@ -1982,6 +2285,8 @@ const DEFAULT_REAL = [
         interfaces: ['Head of Revenue & Market', 'Account Executives', 'Solution & Value Design'],
         successMetrics: ['Content output', 'Sales asset quality', 'Lead support', 'Market education impact'] },
       { id: 'revenue-operations-owner', title: 'CRM / Revenue Operations Owner', name: 'CRM / Revenue Operations Owner', count: 1, area: 'Revenue & Market',
+        officeDistribution: { DK: 1, NO: 0 },
+        strategicLocationLogic: 'CRM/RevOps ligger i Danmark, fordi CRM-struktur, datahygiejne, pipeline governance og reporting bør kobles til den centrale operating model.',
         shortDescription: 'Ejer CRM, pipeline-hygiejne, datakvalitet, aktivitetstracking og revenue reporting.',
         detailedDescription: 'Revenue Operations sikrer, at CRM og pipeline fungerer som styringsværktøj og ikke bare som kontaktarkiv. Rollen ejer datakvalitet, stages, aktivitetstracking, forecast-input og rapportering. Personen skal sikre, at ingen væsentlige deals lever usynligt i hovederne på enkeltpersoner.',
         owns: 'CRM, pipeline stages, datakvalitet, aktivitetstracking og revenue reporting.',
@@ -1996,6 +2301,8 @@ const DEFAULT_REAL = [
     deepPurpose: 'Solution & Value Design er det strategiske bindeled mellem Revenue & Market og Delivery & Technology. Funktionen skal lukke hullet mellem salg og delivery ved at omsætte kundens virkelighed, Shadow Walk-indsigter og AI-muligheder til konkrete, køb-bare og leverbare projekter.',
     roles: [
       { id: 'solution-head', title: 'Head of Solution & Value Design', name: 'Head of Solution & Value Design', count: 1, area: 'Solution & Value Design',
+        officeDistribution: { DK: 1, NO: 0 },
+        strategicLocationLogic: 'Head of Solution & Value Design ligger i Danmark, fordi Danmark udvikler og tester Shadow Walk-metode, value design, pricing-modeller, estimater og handover-standarder.',
         shortDescription: 'Ejer standarder for løsningsdesign, scope, estimater, value cases og handover til delivery.',
         detailedDescription: 'Head of Solution & Value Design sikrer, at BCT\'s pre-sales arbejde ikke bliver personbåret eller tilfældigt. Rollen ejer metoder, templates, kvalitet, estimation, value case-struktur og overdragelse til Delivery & Technology. Funktionen skal sikre, at gode Shadow Walk-indsigter bliver til konkrete projekter med klart scope, realistisk estimat og stærk forretningsværdi.',
         owns: 'Solution-standarder, value design, estimatmodel, scope-kvalitet og sales-to-delivery handover.',
@@ -2003,6 +2310,8 @@ const DEFAULT_REAL = [
         interfaces: ['Revenue & Market', 'Solution Architects', 'Delivery & Technology', 'Productisation / Template Owner'],
         successMetrics: ['Shadow Walk to project conversion', 'Scope quality', 'Estimate accuracy', 'Handover quality'] },
       { id: 'solution-architects', title: 'Solution Architects', name: 'Solution Architects', count: 3, area: 'Solution & Value Design',
+        officeDistribution: { DK: 2, NO: 1 },
+        strategicLocationLogic: 'Danmark har flest Solution Architects, fordi løsningsdesign og value-modeller udvikles her. Norge har én lokal/hybrid Solution Architect til at oversætte modellen til norsk kundekontekst.',
         shortDescription: 'Oversætter kundebehov til konkret løsning, scope, estimat, arkitektur og delivery-oplæg.',
         detailedDescription: 'Solution Architects står i krydsfeltet mellem forretning, teknologi og levering. De skal forstå kundens processer, identificere de rigtige problemer, afgrænse løsningen, vurdere teknisk mulighedsrum og formulere et projekt, som kunden kan købe, og delivery kan overtage. Rollen er kritisk for at reducere afhængighed af tekniske orakler og sikre bedre konvertering fra indsigt til projekt.',
         owns: 'Løsningsdesign, scope, estimat, arkitekturinput og konkret projektoplæg.',
@@ -2010,6 +2319,8 @@ const DEFAULT_REAL = [
         interfaces: ['Account Executives', 'Shadow Walk Leads', 'Tech Leads', 'Proposal / Bid Manager'],
         successMetrics: ['Project conversion', 'Scope clarity', 'Delivery readiness', 'Margin predictability'] },
       { id: 'solution-shadow-walk-leads', title: 'Shadow Walk Leads', name: 'Shadow Walk Leads', count: 2, area: 'Solution & Value Design',
+        officeDistribution: { DK: 1, NO: 1 },
+        strategicLocationLogic: 'Shadow Walk execution skal findes i begge markeder. Danmark udvikler playbooken, Norge skal kunne udføre den lokalt.',
         shortDescription: 'Ejer diagnostisk fase, observation, rapport og anbefalinger.',
         detailedDescription: 'Shadow Walk Leads gennemfører BCT\'s diagnostiske kundedage og sikrer, at observationer fra kundens virkelighed bliver fanget, struktureret og omsat til anbefalinger. Rollen skal skabe tryghed, klarhed og retning for kunden og samtidig levere et stærkt grundlag for Solution Architect og Account Executive.',
         owns: 'Shadow Walk-forberedelse, gennemførsel, observationer, rapport og anbefalinger.',
@@ -2017,6 +2328,8 @@ const DEFAULT_REAL = [
         interfaces: ['Account Executives', 'Solution Architects', 'AI / Process Consultants'],
         successMetrics: ['Report quality', 'Customer clarity', 'Actionable findings', 'Next-step conversion'] },
       { id: 'solution-ai-process-consultants', title: 'AI / Process Consultants', name: 'AI / Process Consultants', count: 2, area: 'Solution & Value Design',
+        officeDistribution: { DK: 1, NO: 1 },
+        strategicLocationLogic: 'AI/process consulting deles, fordi begge lande skal kunne modne kunder, facilitere workshops og identificere lokale AI-use cases.',
         shortDescription: 'Ejer procesanalyse, AI-use cases, workshops og kundemodning.',
         detailedDescription: 'AI / Process Consultants hjælper kunder med at forstå, hvor AI faktisk kan skabe værdi. Rollen arbejder med procesanalyse, workshops, use case-identifikation, modenhedsvurdering og forretningsmæssig prioritering. De skal gøre AI konkret, trygt og kommercielt forståeligt for kunden.',
         owns: 'Procesanalyse, use case mapping, AI-modning og workshopfacilitering.',
@@ -2024,6 +2337,8 @@ const DEFAULT_REAL = [
         interfaces: ['Shadow Walk Leads', 'Solution Architects', 'Revenue Enablement'],
         successMetrics: ['Use case quality', 'Customer maturity', 'Workshop outcomes', 'Value clarity'] },
       { id: 'solution-proposal-bid-manager', title: 'Proposal / Bid Manager', name: 'Proposal / Bid Manager', count: 1, area: 'Solution & Value Design',
+        officeDistribution: { DK: 1, NO: 0 },
+        strategicLocationLogic: 'Proposal/Bid ligger i Danmark, fordi tilbudsstandarder, value cases, udbudsstruktur og proposal templates bør centraliseres.',
         shortDescription: 'Ejer tilbud, projektbeskrivelser, business cases og udbudsmateriale.',
         detailedDescription: 'Proposal / Bid Manager sikrer, at BCT\'s løsningsforslag bliver præsenteret klart, professionelt og salgbart. Rollen arbejder tæt med Sales, Solution Architects og Finance for at sikre, at tilbud har tydelig værdi, scope, pris, risiko, leveranceform og kommerciel logik.',
         owns: 'Tilbudsmateriale, proposal quality, business case-formulering og udbudsdokumentation.',
@@ -2031,6 +2346,8 @@ const DEFAULT_REAL = [
         interfaces: ['Account Executives', 'Solution Architects', 'Finance Lead', 'Revenue Enablement'],
         successMetrics: ['Proposal quality', 'Deadline compliance', 'Win support', 'Reusability'] },
       { id: 'solution-productisation-template-owner', title: 'Productisation / Template Owner', name: 'Productisation / Template Owner', count: 1, area: 'Solution & Value Design',
+        officeDistribution: { DK: 1, NO: 0 },
+        strategicLocationLogic: 'Productisation ligger i Danmark, fordi reusable assets og templates skal fødes af det mest modne testmiljø og derefter eksporteres til Norge.',
         shortDescription: 'Ejer gentagende mønstre, templates, reusable assets og standardiserede løsningsspor.',
         detailedDescription: 'Productisation / Template Owner sikrer, at BCT lærer af gentagende kundebehov og ikke starter fra nul hver gang. Rollen ligger tæt på Solution & Value Design, fordi produktisering skal udspringe af Shadow Walks, salgsdialoger og projektleverancer. Målet er at skabe genbrugelige moduler, templates og løsningspakker, som gør salg hurtigere og delivery mere effektiv.',
         owns: 'Templates, reusable assets, standardiserede løsningsspor og læring fra gentagende kundebehov.',
@@ -2045,6 +2362,8 @@ const DEFAULT_REAL = [
     deepPurpose: 'Delivery & Technology er BCT\'s største kapabilitetsområde og den primære værdiskabelse. Funktionen samler engineering, Tech Leads, specialistspor, AI engineering, DevOps, QA og delivery enablement. Tech Leads ejer projektets Pulse, mens CTO og delivery enablement sikrer standarder, kvalitet, porteføljeoverblik og skalerbarhed.',
     roles: [
       { id: 'delivery-head', title: 'Head of Delivery / Delivery Lead', name: 'Head of Delivery / Delivery Lead', count: 1, area: 'Delivery & Technology',
+        officeDistribution: { DK: 1, NO: 0 },
+        strategicLocationLogic: 'Head of Delivery ligger i Danmark, fordi delivery model, kapacitetsstyring, Pulse og porteføljeoverblik først stabiliseres i det modne marked.',
         shortDescription: 'Ejer samlet leverancekapacitet, porteføljeoverblik, delivery performance og støtte til Tech Leads.',
         detailedDescription: 'Head of Delivery sikrer, at projekter leveres med kvalitet, fremdrift og overblik på tværs af organisationen. Rollen skal ikke overtage Tech Leadens projektansvar, men skabe rammerne omkring portefølje, ressourcer, risiko, prioritering og leverancekapacitet.',
         owns: 'Delivery performance, kapacitetsstyring, porteføljeoverblik, risiko og tværgående delivery-rammer.',
@@ -2052,6 +2371,8 @@ const DEFAULT_REAL = [
         interfaces: ['COO', 'CTO', 'Tech Leads', 'Delivery Managers'],
         successMetrics: ['Delivery predictability', 'Capacity control', 'Risk visibility', 'On-time progress'] },
       { id: 'delivery-managers-pmo', title: 'Delivery Managers / PMO', name: 'Delivery Managers / PMO', count: 2, area: 'Delivery & Technology',
+        officeDistribution: { DK: 1, NO: 1 },
+        strategicLocationLogic: 'PMO/delivery management deles, fordi begge lande skal have porteføljeoverblik og risikostyring, men med fælles standarder.',
         shortDescription: 'Understøtter projektportefølje, ressourcer, risiko, budget og tværgående transparens.',
         detailedDescription: 'Delivery Managers/PMO skaber overblik på tværs af projekter uden at gøre organisationen tung. Rollen understøtter Tech Leads med porteføljeoverblik, status, risici, afhængigheder, budget og ressourceallokering. PMO skal være enablement — ikke bureaukrati.',
         owns: 'Projektportefølje, ressourceoverblik, risici, afhængigheder og tværgående status.',
@@ -2059,6 +2380,8 @@ const DEFAULT_REAL = [
         interfaces: ['Head of Delivery', 'Tech Leads', 'Finance Lead', 'Project Coordinator'],
         successMetrics: ['Portfolio visibility', 'Risk control', 'Resource clarity', 'Low bureaucracy'] },
       { id: 'delivery-tech-leads', title: 'Tech Leads / Project Leads', name: 'Tech Leads / Project Leads', count: 8, area: 'Delivery & Technology',
+        officeDistribution: { DK: 5, NO: 3 },
+        strategicLocationLogic: 'Danmark har flest Tech Leads, fordi størstedelen af delivery-kapaciteten ligger der. Norge har tre Tech Leads, så markedet kan eje egne projekter og ikke kun sende alt til Danmark.',
         shortDescription: 'Ejer projektets Pulse, scope, fremdrift, kundedialog, teamkoordinering og tekniske beslutninger i projektet.',
         detailedDescription: 'Tech Lead er en projektbærende rolle — ikke bare en seniorudvikler. Rollen ejer projektets daglige fremdrift, Pulse-rytme, kundedialog i delivery, scope-beslutninger, unblocking, teamkoordinering, teknisk retning i projektet og ugentlig demo/update. Tech Lead skal sikre, at projektet lever i teamet og ikke eskalerer til CTO eller central ledelse ved hver udfordring.',
         owns: 'Projektets Pulse, scope, teknisk projektretning, teamfremdrift og kundeupdate.',
@@ -2066,6 +2389,8 @@ const DEFAULT_REAL = [
         interfaces: ['CTO', 'Head of Delivery', 'Developers', 'Product Owners', 'Customer Operations'],
         successMetrics: ['Weekly progress', 'Scope control', 'Customer clarity', 'Team flow'] },
       { id: 'delivery-principal-staff-engineers', title: 'Principal / Staff Engineers', name: 'Principal / Staff Engineers', count: 3, area: 'Delivery & Technology',
+        officeDistribution: { DK: 2, NO: 1 },
+        strategicLocationLogic: 'Danmark har størst teknisk specialisttyngde, men Norge har én stærk lokal senior/principal-profil, der fungerer som teknisk anker for det norske marked.',
         shortDescription: 'Ejer dyb teknisk ekspertise, arkitektur, komplekse tekniske valg og sparring på tværs.',
         detailedDescription: 'Principal / Staff Engineers er specialistsporet for ekstrem teknisk tyngde uden nødvendigvis at have projektledelsesansvar. Rollen hjælper med arkitektur, komplekse tekniske problemstillinger, kvalitet, standarder og sparring til Tech Leads og seniorudviklere. Rollen skal give teknisk dybde uden at skabe en ny flaskehals.',
         owns: 'Arkitektonisk kvalitet, teknisk dybde, komplekse beslutninger og specialist-sparring.',
@@ -2073,6 +2398,8 @@ const DEFAULT_REAL = [
         interfaces: ['CTO', 'Tech Leads', 'Senior Developers', 'Solution Architects'],
         successMetrics: ['Architecture quality', 'Technical leverage', 'Reduced key-person risk', 'Reusable standards'] },
       { id: 'delivery-senior-developers', title: 'Senior Developers', name: 'Senior Developers', count: 10, area: 'Delivery & Technology',
+        officeDistribution: { DK: 7, NO: 3 },
+        strategicLocationLogic: 'Seniorudviklere fordeles med tyngde i Danmark, men Norge har nok senioritet til at kunne løfte egne leverancer og støtte lokale Tech Leads.',
         shortDescription: 'Ejer komplekse udviklingsopgaver, mentoring, review og faglig kvalitet.',
         detailedDescription: 'Senior Developers løser komplekse opgaver selvstændigt, støtter juniorer og developers, bidrager til tekniske beslutninger og sikrer høj kodekvalitet. En senior er ikke automatisk Tech Lead. Senioritet handler primært om faglig kompleksitet, selvstændighed, kvalitet og evnen til at løfte andre fagligt.',
         owns: 'Komplekse features, teknisk kvalitet, review, mentoring og faglig sparring.',
@@ -2080,6 +2407,8 @@ const DEFAULT_REAL = [
         interfaces: ['Tech Leads', 'Developers', 'Junior Developers', 'Principal Engineers'],
         successMetrics: ['Code quality', 'Complex feature delivery', 'Mentoring quality', 'Review impact'] },
       { id: 'delivery-developers', title: 'Developers / Mid-level', name: 'Developers / Mid-level', count: 14, area: 'Delivery & Technology',
+        officeDistribution: { DK: 9, NO: 5 },
+        strategicLocationLogic: 'Udviklerkapaciteten er størst i Danmark, men Norge har en reel udviklerbase, så norske projekter ikke bliver rene salgs-/handover-opgaver.',
         shortDescription: 'Ejer selvstændig udvikling og stabil feature-levering.',
         detailedDescription: 'Developers er organisationens stabile leverancekraft. De kan selvstændigt tage features, bugs, integrationer og produktforbedringer fra opgave til færdig leverance inden for projektets rammer. De arbejder tæt med Tech Lead og seniorer og bidrager til ugentlig fremdrift under Pulse.',
         owns: 'Selvstændige udviklingsopgaver, features, bugs, integrationer og stabil levering.',
@@ -2087,6 +2416,8 @@ const DEFAULT_REAL = [
         interfaces: ['Tech Leads', 'Senior Developers', 'QA / Release Specialists'],
         successMetrics: ['Feature throughput', 'Quality', 'Independence', 'Predictable delivery'] },
       { id: 'delivery-junior-developers', title: 'Junior Developers', name: 'Junior Developers', count: 5, area: 'Delivery & Technology',
+        officeDistribution: { DK: 4, NO: 1 },
+        strategicLocationLogic: 'Juniorudvikling ligger primært i Danmark, fordi onboarding, mentoring og learning paths er stærkest i det modne kontor. Norge har én junior som begyndende lokal talentpipeline.',
         shortDescription: 'Ejer læring, mindre opgaver og gradvis selvstændighed.',
         detailedDescription: 'Junior Developers bidrager til projekter gennem afgrænsede opgaver, læring og gradvis større ansvar. Rollen skal understøttes af klare onboardingforløb, mentoring, code review og realistiske forventninger. Juniorer er en del af BCT\'s fremtidige kapabilitetsopbygning.',
         owns: 'Læring, mindre udviklingsopgaver, progression og gradvis selvstændighed.',
@@ -2094,6 +2425,8 @@ const DEFAULT_REAL = [
         interfaces: ['Senior Developers', 'Tech Leads', 'People & Capability Lead'],
         successMetrics: ['Learning progression', 'Task completion', 'Code quality improvement', 'Independence over time'] },
       { id: 'delivery-interns-students', title: 'Praktikanter / Student Developers', name: 'Praktikanter / Student Developers', count: 3, area: 'Delivery & Technology',
+        officeDistribution: { DK: 2, NO: 1 },
+        strategicLocationLogic: 'Praktikanter/studenter ligger primært i Danmark, men Norge har én lokal talentkanal for langsigtet opbygning.',
         shortDescription: 'Ejer læring, assisterende udviklingsopgaver og afprøvning af fagligt potentiale.',
         detailedDescription: 'Praktikanter og student developers bidrager med mindre, afgrænsede opgaver og fungerer som en talentpipeline. Rollen skal have tydelig mentor, klare forventninger og opgaver, der skaber læring uden at belaste projektets kritiske fremdrift.',
         owns: 'Læring, assisterende opgaver og talentpipeline.',
@@ -2101,6 +2434,8 @@ const DEFAULT_REAL = [
         interfaces: ['Mentor', 'Senior Developers', 'People & Capability Lead'],
         successMetrics: ['Learning outcome', 'Potential identification', 'Mentor feedback', 'Small task contribution'] },
       { id: 'delivery-ai-ml-engineers', title: 'AI / ML Engineers', name: 'AI / ML Engineers', count: 3, area: 'Delivery & Technology',
+        officeDistribution: { DK: 2, NO: 1 },
+        strategicLocationLogic: 'AI engineering ligger primært i Danmark for at understøtte central standardisering, men Norge har én AI-profil til lokal use case-nærhed og delivery.',
         shortDescription: 'Ejer AI-agenter, LLM-integration, data pipelines, modelintegration og AI-driftbarhed.',
         detailedDescription: 'AI / ML Engineers bygger og operationaliserer de AI-komponenter, der indgår i BCT\'s løsninger og interne værktøjer. Rollen handler ikke kun om prompts, men om integration, driftbarhed, dataflow, kvalitet, evaluering, sikkerhed og governance i AI-løsninger.',
         owns: 'AI-komponenter, LLM-integrationer, data pipelines, evaluering, AI-drift og model governance.',
@@ -2108,6 +2443,8 @@ const DEFAULT_REAL = [
         interfaces: ['Solution Architects', 'Tech Leads', 'DevOps / Platform', 'CTO'],
         successMetrics: ['AI reliability', 'Solution quality', 'Evaluation quality', 'Operational AI performance'] },
       { id: 'delivery-devops-platform', title: 'DevOps / Platform Engineers', name: 'DevOps / Platform Engineers', count: 2, area: 'Delivery & Technology',
+        officeDistribution: { DK: 2, NO: 0 },
+        strategicLocationLogic: 'DevOps/platform centraliseres i Danmark for at sikre fælles CI/CD, hosting, observability, environments og teknisk driftbarhed på tværs af lande.',
         shortDescription: 'Ejer CI/CD, environments, hosting, secrets, observability og platformstabilitet.',
         detailedDescription: 'DevOps / Platform Engineers sikrer, at BCT\'s løsninger kan deployes, driftes og monitoreres stabilt. Rollen ejer miljøer, pipelines, secrets, observability, hosting og teknisk driftbarhed. De arbejder tæt med Tech Leads, AI Engineers og LiveOps.',
         owns: 'CI/CD, hosting, environments, secrets, observability, deployment stability og platform practices.',
@@ -2115,6 +2452,8 @@ const DEFAULT_REAL = [
         interfaces: ['Tech Leads', 'AI / ML Engineers', 'Customer Operations', 'CTO'],
         successMetrics: ['Deployment stability', 'Uptime support', 'Pipeline reliability', 'Incident reduction'] },
       { id: 'delivery-qa-release', title: 'QA / Release Specialists', name: 'QA / Release Specialists', count: 2, area: 'Delivery & Technology',
+        officeDistribution: { DK: 1, NO: 1 },
+        strategicLocationLogic: 'QA/release deles, så begge lande har lokal releaseforståelse, men arbejder efter fælles standarder.',
         shortDescription: 'Ejer teststrategi, releaseklarhed, kvalitetssikring og release-flow.',
         detailedDescription: 'QA / Release Specialists sikrer, at leverancer kan frigives med tillid. Rollen arbejder med teststrategi, regression, release notes, acceptkriterier, kvalitetstjek og release signoff. Funktionen skal være let og effektiv, stærkt understøttet af AI og automation.',
         owns: 'Teststrategi, releaseklarhed, regression, acceptkriterier og release signoff.',
@@ -2122,6 +2461,8 @@ const DEFAULT_REAL = [
         interfaces: ['Tech Leads', 'Developers', 'Customer Operations'],
         successMetrics: ['Release quality', 'Bug reduction', 'Regression control', 'Acceptance clarity'] },
       { id: 'delivery-product-owners-bas', title: 'Product Owners / Business Analysts', name: 'Product Owners / Business Analysts', count: 4, area: 'Delivery & Technology',
+        officeDistribution: { DK: 3, NO: 1 },
+        strategicLocationLogic: 'PO/BA-kapacitet ligger primært i Danmark, fordi krav, value translation og scope-modeller er tæt koblet til den danske modelmotor. Norge har én lokal/hybrid PO/BA for kundekontekst.',
         shortDescription: 'Ejer backlog, krav, prioritering, forretningsværdi og scope trade-offs.',
         detailedDescription: 'Product Owners / Business Analysts hjælper med at omsætte kundens behov og projektets mål til prioriteret backlog, krav, user stories, acceptkriterier og scope trade-offs. Rollen arbejder tæt med Tech Lead, Solution Architect og kunden.',
         owns: 'Backlog, krav, prioritering, acceptkriterier, forretningsværdi og scope trade-offs.',
@@ -2129,6 +2470,8 @@ const DEFAULT_REAL = [
         interfaces: ['Tech Leads', 'Solution Architects', 'Customers', 'QA'],
         successMetrics: ['Backlog clarity', 'Requirement quality', 'Scope discipline', 'Value alignment'] },
       { id: 'delivery-project-coordinator', title: 'Project Coordinator', name: 'Project Coordinator', count: 1, area: 'Delivery & Technology',
+        officeDistribution: { DK: 1, NO: 0 },
+        strategicLocationLogic: 'Project Coordinator ligger i Danmark for at understøtte den centrale delivery-/Pulse-model og reducere administrativ friktion i det største delivery-miljø.',
         shortDescription: 'Understøtter praktisk projektopfølgning, møder, noter og dokumentation.',
         detailedDescription: 'Project Coordinator hjælper med praktisk koordinering på tværs af projekter, men rollen skal holdes slank og AI-understøttet. Formålet er at fjerne friktion for Tech Leads uden at skabe et tungt projektadministrativt lag.',
         owns: 'Møder, noter, opfølgning, dokumentation og praktisk koordinering.',
@@ -2143,6 +2486,8 @@ const DEFAULT_REAL = [
     deepPurpose: 'Customer Operations samler LiveOps, support, customer success, renewals, service reviews og ongoing value. Funktionen sikrer, at kunder ikke bare får leveret projekter, men får løbende værdi, stabil drift, support, videreudvikling og kommerciel kontinuitet.',
     roles: [
       { id: 'customerops-head', title: 'Head of Customer Operations / LiveOps Lead', name: 'Head of Customer Operations / LiveOps Lead', count: 1, area: 'Customer Operations',
+        officeDistribution: { DK: 1, NO: 0 },
+        strategicLocationLogic: 'Head of Customer Operations ligger i Danmark for at standardisere SLA, supportmodel, renewal-flow og post-delivery-processer.',
         shortDescription: 'Ejer samlet kundeoplevelse efter levering, drift, support, renewals og ongoing value.',
         detailedDescription: 'Head of Customer Operations sikrer, at BCT\'s kunder oplever sammenhæng efter projektlevering. Rollen samler drift, support, customer success, service reviews og renewal. Formålet er at undgå, at kunden splittes mellem teknisk drift og kommerciel relation.',
         owns: 'Post-delivery kundeoplevelse, drift, support, renewals og ongoing value.',
@@ -2150,6 +2495,8 @@ const DEFAULT_REAL = [
         interfaces: ['Account Managers', 'Service Delivery Managers', 'Support Engineers', 'LiveOps'],
         successMetrics: ['Retention', 'Customer health', 'SLA performance', 'Expansion readiness'] },
       { id: 'customerops-service-delivery-managers', title: 'Service Delivery Managers', name: 'Service Delivery Managers', count: 2, area: 'Customer Operations',
+        officeDistribution: { DK: 1, NO: 1 },
+        strategicLocationLogic: 'Service Delivery Managers deles, fordi kundedrift og service reviews kræver lokal nærhed i begge markeder.',
         shortDescription: 'Ejer SLA, service reviews, driftsopfølgning og kundens løbende serviceoplevelse.',
         detailedDescription: 'Service Delivery Managers følger op på drift, support, SLA, incidents og løbende værdi. Rollen sikrer, at kunden har et tydeligt kontaktpunkt efter levering, og at drift ikke bliver usynlig intern teknik.',
         owns: 'SLA, service reviews, driftsopfølgning, kundeoverblik og servicekvalitet.',
@@ -2157,6 +2504,8 @@ const DEFAULT_REAL = [
         interfaces: ['Support Engineers', 'Account Managers', 'Reliability / Platform Support'],
         successMetrics: ['SLA compliance', 'Customer satisfaction', 'Incident communication', 'Service review quality'] },
       { id: 'customerops-support-engineers', title: 'Support Engineers', name: 'Support Engineers', count: 2, area: 'Customer Operations',
+        officeDistribution: { DK: 1, NO: 1 },
+        strategicLocationLogic: 'Support deles, så begge lande har lokal supportkapacitet, men stadig arbejder efter fælles LiveOps-standarder.',
         shortDescription: 'Ejer incident handling, bug triage, supportflow og mindre tekniske rettelser.',
         detailedDescription: 'Support Engineers håndterer kundehenvendelser, incidents, bug triage og mindre rettelser. Rollen arbejder tæt med LiveOps, DevOps og relevante Tech Leads for at sikre hurtig og kvalificeret afklaring.',
         owns: 'Support tickets, incidents, triage, mindre rettelser og teknisk afklaring.',
@@ -2164,6 +2513,8 @@ const DEFAULT_REAL = [
         interfaces: ['Service Delivery Managers', 'Tech Leads', 'Reliability / Platform Support'],
         successMetrics: ['Response time', 'Resolution time', 'Ticket quality', 'Incident reduction'] },
       { id: 'customerops-growth-renewal-owner', title: 'Customer Growth / Renewal Owner', name: 'Customer Growth / Renewal Owner', count: 1, area: 'Customer Operations',
+        officeDistribution: { DK: 0, NO: 1 },
+        strategicLocationLogic: 'Customer Growth/Renewal ligger i Norge, fordi Norge i dette scenarie har stærk kommerciel og relationsmæssig vækstrolle på eksisterende kunder.',
         shortDescription: 'Ejer renewal, mersalg og kommerciel videreudvikling af eksisterende kunder.',
         detailedDescription: 'Customer Growth / Renewal Owner sikrer, at eksisterende kunder udvikles kommercielt på baggrund af faktisk leveret værdi, driftsindsigter og nye behov. Rollen arbejder tæt med Revenue & Market og Service Delivery.',
         owns: 'Renewals, mersalg, customer expansion og kommerciel kundeværdi efter levering.',
@@ -2171,6 +2522,8 @@ const DEFAULT_REAL = [
         interfaces: ['Account Managers', 'Service Delivery Managers', 'Revenue & Market'],
         successMetrics: ['Renewal rate', 'Expansion revenue', 'Customer value growth', 'Churn reduction'] },
       { id: 'customerops-reliability-platform-support', title: 'Reliability / Platform Support', name: 'Reliability / Platform Support', count: 1, area: 'Customer Operations',
+        officeDistribution: { DK: 1, NO: 0 },
+        strategicLocationLogic: 'Reliability/platform support centraliseres i Danmark, tæt på DevOps/platform og fælles tekniske standarder.',
         shortDescription: 'Ejer stabilitet, monitoring, performance og teknisk driftsunderstøttelse i Customer Operations.',
         detailedDescription: 'Reliability / Platform Support sikrer teknisk stabilitet på løsninger i drift. Rollen arbejder med monitoring, performance, deployments, incident prevention og teknisk support til LiveOps.',
         owns: 'Monitoring, performance, incident prevention og teknisk driftsstabilitet.',
@@ -2185,6 +2538,8 @@ const DEFAULT_REAL = [
     deepPurpose: 'Business Platform er BCT\'s interne skaleringsmotor. Funktionen samler operations, people, onboarding, knowledge, finance, legal, vendor management, systems og internal tooling. Målet er at skabe en lille, stærk platformfunktion, hvor AI og interne værktøjer gør få mennesker i stand til at bære meget ansvar.',
     roles: [
       { id: 'platform-head', title: 'Head of Business Platform', name: 'Head of Business Platform', count: 1, area: 'Business Platform',
+        officeDistribution: { DK: 1, NO: 0 },
+        strategicLocationLogic: 'Head of Business Platform ligger i Danmark, fordi business platform, systems, knowledge, finance, legal, people-processer og tooling skal bygges centralt og eksporteres til andre markeder.',
         shortDescription: 'Ejer den samlede interne platform for operations, people, systems, knowledge, finance coordination og AI enablement.',
         detailedDescription: 'Head of Business Platform sikrer, at BCT\'s interne drift er skalerbar, sammenhængende og effektiv. Rollen samler klassiske supportfunktioner i én platformlogik, så organisationen undgår tunge siloer og i stedet bygger stærke interne systemer.',
         owns: 'Business platform, interne systemer, operations, people-processer, knowledge, tooling og intern skalerbarhed.',
@@ -2192,6 +2547,8 @@ const DEFAULT_REAL = [
         interfaces: ['COO', 'Business Operations Manager', 'Systems & Knowledge Owner', 'Finance Lead'],
         successMetrics: ['Internal efficiency', 'System adoption', 'Reduced friction', 'Scalable support'] },
       { id: 'platform-business-operations-manager', title: 'Business Operations Manager', name: 'Business Operations Manager', count: 1, area: 'Business Platform',
+        officeDistribution: { DK: 1, NO: 0 },
+        strategicLocationLogic: 'Business Operations ligger i Danmark for at understøtte operating model, governance, mødestruktur og tværgående struktur fra det mest modne kontor.',
         shortDescription: 'Ejer tværgående processer, governance, mødestruktur og organisatorisk fremdrift.',
         detailedDescription: 'Business Operations Manager sikrer, at organisationens centrale arbejdsgange fungerer i praksis. Rollen arbejder med processer, mødestruktur, governance, opfølgning og koordinering på tværs af funktioner.',
         owns: 'Tværgående processer, governance, mødestruktur, opfølgning og organisatorisk fremdrift.',
@@ -2199,6 +2556,8 @@ const DEFAULT_REAL = [
         interfaces: ['Head of Business Platform', 'COO', 'Delivery Managers', 'Revenue Operations'],
         successMetrics: ['Process clarity', 'Follow-up quality', 'Reduced friction', 'Governance adoption'] },
       { id: 'platform-systems-knowledge-owner', title: 'Systems & Knowledge Owner', name: 'Systems & Knowledge Owner', count: 1, area: 'Business Platform',
+        officeDistribution: { DK: 1, NO: 0 },
+        strategicLocationLogic: 'Systems & Knowledge centraliseres i Danmark, fordi source of truth, playbooks, templates og vidensstruktur skal udvikles ét sted.',
         shortDescription: 'Ejer Notion/source of truth, playbooks, templates, dokumentation og systemstruktur.',
         detailedDescription: 'Systems & Knowledge Owner sikrer, at organisationens viden, playbooks og systemer er opdaterede, tilgængelige og anvendelige. Rollen skal reducere implicit viden og gøre det let for medarbejdere at finde svar, processer og templates.',
         owns: 'Source of truth, Notion, playbooks, templates, dokumentationsstandarder og systemstruktur.',
@@ -2206,6 +2565,8 @@ const DEFAULT_REAL = [
         interfaces: ['Internal Tooling & Automation Lead', 'People & Capability Lead', 'COO'],
         successMetrics: ['Knowledge findability', 'Documentation quality', 'Template adoption', 'Reduced implicit knowledge'] },
       { id: 'platform-tooling-automation-lead', title: 'Internal Tooling & Automation Lead', name: 'Internal Tooling & Automation Lead', count: 1, area: 'Business Platform',
+        officeDistribution: { DK: 1, NO: 0 },
+        strategicLocationLogic: 'Internal Tooling & Automation ligger i Danmark, fordi interne AI-workflows, automations og process tooling skal fungere som fælles platform for alle lande.',
         shortDescription: 'Ejer interne værktøjer, automation, AI workflows og procesoptimering.',
         detailedDescription: 'Internal Tooling & Automation Lead bygger og vedligeholder interne værktøjer, automatiseringer og AI-workflows, der gør BCT mere effektiv. Rollen arbejder tæt med COO, CTO, Sales, Delivery og Business Platform for at fjerne gentagende manuelt arbejde.',
         owns: 'Interne værktøjer, automation, AI workflows, workflow-optimering og intern effektivitet.',
@@ -2213,6 +2574,8 @@ const DEFAULT_REAL = [
         interfaces: ['CTO', 'COO', 'Systems & Knowledge Owner', 'Revenue Operations'],
         successMetrics: ['Time saved', 'Automation adoption', 'Workflow quality', 'Reduced manual work'] },
       { id: 'platform-people-capability-lead', title: 'People & Capability Lead', name: 'People & Capability Lead', count: 1, area: 'Business Platform',
+        officeDistribution: { DK: 1, NO: 0 },
+        strategicLocationLogic: 'People & Capability ligger i Danmark, fordi onboarding, learning paths og capability-building først skal standardiseres i det modne miljø.',
         shortDescription: 'Ejer onboarding, learning paths, medarbejderudvikling, capability-building og kultur i praksis.',
         detailedDescription: 'People & Capability Lead sikrer, at BCT kan udvikle mennesker og ikke kun ansætte færdige profiler. Rollen ejer onboarding, learning paths, performance rhythms, medarbejderudvikling og kulturinitiativer. Rollen er lille men strategisk vigtig, fordi bredere rekruttering kræver stærkere udviklingssystem.',
         owns: 'Onboarding, learning paths, capability-building, medarbejderudvikling og kultur.',
@@ -2220,6 +2583,8 @@ const DEFAULT_REAL = [
         interfaces: ['Head of Business Platform', 'CTO', 'Head of Delivery', 'Talent Acquisition'],
         successMetrics: ['Ramp-up speed', 'Retention', 'Capability growth', 'Onboarding quality'] },
       { id: 'platform-talent-acquisition', title: 'Talent Acquisition / Employer Brand', name: 'Talent Acquisition / Employer Brand', count: 1, area: 'Business Platform',
+        officeDistribution: { DK: 0, NO: 1 },
+        strategicLocationLogic: 'Talent Acquisition/Employer Brand ligger i Norge i dette scenarie, fordi Norge skal opbygge lokal employer brand og kandidatpipeline som voksende marked.',
         shortDescription: 'Ejer rekruttering, kandidatpipeline og employer branding.',
         detailedDescription: 'Talent Acquisition / Employer Brand sikrer, at BCT har adgang til relevante kandidater og kan fortælle en attraktiv historie om virksomheden. Rollen arbejder tæt med CTO, Delivery, Revenue og People & Capability.',
         owns: 'Kandidatpipeline, rekruttering, employer branding og hiring coordination.',
@@ -2227,6 +2592,8 @@ const DEFAULT_REAL = [
         interfaces: ['People & Capability Lead', 'CTO', 'Head of Delivery', 'Revenue & Market'],
         successMetrics: ['Time to hire', 'Candidate quality', 'Pipeline strength', 'Employer brand reach'] },
       { id: 'platform-business-control-finance-partner', title: 'Business Control / Finance Partner', name: 'Business Control / Finance Partner', count: 1, area: 'Business Platform',
+        officeDistribution: { DK: 1, NO: 0 },
+        strategicLocationLogic: 'Business Control ligger i Danmark, tæt på CFO-funktion, projektøkonomi, marginstyring og finance governance.',
         shortDescription: 'Ejer økonomisk kontrol i praksis, projektøkonomi, marginopfølgning og finansiel rapportering.',
         detailedDescription: 'Business Control / Finance Partner understøtter Finance Lead/CFO-funktionen med projektøkonomi, margin, budgetopfølgning, forecast, rapportering og økonomisk beslutningsgrundlag. Rollen er ikke klassisk bogholderi, men økonomisk kontrol og business support.',
         owns: 'Projektøkonomi, marginopfølgning, budgetkontrol, forecast og finansiel rapportering.',
@@ -2234,6 +2601,8 @@ const DEFAULT_REAL = [
         interfaces: ['Finance Lead', 'Head of Delivery', 'Revenue Operations', 'COO'],
         successMetrics: ['Margin visibility', 'Forecast quality', 'Budget control', 'Project profitability insight'] },
       { id: 'platform-legal-contract-vendor-manager', title: 'Legal / Contract & Vendor Manager', name: 'Legal / Contract & Vendor Manager', count: 1, area: 'Business Platform',
+        officeDistribution: { DK: 1, NO: 0 },
+        strategicLocationLogic: 'Legal/contract/vendor centraliseres i Danmark for at sikre fælles kontraktstandarder, vendor governance og juridisk struktur.',
         shortDescription: 'Ejer kontrakter, DPA/MSA, leverandører, licenser, compliance og vendor spend.',
         detailedDescription: 'Legal / Contract & Vendor Manager sikrer, at BCT\'s kontrakter, leverandører, softwareaftaler og juridiske grundlag er strukturerede og risikobevidste. Rollen samler legal, procurement og vendor management i én AI-understøttet funktion.',
         owns: 'Kontrakter, DPA/MSA, leverandører, licenser, compliance, procurement og vendor cost control.',
@@ -2241,6 +2610,8 @@ const DEFAULT_REAL = [
         interfaces: ['Finance Lead', 'Account Executives', 'Proposal / Bid Manager', 'COO'],
         successMetrics: ['Contract clarity', 'Vendor cost control', 'Risk reduction', 'Renewal visibility'] },
       { id: 'platform-finance-admin-coordinator', title: 'Finance / Admin Coordinator', name: 'Finance / Admin Coordinator', count: 1, area: 'Business Platform',
+        officeDistribution: { DK: 1, NO: 0 },
+        strategicLocationLogic: 'Finance/Admin ligger i Danmark, fordi meget praktisk finance/admin kan centraliseres og AI-understøttes.',
         shortDescription: 'Ejer fakturering, udlæg, administrative flows og praktisk finance/admin support.',
         detailedDescription: 'Finance / Admin Coordinator håndterer de praktiske administrative flows omkring fakturering, udlæg, betalinger, dataopsamling og intern koordinering. Rollen er stærkt AI- og systemunderstøttet og skal ikke vokse lineært med organisationen.',
         owns: 'Fakturering, udlæg, betalinger, administrative flows og praktisk support.',
@@ -2248,6 +2619,8 @@ const DEFAULT_REAL = [
         interfaces: ['Business Control / Finance Partner', 'Finance Lead', 'Operations Coordinator'],
         successMetrics: ['Admin accuracy', 'Invoice timeliness', 'Reduced manual work', 'Payment flow quality'] },
       { id: 'platform-operations-coordinator', title: 'Operations Coordinator', name: 'Operations Coordinator', count: 1, area: 'Business Platform',
+        officeDistribution: { DK: 0, NO: 1 },
+        strategicLocationLogic: 'Operations Coordinator ligger i Norge for at sikre lokal praktisk koordinering, onboarding-logistik og kontorstøtte i det voksende norske marked.',
         shortDescription: 'Understøtter praktisk koordinering, onboarding-logistik, interne flows og tværgående opfølgning.',
         detailedDescription: 'Operations Coordinator hjælper med praktisk koordinering på tværs af Business Platform, onboarding, interne initiativer, møder, dokumentation og opfølgningsflows. Rollen skal frigøre tid fra ledelse og nøglepersoner uden at skabe administrativ tyngde.',
         owns: 'Praktisk koordinering, onboarding-logistik, interne flows og opfølgning.',
@@ -2297,10 +2670,10 @@ window.setupCloud = function(url, key, passphrase) {
 // HQ peger på hvilket kontor der huser centrale (Central) roller by default.
 // ════════════════════════════════════════════════════════════════
 const DEFAULT_OFFICES = [
-  { id: 'DK', name: 'Danmark', city: 'Aalborg',   flag: '🇩🇰', color: '#c8102e', active: true,  isHQ: true  },
-  { id: 'NO', name: 'Norge',   city: 'Oslo',      flag: '🇳🇴', color: '#3a86ff', active: true,  isHQ: false },
-  { id: 'SE', name: 'Sverige', city: 'Stockholm', flag: '🇸🇪', color: '#ffd166', active: false, isHQ: false },
-  { id: 'DE', name: 'Tyskland',city: 'Hamburg',   flag: '🇩🇪', color: '#06d6a0', active: false, isHQ: false }
+  { id: 'DK', name: 'Danmark', city: 'Aalborg',   flag: '🇩🇰', color: '#c8102e', active: true,  isHQ: true,  lat: 57.0488, lon: 9.9217 },
+  { id: 'NO', name: 'Norge',   city: 'Oslo',      flag: '🇳🇴', color: '#3a86ff', active: true,  isHQ: false, lat: 59.9139, lon: 10.7522 },
+  { id: 'SE', name: 'Sverige', city: 'Stockholm', flag: '🇸🇪', color: '#ffd166', active: false, isHQ: false, lat: 59.3293, lon: 18.0686 },
+  { id: 'DE', name: 'Tyskland',city: 'Hamburg',   flag: '🇩🇪', color: '#06d6a0', active: false, isHQ: false, lat: 53.5511, lon: 9.9937 }
 ];
 
 // ════════════════════════════════════════════════════════════════
@@ -2469,6 +2842,41 @@ function defaultDistribution(role) {
   return dist;
 }
 
+// Backfill missing fields from DEFAULT_REAL by id — runs after cloud/local load
+// so that old cloud-state automatically inherits any new fields (officeDistribution,
+// strategicLocationLogic, ownershipType, descriptions, etc.) we've added since.
+function backfillFromDefaults(arr) {
+  if (!arr) return;
+  const defaultById = {};
+  DEFAULT_REAL.forEach(a => a.roles.forEach(r => {
+    if (r.id) defaultById[r.id] = r;
+  }));
+  const fields = ['officeDistribution', 'strategicLocationLogic', 'ownershipType', 'rolePurpose',
+    'shortDescription', 'detailedDescription', 'owns', 'aiSupport', 'interfaces', 'successMetrics',
+    'title', 'area'];
+  arr.forEach(area => {
+    if (area.roles) area.roles.forEach(r => {
+      if (!r.id) return;
+      const def = defaultById[r.id];
+      if (!def) return;
+      fields.forEach(field => {
+        if (r[field] === undefined || r[field] === null ||
+            (Array.isArray(r[field]) && r[field].length === 0) ||
+            (typeof r[field] === 'object' && !Array.isArray(r[field]) && Object.keys(r[field]).length === 0)) {
+          r[field] = JSON.parse(JSON.stringify(def[field]));  // deep copy
+        }
+      });
+    });
+    // Also backfill area-level fields
+    const defArea = DEFAULT_REAL.find(d => d.name === area.name);
+    if (defArea) {
+      ['deepPurpose', 'purpose', 'color'].forEach(f => {
+        if (area[f] === undefined || area[f] === null) area[f] = defArea[f];
+      });
+    }
+  });
+}
+
 // Apply ownership map, rolePurpose fallback, expected counts, and office distribution
 function enrichRoleData() {
   DEFAULT_REAL.forEach(area => {
@@ -2479,12 +2887,20 @@ function enrichRoleData() {
       if (!r.id) return;
       if (OWNERSHIP_MAP[r.id] && !r.ownershipType) r.ownershipType = OWNERSHIP_MAP[r.id];
       if (!r.rolePurpose && r.shortDescription) r.rolePurpose = r.shortDescription;
-      // Office distribution — only init if missing or sum doesn't match count
+      // Office distribution — preserve explicit values if they sum correctly.
+      // Only auto-distribute if missing entirely or sum is wrong.
       const currentSum = r.officeDistribution
         ? Object.values(r.officeDistribution).reduce((a, b) => a + b, 0)
         : -1;
       if (!r.officeDistribution || currentSum !== r.count) {
         r.officeDistribution = defaultDistribution(r);
+      }
+      // Strip office keys that no longer correspond to known offices (cleanup)
+      if (r.officeDistribution) {
+        const validIds = new Set(activeOffices.map(o => o.id));
+        Object.keys(r.officeDistribution).forEach(k => {
+          if (!validIds.has(k) && r.officeDistribution[k] === 0) delete r.officeDistribution[k];
+        });
       }
     });
   });
@@ -2525,11 +2941,39 @@ function validateOrgConfig() {
     issues.push('Tech Lead and Principal/Staff Engineers must not be the same role');
   }
 
+  // Office distribution validation
+  let dkTotal = 0, noTotal = 0;
+  DEFAULT_REAL.forEach(area => area.roles.forEach(r => {
+    if (r.divider || !r.id) return;
+    if (!r.officeDistribution) {
+      issues.push('Role ' + r.id + ' is missing officeDistribution');
+      return;
+    }
+    const sum = Object.values(r.officeDistribution).reduce((a, b) => a + (b || 0), 0);
+    if (sum !== r.count) {
+      issues.push('Office distribution mismatch for role: ' + r.id + ' (sum ' + sum + ', expected ' + r.count + ')');
+    }
+    Object.entries(r.officeDistribution).forEach(([oid, n]) => {
+      if (n < 0) issues.push('Negative office count: ' + r.id + ' / ' + oid);
+    });
+    dkTotal += r.officeDistribution.DK || 0;
+    noTotal += r.officeDistribution.NO || 0;
+
+    // strategicLocationLogic must be non-empty string if present
+    if (r.strategicLocationLogic !== undefined && (typeof r.strategicLocationLogic !== 'string' || !r.strategicLocationLogic.trim())) {
+      issues.push('Role ' + r.id + ' has empty strategicLocationLogic');
+    }
+  }));
+
+  if (dkTotal !== 67) issues.push('DK total mismatch: actual ' + dkTotal + ', expected 67');
+  if (noTotal !== 33) issues.push('NO total mismatch: actual ' + noTotal + ', expected 33');
+  if (dkTotal + noTotal !== 100) issues.push('DK+NO total: ' + (dkTotal + noTotal) + ', expected 100');
+
   if (issues.length) {
     console.warn('🟡 orgConfig validation found ' + issues.length + ' issue(s):');
     issues.forEach(i => console.warn('  -', i));
   } else {
-    console.log('✅ orgConfig validation passed (' + totalCount + ' employees, ' + DEFAULT_REAL.length + ' capabilities, ' + Object.keys(orgConfig.roles).length + ' unique roles)');
+    console.log('✅ orgConfig validation passed (' + totalCount + ' employees · DK ' + dkTotal + ' · NO ' + noTotal + ' · ' + DEFAULT_REAL.length + ' capabilities · ' + Object.keys(orgConfig.roles).length + ' unique roles)');
   }
 }
 
@@ -2544,9 +2988,32 @@ let isApplyingRemote = false;
 let state = {
   scenario: 'dream',
   editMode: false,
+  cardEdits: new Set(),  // keys: "real:fIdx" / "dream:fIdx" — per-card edit mode
   dream: clone(DEFAULT_DREAM),
   real: clone(DEFAULT_REAL)
 };
+
+// Helpers — true if either global edit mode OR this card's per-card edit is on
+function cardKey(fIdx, isReal) { return (isReal ? 'real' : 'dream') + ':' + fIdx; }
+function isCardEditing(fIdx, isReal) {
+  return state.editMode || state.cardEdits.has(cardKey(fIdx, isReal));
+}
+function toggleCardEdit(fIdx, isReal) {
+  if (state.editMode) {
+    // If global is on, this button just exits global
+    toggleEditMode();
+    return;
+  }
+  if (!ensureAccess()) return;
+  if (!localStorage.getItem('bct-user')) {
+    const name = prompt('Hvad hedder du? (vises i historik når du redigerer)');
+    if (name && name.trim()) localStorage.setItem('bct-user', name.trim());
+  }
+  const key = cardKey(fIdx, isReal);
+  if (state.cardEdits.has(key)) state.cardEdits.delete(key);
+  else state.cardEdits.add(key);
+  renderAll();
+}
 
 function clone(o) { return JSON.parse(JSON.stringify(o)); }
 
@@ -2628,6 +3095,9 @@ async function loadFromCloud() {
     isApplyingRemote = true;
     if (data.data.dream) state.dream = data.data.dream;
     if (data.data.real) state.real = data.data.real;
+    // Backfill new/missing fields from current DEFAULT_REAL so old cloud-state
+    // inherits any structural updates (officeDistribution, strategicLocationLogic, etc.)
+    backfillFromDefaults(state.real);
     lastSyncedHash = JSON.stringify(data.data);
     renderAll();
     isApplyingRemote = false;
@@ -2683,6 +3153,7 @@ function subscribeToCloud() {
           isApplyingRemote = true;
           if (payload.new.data.dream) state.dream = payload.new.data.dream;
           if (payload.new.data.real) state.real = payload.new.data.real;
+          backfillFromDefaults(state.real);
           lastSyncedHash = JSON.stringify(payload.new.data);
           renderAll();
           isApplyingRemote = false;
@@ -2967,6 +3438,8 @@ function renderStats() {
 
 function renderFunction(f, fIdx, isReal) {
   const count = isReal ? sumFunc(f) : null;
+  const editing = isCardEditing(fIdx, isReal);
+  const editClass = editing ? ' card-edit' : '';
   const rolesHTML = f.roles.map((r, rIdx) => {
     if (r.divider) {
       return `<li class="role-divider" data-divider="1">${escapeHtml(r.name)}
@@ -2975,19 +3448,19 @@ function renderFunction(f, fIdx, isReal) {
     }
     const idAttr = r.id ? `data-role-id="${escapeHtml(r.id)}"` : '';
     const clickHandler = r.id
-      ? `if(!state.editMode){event.stopPropagation();openRoleModalById('${r.id}');}`
-      : `if(!state.editMode){event.stopPropagation();openRoleModal(${fIdx},${rIdx},${isReal});}`;
+      ? `if(!isCardEditing(${fIdx},${isReal})){event.stopPropagation();openRoleModalById('${r.id}');}`
+      : `if(!isCardEditing(${fIdx},${isReal})){event.stopPropagation();openRoleModal(${fIdx},${rIdx},${isReal});}`;
     return `
-      <li class="role-item" draggable="true"
+      <li class="role-item" draggable="${editing}"
           ${idAttr} data-fidx="${fIdx}" data-ridx="${rIdx}"
           ondragstart="onDragStart(event)" ondragend="onDragEnd(event)">
         <span class="role-handle" title="Træk for at flytte">⋮⋮</span>
-        <span class="role-title" contenteditable="${state.editMode}"
+        <span class="role-title" contenteditable="${editing}"
               onclick="${clickHandler}"
               onblur="updateRoleName(${fIdx},${rIdx},${isReal},this.textContent)"
               onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">${escapeHtml(r.name)}</span>
-        ${isReal && r.ownershipType ? `<span class="ownership-badge ${r.ownershipType}" title="${r.ownershipType.toUpperCase()} — klik i edit-mode for at ændre" onclick="if(state.editMode){event.stopPropagation();openOwnershipPopover('${r.id}', this);}">${r.ownershipType[0].toUpperCase()}</span>` : ''}
-        ${isReal && r.officeDistribution ? `<span class="office-badges" onclick="if(state.editMode && '${r.id}'){event.stopPropagation();openOwnershipPopover('${r.id}', this);}">${
+        ${isReal && r.ownershipType ? `<span class="ownership-badge ${r.ownershipType}" title="${r.ownershipType.toUpperCase()} — klik i edit-mode for at ændre" onclick="if(isCardEditing(${fIdx},${isReal})){event.stopPropagation();openOwnershipPopover('${r.id}', this);}">${r.ownershipType[0].toUpperCase()}</span>` : ''}
+        ${isReal && r.officeDistribution ? `<span class="office-badges" onclick="if(isCardEditing(${fIdx},${isReal}) && '${r.id}'){event.stopPropagation();openOwnershipPopover('${r.id}', this);}">${
           Object.entries(r.officeDistribution).filter(([oid, n]) => n > 0).map(([oid, n]) => {
             const o = activeOffices.find(x => x.id === oid);
             if (!o) return '';
@@ -3012,17 +3485,18 @@ function renderFunction(f, fIdx, isReal) {
   }).join('');
 
   return `
-    <div class="func-card" style="--func-color: ${f.color};"
+    <div class="func-card${editClass}" style="--func-color: ${f.color};"
          data-fidx="${fIdx}"
          ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event,${isReal})">
       <div class="func-header">
-        <div class="func-name" contenteditable="${state.editMode}"
-             onclick="if(!state.editMode){event.stopPropagation();openAreaModal(${fIdx},${isReal});}"
+        <div class="func-name" contenteditable="${editing}"
+             onclick="if(!isCardEditing(${fIdx},${isReal})){event.stopPropagation();openAreaModal(${fIdx},${isReal});}"
              onblur="updateFuncName(${fIdx},${isReal},this.textContent)"
              onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">${escapeHtml(f.name)}</div>
         ${isReal ? `<div class="func-count">${count}<small>pers</small></div>` : ''}
+        <button class="card-edit-btn ${editing ? 'on' : ''}" onclick="toggleCardEdit(${fIdx},${isReal})" title="${editing ? 'Færdig med at redigere' : 'Rediger dette kort'}">${editing ? '✓' : '✎'}</button>
       </div>
-      <div class="func-purpose" contenteditable="${state.editMode}"
+      <div class="func-purpose" contenteditable="${editing}"
            onblur="updateFuncPurpose(${fIdx},${isReal},this.textContent)"
            onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">${escapeHtml(f.purpose)}</div>
       <ul class="roles-list">${rolesHTML}</ul>
@@ -3107,6 +3581,200 @@ function rolesByOffice(officeId) {
   return list.sort((a, b) => b.count - a.count);
 }
 
+// ─── World Map (Leaflet) ───────────────────────────────────────
+let worldMap = null;
+let mapMarkerLayer = null;
+let mapInitTried = false;
+let mapHasFitted = false;
+
+function initWorldMap() {
+  if (worldMap) return;
+  const container = document.getElementById('world-map');
+  if (!container) return;
+  if (!window.L) {
+    // Leaflet not loaded yet — retry once
+    if (!mapInitTried) {
+      mapInitTried = true;
+      setTimeout(initWorldMap, 500);
+    }
+    return;
+  }
+
+  try {
+    worldMap = L.map(container, {
+      zoomControl: true,
+      attributionControl: true,
+      worldCopyJump: true,
+      minZoom: 2,
+      maxZoom: 18,
+      preferCanvas: true
+    }).setView([60, 10], 4);
+
+    // OpenStreetMap standard tiles — universally available and reliable.
+    // We invert/darken them via CSS .leaflet-tile filter for a dark-mode look.
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      subdomains: 'abc',
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      maxZoom: 19,
+      crossOrigin: true
+    }).addTo(worldMap);
+
+    mapMarkerLayer = L.layerGroup().addTo(worldMap);
+    renderMapMarkers(false); // don't fit yet — container size may be wrong
+
+    // Multi-pass invalidate + fit:
+    // Leaflet often computes container size wrong before layout completes.
+    // We call invalidateSize at increasing intervals, then run fitBounds with correct dims.
+    const refresh = (doFit) => {
+      if (!worldMap) return;
+      worldMap.invalidateSize(true);
+      if (doFit) renderMapMarkers(true);
+    };
+    setTimeout(() => refresh(false), 50);
+    setTimeout(() => refresh(true),  250);
+    setTimeout(() => refresh(false), 800);
+
+    // Re-invalidate on window resize
+    window.addEventListener('resize', () => {
+      if (worldMap) worldMap.invalidateSize();
+    });
+
+    // ResizeObserver to catch any container size changes
+    if (window.ResizeObserver) {
+      const ro = new ResizeObserver(() => {
+        if (worldMap) worldMap.invalidateSize();
+      });
+      ro.observe(container);
+    }
+  } catch (e) {
+    console.error('Map init failed:', e);
+  }
+}
+
+function renderMapMarkers(forceFit = false) {
+  if (!worldMap || !mapMarkerLayer) return;
+  mapMarkerLayer.clearLayers();
+  const counts = computeOfficeCounts();
+  const bounds = [];
+
+  activeOffices.forEach(o => {
+    if (!o.lat || !o.lon) return;
+    const n = counts[o.id] || 0;
+    const isActive = !!o.active;
+    const icon = L.divIcon({
+      html: `
+        <div class="map-marker ${isActive ? '' : 'inactive'}" style="--m-color: ${o.color};">
+          <div class="map-marker-pin ${o.isHQ && isActive ? 'hq' : ''}">
+            ${o.isHQ ? '<span class="map-marker-hq-badge">HQ</span>' : ''}
+            <div class="map-marker-flag">${o.flag}</div>
+            <div class="map-marker-count">${n}</div>
+          </div>
+          <div class="map-marker-label">${escapeHtml(o.city)}</div>
+        </div>
+      `,
+      className: 'custom-map-marker',
+      iconSize: [90, 96],
+      iconAnchor: [45, 80]
+    });
+
+    L.marker([o.lat, o.lon], { icon, opacity: isActive ? 1 : 0.45 })
+      .addTo(mapMarkerLayer)
+      .on('click', () => openOfficeDetailModal(o.id));
+
+    if (isActive) bounds.push([o.lat, o.lon]);
+  });
+
+  // Only auto-fit on first render or when explicitly forced (e.g., new office added)
+  if ((forceFit || !mapHasFitted) && bounds.length > 0) {
+    if (bounds.length > 1) {
+      worldMap.fitBounds(bounds, { padding: [60, 60], maxZoom: 6 });
+    } else {
+      worldMap.setView(bounds[0], 5);
+    }
+    mapHasFitted = true;
+  }
+}
+
+// ─── Office Detail Modal — compact accordion ────────────────────
+function openOfficeDetailModal(officeId) {
+  const office = activeOffices.find(o => o.id === officeId);
+  if (!office) return;
+  const counts = computeOfficeCounts();
+  const total = counts[officeId] || 0;
+
+  // Group by capability area
+  const byArea = [];
+  state.real.forEach(area => {
+    const areaRoles = area.roles
+      .filter(r => r.officeDistribution && r.officeDistribution[officeId] > 0)
+      .map(r => ({ id: r.id, title: r.title || r.name, n: r.officeDistribution[officeId], ownershipType: r.ownershipType }));
+    if (areaRoles.length) {
+      byArea.push({ name: area.name, color: area.color, roles: areaRoles, total: areaRoles.reduce((s, r) => s + r.n, 0) });
+    }
+  });
+
+  modalContext = { type: 'office', officeId };
+  const modal = document.getElementById('modal');
+  modal.style.setProperty('--modal-color', office.color);
+  document.getElementById('modal-kicker').textContent = office.flag + '  Kontor';
+  document.getElementById('modal-kicker').style.color = office.color;
+  document.getElementById('modal-title').textContent = office.name + (office.isHQ ? ' · HQ' : '');
+  document.getElementById('modal-sub').innerHTML = office.city + ' · ' + total + ' personer · ' + byArea.length + ' kapabilitetsområder' + (office.active ? '' : ' <span style="color: var(--text-muted);">(ikke aktiv)</span>');
+
+  // Hide unused role-specific sections
+  ['modal-func-section','modal-short-section','modal-owns-section','modal-ai-section','modal-interfaces-section','modal-success-section','modal-geo-section'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+
+  document.getElementById('modal-role-h4').textContent = 'Fordeling pr. kapabilitetsområde';
+
+  if (!byArea.length) {
+    document.getElementById('modal-role-text').innerHTML = '<em style="color: var(--text-muted);">Ingen roller placeret på dette kontor endnu.</em>';
+  } else {
+    // Chips: department tags in their colors with count outside the tag
+    const chipsHTML = '<div class="office-chips">' + byArea.map(a =>
+      `<span class="office-chip" style="--chip-color: ${a.color};"><span class="chip-tag">${escapeHtml(a.name)}</span><span class="chip-num">${a.total}</span></span>`
+    ).join('') + '</div>';
+
+    // Compact accordion — click to expand each area
+    const accordionHTML = '<div class="office-accordion">' + byArea.map((a, i) => {
+      const rowsHTML = a.roles.map(r =>
+        `<div class="office-role-row"><span class="rn" onclick="event.stopPropagation(); openRoleModalById('${r.id}')">${escapeHtml(r.title)}${r.ownershipType ? ' <span class="ownership-badge ' + r.ownershipType + '">' + r.ownershipType[0].toUpperCase() + '</span>' : ''}</span><span class="ct">${r.n}</span></div>`
+      ).join('');
+      return `<div class="office-area-row" id="oar-${i}" style="--row-color: ${a.color};"><div class="office-area-head" onclick="toggleOfficeAreaRow(${i})"><div class="left"><span class="caret">▶</span><span class="name">${escapeHtml(a.name)}</span></div><div class="count">${a.total}</div></div><div class="office-area-body">${rowsHTML}</div></div>`;
+    }).join('') + '</div>';
+
+    document.getElementById('modal-role-text').innerHTML = chipsHTML + accordionHTML;
+  }
+
+  document.getElementById('modal-role-view').style.display = 'block';
+  document.getElementById('modal-role-edit').style.display = 'none';
+  document.getElementById('modal-edit-btn').style.display = 'none';
+  document.getElementById('modal-save-btn').style.display = 'none';
+  document.getElementById('modal-backdrop').classList.add('open');
+}
+
+function toggleOfficeAreaRow(idx) {
+  const row = document.getElementById('oar-' + idx);
+  if (row) row.classList.toggle('open');
+}
+
+// ─── Geocoding via Nominatim (free, no API key) ────────────────
+async function geocodeCity(city) {
+  try {
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(city)}&format=json&limit=1&accept-language=da`, {
+      headers: { 'Accept': 'application/json' }
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (data && data.length) {
+      return { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon), displayName: data[0].display_name };
+    }
+  } catch(e) { console.warn('Geocode failed:', e); }
+  return null;
+}
+
 function renderGeography() {
   const grid = document.getElementById('geo-grid');
   if (!grid) return;
@@ -3128,7 +3796,6 @@ function renderGeography() {
 
   document.getElementById('geo-summary').textContent =
     activeOff.length + ' aktive kontor' + (activeOff.length === 1 ? '' : 'er') + ' · ' + total + ' personer distribueret';
-  document.getElementById('add-office-btn').style.display = state.editMode ? 'inline-flex' : 'none';
 
   // Office cards (active + inactive)
   grid.innerHTML = activeOffices.map(o => {
@@ -3137,7 +3804,11 @@ function renderGeography() {
     const hqBadge = o.isHQ ? ' <span style="font-size: 10px; padding: 1px 6px; background: rgba(212,166,85,0.15); color: var(--gold); border-radius: 3px; letter-spacing: 0.1em;">HQ</span>' : '';
     return `
       <div class="geo-office ${o.active ? 'active' : 'inactive'}" style="--office-color: ${o.color};">
-        <div class="geo-office-toggle" onclick="toggleOffice('${o.id}')" title="${o.active ? 'Slå fra' : 'Slå til'}"></div>
+        <div class="geo-office-actions">
+          <button class="geo-action-btn" onclick="editOffice('${o.id}')" title="Rediger kontor">✎</button>
+          <button class="geo-action-btn" onclick="toggleOffice('${o.id}')" title="${o.active ? 'Slå fra' : 'Slå til'}">${o.active ? '⏸' : '▶'}</button>
+          ${!o.isHQ ? `<button class="geo-action-btn danger" onclick="removeOffice('${o.id}')" title="Fjern kontor">×</button>` : ''}
+        </div>
         <div class="geo-office-head">
           <div class="geo-office-name">${o.flag} ${escapeHtml(o.name)}${hqBadge}</div>
           <div class="geo-office-count">${n}</div>
@@ -3151,6 +3822,67 @@ function renderGeography() {
       </div>
     `;
   }).join('');
+}
+
+async function editOffice(officeId) {
+  const o = activeOffices.find(x => x.id === officeId);
+  if (!o) return;
+  const name = prompt('Land-navn:', o.name);
+  if (name === null) return;
+  const city = prompt('By (bruges til markør på kortet):', o.city);
+  if (city === null) return;
+  const flag = prompt('Flag-emoji:', o.flag);
+  if (flag === null) return;
+  const color = prompt('Farve (hex, fx #c8102e):', o.color);
+  if (color === null) return;
+
+  const cityChanged = city.trim() !== o.city;
+  o.name = name.trim() || o.name;
+  o.city = city.trim() || o.city;
+  o.flag = flag.trim() || o.flag;
+  o.color = color.trim() || o.color;
+
+  if (cityChanged) {
+    showToast('Slår op på ' + o.city + '...');
+    const geo = await geocodeCity(o.city + ', ' + o.name);
+    if (geo) {
+      o.lat = geo.lat;
+      o.lon = geo.lon;
+      showToast(o.city + ' opdateret på kortet ✓');
+    }
+  }
+
+  saveOffices();
+  renderAll();
+  if (worldMap) {
+    renderMapMarkers(true);
+    setTimeout(() => worldMap && worldMap.invalidateSize(), 50);
+  }
+}
+
+function removeOffice(officeId) {
+  const o = activeOffices.find(x => x.id === officeId);
+  if (!o) return;
+  if (o.isHQ) { alert('HQ-kontoret kan ikke fjernes.'); return; }
+  if (!confirm('Fjern kontoret "' + o.name + '"? Personer fra dette kontor flyttes tilbage til HQ.')) return;
+  // Move all people from this office to HQ
+  const hq = getHQ();
+  state.real.forEach(area => area.roles.forEach(r => {
+    if (r.officeDistribution && r.officeDistribution[officeId]) {
+      r.officeDistribution[hq.id] = (r.officeDistribution[hq.id] || 0) + r.officeDistribution[officeId];
+      delete r.officeDistribution[officeId];
+    }
+  }));
+  // Remove the office
+  activeOffices = activeOffices.filter(x => x.id !== officeId);
+  saveOffices();
+  save();
+  renderAll();
+  if (worldMap) {
+    renderMapMarkers(true);
+    setTimeout(() => worldMap && worldMap.invalidateSize(), 50);
+  }
+  showToast('Kontoret "' + o.name + '" er fjernet');
 }
 
 function toggleOffice(officeId) {
@@ -3171,27 +3903,38 @@ function toggleOffice(officeId) {
   renderAll();
 }
 
-function addOffice() {
+async function addOffice() {
   const id = prompt('Landekode (2 bogstaver, fx FI for Finland):');
   if (!id || id.length !== 2) return;
-  const name = prompt('Land/by-navn (fx Finland):');
+  const name = prompt('Land-navn (fx Finland):');
   if (!name) return;
-  const city = prompt('By (fx Helsinki):') || name;
+  const city = prompt('By (fx Helsinki) — bruges til at placere markøren på kortet:');
+  if (!city) return;
   if (activeOffices.find(o => o.id === id.toUpperCase())) {
     alert('Et kontor med koden ' + id.toUpperCase() + ' findes allerede.');
     return;
   }
-  const colors = ['#ff6b9d', '#06d6a0', '#ffd166', '#9b5de5', '#00bbf9', '#f15bb5'];
+  const flag = prompt('Flag-emoji (fx 🇫🇮) — kan også være et bygnings-ikon 🏢:') || '🏢';
+  const colors = ['#ff6b9d', '#06d6a0', '#ffd166', '#9b5de5', '#00bbf9', '#f15bb5', '#ee6c4d', '#b497ff'];
   const usedColors = activeOffices.map(o => o.color);
   const newColor = colors.find(c => !usedColors.includes(c)) || colors[0];
+
+  showToast('Slår op på ' + city + '...');
+  const geo = await geocodeCity(city + ', ' + name);
+  if (!geo) {
+    if (!confirm('Kunne ikke finde "' + city + '" på kortet. Tilføj alligevel (uden markør på kortet)?')) return;
+  }
+
   activeOffices.push({
     id: id.toUpperCase(),
     name: name.trim(),
     city: city.trim(),
-    flag: '🏢',
+    flag: flag.trim(),
     color: newColor,
     active: true,
-    isHQ: false
+    isHQ: false,
+    lat: geo ? geo.lat : null,
+    lon: geo ? geo.lon : null
   });
   saveOffices();
   // Re-distribute local/hybrid roles
@@ -3202,6 +3945,11 @@ function addOffice() {
   }));
   save();
   renderAll();
+  if (worldMap) {
+    renderMapMarkers(true);  // force re-fit so new marker is visible
+    setTimeout(() => worldMap && worldMap.invalidateSize(), 100);
+  }
+  if (geo) showToast(city + ' tilføjet og placeret på kortet ✓');
 }
 
 // ─── Ownership popover (klik på badge i edit mode) ──────────────
@@ -3325,6 +4073,14 @@ function renderAll() {
   renderStats();
   renderOperatingModel();
   renderGeography();
+  if (!worldMap) {
+    // Defer until DOM and Leaflet are ready
+    if (document.readyState === 'complete') initWorldMap();
+    else window.addEventListener('load', initWorldMap, { once: true });
+  } else {
+    renderMapMarkers(false);
+    setTimeout(() => worldMap && worldMap.invalidateSize(), 50);
+  }
 }
 
 // Mutators
@@ -3517,6 +4273,8 @@ function openRoleModalById(roleId) {
     document.getElementById('modal-ai-section').style.display = 'none';
     document.getElementById('modal-interfaces-section').style.display = 'none';
     document.getElementById('modal-success-section').style.display = 'none';
+    const geoSecM = document.getElementById('modal-geo-section');
+    if (geoSecM) geoSecM.style.display = 'none';
     document.getElementById('modal-edit-btn').style.display = 'none';
     document.getElementById('modal-save-btn').style.display = 'none';
     document.getElementById('modal-backdrop').classList.add('open');
@@ -3677,6 +4435,27 @@ function openRoleModal(fIdx, rIdx, isReal) {
     document.getElementById('modal-success-section').style.display = 'none';
   }
 
+  // Geografisk logik
+  const geoSec = document.getElementById('modal-geo-section');
+  if (geoSec) {
+    if (role.strategicLocationLogic && typeof role.strategicLocationLogic === 'string' && role.strategicLocationLogic.trim()) {
+      geoSec.style.display = 'block';
+      let geoHTML = escapeHtml(role.strategicLocationLogic);
+      if (role.officeDistribution) {
+        const placement = Object.entries(role.officeDistribution)
+          .filter(([k, v]) => v > 0)
+          .map(([k, v]) => {
+            const o = activeOffices.find(x => x.id === k);
+            return o ? `<span class="office-badge" style="--office-color: ${o.color}; margin-right: 6px;"><span class="flag">${o.flag}</span> ${escapeHtml(o.name)} <span class="n">${v}</span></span>` : '';
+          }).join('');
+        if (placement) geoHTML += '<div style="margin-top: 8px;">' + placement + '</div>';
+      }
+      document.getElementById('modal-geo-text').innerHTML = geoHTML;
+    } else {
+      geoSec.style.display = 'none';
+    }
+  }
+
   document.getElementById('modal-backdrop').classList.add('open');
 }
 
@@ -3715,7 +4494,7 @@ document.addEventListener('keydown', (e) => {
 });
 
 loadLocal();
-// Re-apply enrichment in case loaded state from localStorage doesn't have ownershipType
+backfillFromDefaults(state.real);  // merge new fields into local-loaded state
 enrichRoleData();
 validateOrgConfig();
 renderAll();
