@@ -991,6 +991,24 @@ footer .motto {
   resize: vertical;
 }
 .modal-textarea:focus { outline: 1px solid var(--modal-color, var(--gold)); border-color: var(--modal-color, var(--gold)); }
+.chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+.chip-list span {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 4px 10px;
+  border-radius: 14px;
+  font-size: 12px;
+}
+.chip-list.success span {
+  border-color: var(--c-liveops);
+  color: var(--c-liveops);
+}
 .modal-actions {
   display: flex;
   gap: 8px;
@@ -1128,10 +1146,14 @@ body.edit-mode .role-title { cursor: text; }
   <!-- REALISTIC SCENARIO -->
   <div id="scenario-real" class="scenario">
     <section class="hero">
-      <div class="kicker">Scenario II · ~100 medarbejdere</div>
-      <h1>Realistisk Skaleringsmodel</h1>
+      <div class="kicker">Scenario II · AI-first operating architecture</div>
+      <h1>Realistisk model — ca. 100 medarbejdere</h1>
       <div class="divider"><span class="rune">◆ ◇ ◆</span></div>
-      <p class="subtitle">Ambitiøs men ikke overdesignet. AI-first og lav-bureaukratisk: support- og adminfunktioner skalerer <em>ikke</em> lineært. Tech, solution og delivery vægter tungest — det er der værdi skabes.</p>
+      <p class="subtitle">En realistisk AI-first organisationsmodel for BCT ved ca. 100 medarbejdere. Modellen er ikke bygget som et klassisk konsulenthus med mange tunge supportafdelinger, men som seks kapabilitetsområder forstærket af AI, automation, Pulse, klare roller og genbrugelige templates. Målet er at skalere leverancekraft uden at skalere bureaukrati lineært.</p>
+      <div class="ai-thesis" style="margin: 20px auto 0; max-width: 780px; text-align: left;">
+        <div class="ai-thesis-label">Strategisk pointe</div>
+        <div class="ai-thesis-text">BCT skal ikke vokse ved blot at ansætte flere mennesker i alle funktioner. BCT skal vokse ved at gøre <strong>hver funktion mere effektiv</strong>. AI, interne værktøjer, klare handovers, Pulse, stærk onboarding og reusable assets skal gøre små teams i stand til at bære mere ansvar end i en klassisk organisation.</div>
+      </div>
     </section>
 
     <div class="stats" id="real-stats"></div>
@@ -1145,10 +1167,10 @@ body.edit-mode .role-title { cursor: text; }
       <div class="connector"></div>
 
       <div class="exec-row">
-        <div class="exec-card" onclick="openExecModal('COO')"><div class="role">COO</div><div class="label">Operations · 1</div></div>
-        <div class="exec-card" onclick="openExecModal('CTO')"><div class="role">CTO</div><div class="label">Technology · 1</div></div>
-        <div class="exec-card" onclick="openExecModal('CCO')"><div class="role">CCO</div><div class="label">Commercial · 1</div></div>
-        <div class="exec-card" onclick="openExecModal('CFO')"><div class="role">CFO</div><div class="label">Finance · 1</div></div>
+        <div class="exec-card" onclick="openExecModal('COO')"><div class="role">COO</div><div class="label">Operating model · 1</div></div>
+        <div class="exec-card" onclick="openExecModal('CTO')"><div class="role">CTO</div><div class="label">Teknisk retning · 1</div></div>
+        <div class="exec-card" onclick="openExecModal('CCO')"><div class="role">CCO</div><div class="label">Kommerciel · 1</div></div>
+        <div class="exec-card" onclick="openExecModal('CFO')"><div class="role">Finance Lead</div><div class="label">Business control · 1</div></div>
       </div>
 
       <div class="functions-grid" id="real-functions"></div>
@@ -1157,77 +1179,85 @@ body.edit-mode .role-title { cursor: text; }
     <div class="section">
       <div class="section-title">
         <h2>Værdiflowet</h2>
-        <p>Sales → Solution → Delivery → LiveOps → Customer Success · klar handover, ingen huller</p>
+        <p>Revenue & Market → Solution & Value Design → Delivery & Technology → Customer Operations</p>
       </div>
       <div class="flow-chain">
-        <div class="flow-step" style="--c-step: var(--c-commercial);"><div class="num">01</div><div class="name">Sales</div><div class="desc">Pipeline · Closing · Forecast</div></div>
+        <div class="flow-step" style="--c-step: var(--c-commercial);"><div class="num">01</div><div class="name">Revenue & Market</div><div class="desc">Skaber opmærksomhed, modner markedet, kvalificerer muligheder og driver kommerciel fremdrift.</div></div>
         <div class="flow-arrow">→</div>
-        <div class="flow-step" style="--c-step: var(--c-solution);"><div class="num">02</div><div class="name">Solution</div><div class="desc">Shadow Walk · Scope · Estimat</div></div>
+        <div class="flow-step" style="--c-step: var(--c-solution);"><div class="num">02</div><div class="name">Solution & Value Design</div><div class="desc">Oversætter kundens virkelighed til scope, value case, estimat, løsningsdesign og køb-bart projekt.</div></div>
         <div class="flow-arrow">→</div>
-        <div class="flow-step" style="--c-step: var(--c-delivery);"><div class="num">03</div><div class="name">Delivery</div><div class="desc">Pulse · Tech Lead · QA</div></div>
+        <div class="flow-step" style="--c-step: var(--c-tech);"><div class="num">03</div><div class="name">Delivery & Technology</div><div class="desc">Leverer projektet gennem Pulse, Tech Leads, engineering, QA, platform og tydeligt teamansvar.</div></div>
         <div class="flow-arrow">→</div>
-        <div class="flow-step" style="--c-step: var(--c-liveops);"><div class="num">04</div><div class="name">LiveOps</div><div class="desc">SLA · Support · Stabilitet</div></div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-step" style="--c-step: var(--c-commercial);"><div class="num">05</div><div class="name">Customer Success</div><div class="desc">Mersalg · Relation · Renewal</div></div>
+        <div class="flow-step" style="--c-step: var(--c-liveops);"><div class="num">04</div><div class="name">Customer Operations</div><div class="desc">Sikrer drift, support, renewal, videreudvikling og løbende kundeværdi efter levering.</div></div>
+      </div>
+      <div class="callout" style="margin-top: 18px;">
+        <strong>Business Platform</strong> og <strong style="color: var(--c-ai);">AI Enablement</strong> understøtter alle led i værdikæden. Målet er, at viden, status, scope, økonomi, kundehistorik og beslutninger ikke forsvinder mellem funktioner.
       </div>
     </div>
 
     <div class="section">
       <div class="section-title">
-        <h2>To karrierespor i Engineering</h2>
-        <p>Specialist og Leadership er <em>parallelle</em> spor — samme status, forskellig ansvarsprofil. Senior ≠ Tech Lead.</p>
+        <h2>Dual-track tech progression</h2>
+        <p>Fælles base — derefter to parallelle spor. Senior Developer er ikke automatisk Tech Lead.</p>
       </div>
+
+      <!-- Shared base -->
+      <div style="margin-bottom: 24px;">
+        <div class="track-label" style="--track-color: var(--text-muted); text-align: center;">Fælles base</div>
+        <div class="ladder" style="max-width: 700px; margin: 8px auto 0;">
+          <div class="ladder-rung h1" style="--c-rung: var(--text-muted);"><div class="lvl">L0</div><div class="title" style="color: var(--text-muted);">Praktikant</div><div class="what">Læring & assisterende opgaver</div></div>
+          <div class="ladder-rung h2" style="--c-rung: var(--text-muted);"><div class="lvl">L1</div><div class="title" style="color: var(--text-muted);">Junior Developer</div><div class="what">Mindre opgaver, gradvis selvstændighed</div></div>
+          <div class="ladder-rung h3" style="--c-rung: var(--text-muted);"><div class="lvl">L2</div><div class="title" style="color: var(--text-muted);">Developer</div><div class="what">Selvstændig feature-levering</div></div>
+        </div>
+      </div>
+
+      <div style="text-align: center; color: var(--text-muted); font-size: 14px; margin: 16px 0;">↓ herefter to parallelle spor ↓</div>
+
       <div class="tracks">
         <div class="track">
           <div class="track-label" style="--track-color: var(--c-tech);">Specialist Track</div>
           <div class="track-sub">Faglig dybde · Arkitektur · Kompleksitet</div>
           <div class="ladder">
-            <div class="ladder-rung h1" style="--c-rung: var(--c-tech);"><div class="lvl">L0</div><div class="title">Praktikant</div><div class="what">Læring & støtte</div></div>
-            <div class="ladder-rung h2" style="--c-rung: var(--c-tech);"><div class="lvl">L1</div><div class="title">Junior</div><div class="what">Gradvis selvstændighed</div></div>
-            <div class="ladder-rung h3" style="--c-rung: var(--c-tech);"><div class="lvl">L2</div><div class="title">Developer</div><div class="what">Selvstændig levering</div></div>
-            <div class="ladder-rung h4" style="--c-rung: var(--c-tech);"><div class="lvl">L3</div><div class="title">Senior</div><div class="what">Kompleksitet, mentoring</div></div>
+            <div class="ladder-rung h4" style="--c-rung: var(--c-tech);"><div class="lvl">L3</div><div class="title">Senior Developer</div><div class="what">Kompleksitet, mentoring</div></div>
             <div class="ladder-rung h5" style="--c-rung: var(--c-tech);"><div class="lvl">L4</div><div class="title">Staff Engineer</div><div class="what">System-arkitektur</div></div>
             <div class="ladder-rung h6"><div class="lvl">L5</div><div class="title">Principal Engineer</div><div class="what">Dyb teknisk autoritet</div></div>
           </div>
+          <p style="font-size: 12px; color: var(--text-muted); margin-top: 12px; font-style: italic;">Specialistsporet er for dyb teknisk ekspertise, arkitektur, komplekse tekniske problemstillinger og faglig kvalitet uden nødvendigvis at have projektledelsesansvar.</p>
         </div>
         <div class="track">
           <div class="track-label" style="--track-color: var(--gold);">Leadership / Delivery Track</div>
           <div class="track-sub">Leveranceansvar · Pulse · Mennesker</div>
           <div class="ladder">
-            <div class="ladder-rung h1" style="--c-rung: var(--c-delivery);"><div class="lvl">L0</div><div class="title">Praktikant</div><div class="what">Læring & støtte</div></div>
-            <div class="ladder-rung h2" style="--c-rung: var(--c-delivery);"><div class="lvl">L1</div><div class="title">Junior</div><div class="what">Gradvis selvstændighed</div></div>
-            <div class="ladder-rung h3" style="--c-rung: var(--c-delivery);"><div class="lvl">L2</div><div class="title">Developer / Senior</div><div class="what">Faglig basis</div></div>
-            <div class="ladder-rung h4" style="--c-rung: var(--c-delivery);"><div class="lvl">L3</div><div class="title">Tech Lead</div><div class="what">Projektets Pulse · kundedialog</div></div>
-            <div class="ladder-rung h5" style="--c-rung: var(--c-delivery);"><div class="lvl">L4</div><div class="title">Engineering Manager</div><div class="what">Mennesker · portefølje</div></div>
-            <div class="ladder-rung h6"><div class="lvl">L5</div><div class="title">CTO</div><div class="what">Tech som system · standarder</div></div>
+            <div class="ladder-rung h3" style="--c-rung: var(--c-delivery);"><div class="lvl">L3</div><div class="title">Senior Developer</div><div class="what">Faglig basis</div></div>
+            <div class="ladder-rung h4" style="--c-rung: var(--c-delivery);"><div class="lvl">L4</div><div class="title">Tech Lead</div><div class="what">Projektets Pulse · kundedialog</div></div>
+            <div class="ladder-rung h5" style="--c-rung: var(--c-delivery);"><div class="lvl">L5</div><div class="title">Engineering Manager / Delivery Lead</div><div class="what">Mennesker · portefølje</div></div>
+            <div class="ladder-rung h6"><div class="lvl">L6</div><div class="title">CTO</div><div class="what">Tech som system · standarder</div></div>
           </div>
+          <p style="font-size: 12px; color: var(--text-muted); margin-top: 12px; font-style: italic;">Leadership/delivery-sporet er for roller, der tager ansvar for fremdrift, team, kundedialog, scope, Pulse, leverancekvalitet og organisatorisk teknisk retning.</p>
         </div>
       </div>
       <div class="callout">
-        <strong>Tech Lead ejer projektets Pulse</strong> — kickoff, scope, Monday planning, standups, Friday demo, intern summary, kundeupdate.<br>
-        <strong>Delivery / PMO understøtter</strong> — porteføljeoverblik, ressourcekoordinering, risiko, budget, QA-flow, tværgående transparens. <em>Overtager ikke projektledelsen.</em>
+        <strong>Senior Developer er ikke automatisk Tech Lead.</strong> Senioritet handler om faglig kompleksitet og selvstændighed. Tech Lead handler om leveranceansvar, struktur, kommunikation og projektets Pulse.
       </div>
     </div>
 
     <div class="section ai-section">
       <div class="section-title">
         <h2><span style="color: var(--c-ai);">⚡</span> AI Enablement Layer</h2>
-        <p>På tværs af hele organisationen — gør hver funktion mere effektiv frem for at lade den skalere lineært</p>
+        <p>AI er ikke en separat afdeling. AI er et tværgående enablement-lag, der forstærker alle funktioner i organisationen.</p>
+      </div>
+      <div style="font-size: 13.5px; color: var(--text-muted); line-height: 1.6; margin-bottom: 22px; max-width: 820px; margin-left: auto; margin-right: auto; text-align: center;">
+        Formålet er at reducere manuelt arbejde, øge transparens, accelerere beslutningsgrundlag og gøre supportfunktioner mindre lineært afhængige af medarbejderantal.
       </div>
       <div class="ai-grid">
-        <div class="ai-card" style="--c-fn: var(--c-commercial);"><div class="ai-fn">Sales</div><div class="ai-use">CRM-hygiejne · lead research · outreach · forecast assist</div></div>
-        <div class="ai-card" style="--c-fn: var(--c-marketing);"><div class="ai-fn">Marketing</div><div class="ai-use">Content draft · SEO · kampagne-variants · case studies</div></div>
-        <div class="ai-card" style="--c-fn: var(--c-solution);"><div class="ai-fn">Solution & Value</div><div class="ai-use">Proposal writing · scope · estimat · Shadow Walk-rapporter</div></div>
-        <div class="ai-card" style="--c-fn: var(--c-delivery);"><div class="ai-fn">Delivery</div><div class="ai-use">Project reporting · risk scoring · status digests · QA-assist</div></div>
-        <div class="ai-card" style="--c-fn: var(--c-tech);"><div class="ai-fn">Engineering</div><div class="ai-use">Code gen · review · test · docs · debug · refactor</div></div>
-        <div class="ai-card" style="--c-fn: var(--c-liveops);"><div class="ai-fn">LiveOps</div><div class="ai-use">Triage · runbook lookup · incident summary · auto-responses</div></div>
-        <div class="ai-card" style="--c-fn: var(--c-operations);"><div class="ai-fn">Operations</div><div class="ai-use">Meeting summaries · knowledge management · process docs</div></div>
-        <div class="ai-card" style="--c-fn: var(--c-people);"><div class="ai-fn">People</div><div class="ai-use">Onboarding flows · learning paths · feedback synthesis</div></div>
-        <div class="ai-card" style="--c-fn: var(--c-finance);"><div class="ai-fn">Finance / Admin</div><div class="ai-use">Bogføring · fakturering · kontraktanalyse · vendor-tracking</div></div>
-      </div>
-      <div class="ai-thesis">
-        <div class="ai-thesis-label">Strategisk pointe</div>
-        <div class="ai-thesis-text">BCT skal <strong>ikke vokse</strong> ved at ansætte flere mennesker i alle funktioner. BCT skal vokse ved at gøre <strong>hver funktion mere effektiv</strong> — gennem AI, automation, klare roller, Pulse, bedre onboarding, genbrugelige templates og tydeligt ejerskab.</div>
+        <div class="ai-card" style="--c-fn: var(--c-commercial);"><div class="ai-fn">Sales automation</div><div class="ai-use">AI understøtter lead research, mødeforberedelse, CRM-berigelse, outreach-klargøring, pipeline summaries og forecast-input.</div></div>
+        <div class="ai-card" style="--c-fn: var(--c-solution);"><div class="ai-fn">Proposal & value case drafting</div><div class="ai-use">AI hjælper med tilbudsudkast, projektbeskrivelser, business cases, scope-opsummeringer og genbrug af tidligere formuleringer.</div></div>
+        <div class="ai-card" style="--c-fn: var(--c-delivery);"><div class="ai-fn">Project intelligence</div><div class="ai-use">AI opsummerer status, identificerer scope drift, samler blockers, genererer kundeupdates og hjælper Tech Leads med at holde projektets Pulse synlig.</div></div>
+        <div class="ai-card" style="--c-fn: var(--c-operations);"><div class="ai-fn">Knowledge management</div><div class="ai-use">AI gør Notion, playbooks, templates, beslutningslogs og tidligere projekter søgbare og anvendelige i daglig drift.</div></div>
+        <div class="ai-card" style="--c-fn: var(--c-people);"><div class="ai-fn">Onboarding & learning</div><div class="ai-use">AI understøtter 30/60/90-dages onboarding, rollebaseret læring, mentorforberedelse og løbende kompetenceudvikling.</div></div>
+        <div class="ai-card" style="--c-fn: var(--c-finance);"><div class="ai-fn">Finance & business control</div><div class="ai-use">AI hjælper med budgetafvigelser, marginanalyse, forecast-drafts, vendor spend summaries, fakturakontrol og ledelsesrapportering.</div></div>
+        <div class="ai-card" style="--c-fn: var(--c-liveops);"><div class="ai-fn">Support & LiveOps</div><div class="ai-use">AI understøtter triage, incident summaries, runbook lookup, support drafts, service review preparation og root-cause dokumentation.</div></div>
+        <div class="ai-card" style="--c-fn: var(--c-tech);"><div class="ai-fn">QA & release support</div><div class="ai-use">AI hjælper med testcases, release notes, regressionsoverblik, changelogs og kvalitetstjek før deployment.</div></div>
       </div>
     </div>
 
@@ -1248,18 +1278,20 @@ body.edit-mode .role-title { cursor: text; }
 
     <div class="section">
       <div class="section-title">
-        <h2>Otte Bærende Principper</h2>
+        <h2>Ti Bærende Principper</h2>
         <p>Tribens kodeks · Hvorfor modellen ser sådan ud</p>
       </div>
       <div class="principles-grid">
-        <div class="principle"><div class="principle-num">PRINCIP I</div><h3>Funktion før titel</h3><p>Definér først hvilke funktioner organisationen skal bære. Dernæst hvilke personer der ejer dem.</p></div>
-        <div class="principle"><div class="principle-num">PRINCIP II</div><h3>Tech Lead ≠ Senior Developer</h3><p>Senior = faglig kompleksitet. Tech Lead = leveranceansvar, struktur, fremdrift og projektets puls.</p></div>
-        <div class="principle"><div class="principle-num">PRINCIP III</div><h3>CTO er ikke flaskehals</h3><p>CTO ejer standarder, kvalitet og tech som system — ikke daglig brandslukning på alle projekter.</p></div>
-        <div class="principle"><div class="principle-num">PRINCIP IV</div><h3>Solution er kritisk</h3><p>Solution-laget lukker hullet mellem salg og delivery — gode indsigter bliver til leverbare projekter.</p></div>
-        <div class="principle"><div class="principle-num">PRINCIP V</div><h3>Delivery støtter Tech Leads</h3><p>Tech Leads ejer pulsen. Delivery/PMO ejer portefølje, ressourcer, risiko og scope-kvalitet.</p></div>
-        <div class="principle"><div class="principle-num">PRINCIP VI</div><h3>Operations er skaleringsmotor</h3><p>Systemer, processer, dokumentation og governance — så organisationen ikke afhænger af implicit viden.</p></div>
-        <div class="principle"><div class="principle-num">PRINCIP VII</div><h3>People udvikler kapabilitet</h3><p>Onboarding og learning paths er strategisk nødvendige. Vi kan ikke kun skalere på færdige top-talenter.</p></div>
-        <div class="principle"><div class="principle-num">PRINCIP VIII</div><h3>Pulse er projektets rytme</h3><p>Kickoff · Monday planning · standups · Friday demo · summary · kundeupdate. Lavt bureaukrati.</p></div>
+        <div class="principle"><div class="principle-num">PRINCIP I</div><h3>Funktion før titel</h3><p>Definér først hvilke kapabiliteter organisationen skal bære. Dernæst hvilke personer der ejer dem.</p></div>
+        <div class="principle" style="border-left-color: var(--c-ai);"><div class="principle-num" style="color: var(--c-ai);">PRINCIP II</div><h3>AI er et lag, ikke en afdeling</h3><p>AI skal forstærke alle funktioner — salg, solution, delivery, finance, people, operations, support og knowledge.</p></div>
+        <div class="principle"><div class="principle-num">PRINCIP III</div><h3>Supportfunktioner skal ikke skalere lineært</h3><p>Marketing, finance, people, operations og admin skal holdes slanke gennem AI, automation, stærke systemer og klare processer.</p></div>
+        <div class="principle"><div class="principle-num">PRINCIP IV</div><h3>Tech Lead er ikke Senior Developer</h3><p>Senior handler om faglig kompleksitet. Tech Lead handler om leveranceansvar, kundedialog, scope, fremdrift og projektets Pulse.</p></div>
+        <div class="principle"><div class="principle-num">PRINCIP V</div><h3>CTO er ikke ny flaskehals</h3><p>CTO ejer standarder, kvalitet, arkitekturprincipper og tech som system — ikke daglig brandslukning på alle projekter.</p></div>
+        <div class="principle"><div class="principle-num">PRINCIP VI</div><h3>Solution er strategisk kerne</h3><p>Solution & Value Design lukker hullet mellem salg og delivery ved at gøre indsigter konkrete, køb-bare og leverbare.</p></div>
+        <div class="principle"><div class="principle-num">PRINCIP VII</div><h3>Delivery understøtter Tech Leads</h3><p>Delivery/PMO skaber porteføljeoverblik, ressourcekontrol, risikooverblik og transparens — men Tech Lead ejer projektets puls.</p></div>
+        <div class="principle"><div class="principle-num">PRINCIP VIII</div><h3>Business Platform er skaleringsmotoren</h3><p>Operations, people, finance, legal, systems og knowledge samles som en lille, stærk intern platformfunktion.</p></div>
+        <div class="principle"><div class="principle-num">PRINCIP IX</div><h3>Productisation skal fødes af virkeligheden</h3><p>Templates og reusable assets skal opstå fra Shadow Walks, projekter og gentagende kundebehov — ikke som isoleret produktteori.</p></div>
+        <div class="principle"><div class="principle-num">PRINCIP X</div><h3>Pulse før proces</h3><p>BCT skal have en fast let rytme for projekter: kickoff, Monday planning, korte standups, Friday demo, summary og kundeupdate — uden tungt bureaukrati.</p></div>
       </div>
     </div>
   </div>
@@ -1298,13 +1330,38 @@ body.edit-mode .role-title { cursor: text; }
       <div class="modal-text" id="modal-func-text"></div>
     </div>
 
+    <div class="modal-section" id="modal-short-section">
+      <h4>Kort beskrivelse</h4>
+      <div class="modal-text" id="modal-short-text"></div>
+    </div>
+
     <div class="modal-section">
-      <h4>Hvad denne rolle reelt laver</h4>
+      <h4 id="modal-role-h4">Hvad denne rolle reelt laver</h4>
       <div id="modal-role-view">
         <div class="modal-text" id="modal-role-text"></div>
       </div>
       <textarea class="modal-textarea" id="modal-role-edit" style="display:none;"
         placeholder="Beskriv hvad personen i denne rolle præcist skal lave..."></textarea>
+    </div>
+
+    <div class="modal-section" id="modal-owns-section">
+      <h4>Ejer</h4>
+      <div class="modal-text" id="modal-owns-text"></div>
+    </div>
+
+    <div class="modal-section" id="modal-ai-section">
+      <h4>AI-understøttelse</h4>
+      <div class="modal-text" id="modal-ai-text" style="color: var(--c-ai);"></div>
+    </div>
+
+    <div class="modal-section" id="modal-interfaces-section">
+      <h4>Interfaces (samarbejder tæt med)</h4>
+      <div id="modal-interfaces-list" class="chip-list"></div>
+    </div>
+
+    <div class="modal-section" id="modal-success-section">
+      <h4>Success metrics</h4>
+      <div id="modal-success-list" class="chip-list success"></div>
     </div>
 
     <div class="modal-actions">
@@ -1318,43 +1375,53 @@ body.edit-mode .role-title { cursor: text; }
 const EXEC_DESCRIPTIONS = {
   'CEO': {
     title: 'CEO / Managing Director',
-    sub: 'Höfðingi · Chieftain · Strategisk samlingspunkt',
+    sub: 'Vision · Strategi · Kultur · Langsigtet retning',
     color: 'var(--gold)',
-    text: `CEO'en ejer den overordnede retning for BCT: vision, strategi, kultur og prioritering. Rollen skal sikre, at organisationen ikke kun vokser i størrelse, men også i sammenhængskraft, kvalitet og kommerciel klarhed. CEO'en sætter rammen for, hvor virksomheden skal hen, hvilke markeder der prioriteres, og hvilke principper organisationen skal bygges på.
+    text: `CEO'en har det samlede ansvar for BCT's strategiske udvikling, markedsposition, kultur og overordnede beslutninger. Rollen skal sikre, at organisationen bevæger sig i én klar retning, og at vækst ikke sker på bekostning af kvalitet, kultur eller forretningsmæssig disciplin. CEO'en skal ikke eje alle operationelle beslutninger, men skal sikre alignment mellem kommerciel retning, teknologisk retning, økonomi og organisation.
 
-I den realistiske model skal CEO'en ikke være flaskehals i den daglige drift, men fungere som strategisk samlingspunkt for ledergruppen. Rollen binder kommerciel vækst, teknologisk retning, økonomisk ansvarlighed og organisatorisk udvikling sammen.`
+Ejer: Vision, strategi, kultur, større beslutninger og samlet virksomhedsretning.
+
+AI-understøttelse: AI kan understøtte med strategiske briefs, markedsopsummeringer, mødeopsamlinger, beslutningsgrundlag og tracking af strategiske initiativer.`
   },
   'COO': {
     title: 'COO / Head of Operations',
-    sub: 'Operationel skalering · Bindeleddet mellem strategi og drift',
+    sub: 'Operating model · Skalerbarhed · Tværgående fremdrift',
     color: 'var(--c-operations)',
-    text: `COO'en ejer den operationelle skalering af BCT. Rollen sikrer, at virksomheden fungerer som ét samlet system på tværs af salg, delivery, interne processer, onboarding, systemejerskab og ledelsesrytmer. Fokus er at reducere friktion, skabe tydelige ansvarsområder og sikre, at vækst ikke skaber unødigt kaos.
+    text: `COO'en sikrer, at BCT fungerer som en sammenhængende organisation og ikke som en samling stærke enkeltpersoner. Rollen ejer operating model, systemstruktur, governance, kapacitet, tværgående processer og organisatorisk fremdrift. COO'en skal sikre, at sales, solution, delivery, tech, customer operations og business platform hænger sammen i praksis.
 
-COO'en er bindeleddet mellem strategi og daglig drift. Rollen skal ikke eje alle detaljer, men sikre at de rigtige processer, rytmer og ejerskaber findes, så organisationen kan vokse uden at blive afhængig af enkelte nøglepersoner.`
+Ejer: Operating model, processer, systemlandskab, kapacitet, governance og tværgående struktur.
+
+AI-understøttelse: AI kan understøtte med proceskortlægning, statusopsamlinger, systemoverblik, mødenoter, opgaveopfølgning og intern rapportering.`
   },
   'CTO': {
-    title: 'CTO / Technology',
-    sub: 'Teknologisk retning · Engineering-kultur · Mindre key-person risk',
+    title: 'CTO',
+    sub: 'Teknisk retning · Arkitekturprincipper · Kvalitet · Stack · Capability-building',
     color: 'var(--c-tech)',
-    text: `CTO'en ejer den teknologiske retning og modenhed i BCT. Rollen har ansvar for arkitekturprincipper, tekniske standarder, kvalitet, stack-valg, engineering-kultur og udvikling af Tech Lead- og specialistlaget. CTO'en skal sikre, at teknologien understøtter både kundeleverancer, produktisering og intern skalering.
+    text: `CTO'en skal ikke være den nye centrale brandslukker eller backup-projektleder på alle projekter. Rollen ejer derimod tech-organisationen som system: tekniske standarder, arkitekturprincipper, stack-valg, kvalitet, kompetenceudvikling, sparring til Tech Leads og langsigtet teknologisk retning. CTO'en skal reducere personafhængighed ved at gøre teknisk kvalitet gentagelig gennem standarder, playbooks og stærke Tech Leads.
 
-CTO'en skal ikke være den nye centrale brandslukker på alle projekter. Rollen skal i stedet bygge systemet omkring engineering, så ansvar kan bæres af Tech Leads, teams, fælles standarder og teknisk governance fremfor enkeltpersoner. Det matcher behovet for en reel CTO-funktion og mindre key-person risk.`
+Ejer: Teknisk strategi, standarder, arkitekturprincipper, kvalitet, stack og teknisk capability-building.
+
+AI-understøttelse: AI kan understøtte med architecture reviews, kodeanalyse, standardforslag, teknisk dokumentation, ADR-drafts og mønsteridentifikation på tværs af projekter.`
   },
   'CCO': {
-    title: 'CCO / Commercial',
-    sub: 'Kommerciel motor · Pipeline · Go-to-market',
+    title: 'CCO / Head of Commercial',
+    sub: 'Pipeline · Revenue · Partnerskaber · Salgsperformance',
     color: 'var(--c-commercial)',
-    text: `CCO'en ejer den kommercielle motor: pipeline, salg, go-to-market, kundemodning, account-strategi og vækst. Rollen skal sikre, at BCT ikke kun skaber interesse, men konverterer de rigtige kunder til de rigtige engagementer med den rigtige forventningsstyring.
+    text: `CCO'en har ansvar for, at BCT's kommercielle motor er struktureret, prioriteret og skalerbar. Rollen ejer pipeline, salgsstrategi, forecast, revenue targets, partnerskaber og kommerciel retning. CCO'en skal sikre, at salg ikke er personbåret, og at markedet modnes gennem tydelig positioning, cases og value communication.
 
-CCO'en arbejder tæt sammen med Solution & Value Design, fordi BCT's salg ikke blot handler om at lukke deals, men om at modne kunden, forstå behovet og gøre løsningen købsbar. Det er særligt vigtigt, fordi der historisk har manglet et stærkt formaliseret overgangsled mellem salg og delivery.`
+Ejer: Commercial strategy, pipeline, revenue, partnerskaber og forecast.
+
+AI-understøttelse: AI kan understøtte med pipeline summaries, lead scoring, account research, salgsforberedelse, forecast-input og udarbejdelse af kommercielle briefs.`
   },
   'CFO': {
-    title: 'CFO / Finance',
-    sub: 'Økonomi · Margin · Sund vækst',
+    title: 'Finance Lead / CFO-function',
+    sub: 'Cashflow · Margin · Pricing · Projektøkonomi · Finansiel governance',
     color: 'var(--c-finance)',
-    text: `CFO'en ejer økonomi, margin, budgettering, forecast, cashflow og finansiel styring. Rollen skal sikre, at BCT kan vokse sundt — ikke kun målt på omsætning, men også på lønsomhed, kapacitetsudnyttelse og økonomisk robusthed.
+    text: `Finance Lead/CFO-funktionen bliver ikke overflødig i en AI-first organisation. Den bliver mindre administrativ og mere strategisk. Rollen ejer økonomisk dømmekraft, budget, cashflow, margin, pricing support, projektøkonomi, forecast, vendor cost control og ledelsesrapportering. AI kan automatisere meget finance-arbejde, men ansvaret for økonomiske beslutninger, risiko og governance skal ligge hos et menneske.
 
-CFO'en skal være tæt koblet på både salg og delivery, fordi projektøkonomi, scope, bemanding og margin hænger direkte sammen. I en mere projekt- og leverancebaseret model bliver CFO'en en vigtig sparringspartner i forhold til prissætning, risikostyring og beslutningsgrundlag.`
+Ejer: Cashflow, budget, margin, forecast, pricing, projektprofitabilitet, økonomisk governance og finansiel risikostyring.
+
+AI-understøttelse: AI kan understøtte med forecast-drafts, budgetafvigelser, fakturakontrol, vendor spend summaries, marginanalyse og rapportudkast.`
   }
 };
 
@@ -1483,55 +1550,371 @@ const DEFAULT_DREAM = [
   ]}
 ];
 
+// ════════════════════════════════════════════════════════════════
+// REALISTISK SCENARIE — AI-first operating architecture
+// 6 kapabilitetsområder, 100 personer total.
+// Hver rolle har: id, title, count, area, shortDescription,
+// detailedDescription, owns, aiSupport, interfaces, successMetrics.
+// Klik-lookup sker via role.id (ingen index/title fallback).
+// ════════════════════════════════════════════════════════════════
 const DEFAULT_REAL = [
-  { name: 'Commercial / Sales / CS', color: 'var(--c-commercial)', purpose: 'Salg skal ikke være personbåret. AI hjælper CRM, research og outreach.', roles: [
-    { name: 'Head of Sales', count: 1 }, { name: 'Account Executives', count: 2 },
-    { name: 'Business Developers', count: 2 }, { name: 'Account Managers / CS', count: 3 },
-    { name: 'CRM / Sales Ops Owner', count: 1 }
-  ]},
-  { name: 'Marketing', color: 'var(--c-marketing)', purpose: 'Lille, slagkraftigt — AI accelererer content, kampagner og SEO.', roles: [
-    { name: 'Head of Marketing / Growth', count: 1 }, { name: 'Content & Thought Leadership', count: 1 },
-    { name: 'Web / SEO / Campaign Lead', count: 1 }
-  ]},
-  { name: 'Solution & Value Design', color: 'var(--c-solution)', purpose: 'Strategisk kerneled mellem Sales og Delivery — Shadow Walk → købbart projekt.', roles: [
-    { name: 'Head of Solution & Value', count: 1 }, { name: 'Solution Architects', count: 3 },
-    { name: 'AI / Process Consultants', count: 3 }, { name: 'Shadow Walk Lead', count: 1 },
-    { name: 'Proposal / Bid Manager', count: 1 }
-  ]},
-  { name: 'Delivery / Project', color: 'var(--c-delivery)', purpose: 'Understøtter Tech Leads — overtager IKKE projektledelsen. Portefølje, risiko, QA.', roles: [
-    { name: 'Head of Delivery', count: 1 }, { name: 'Delivery Managers / PMO', count: 2 },
-    { name: 'Project Coordinator', count: 1 }, { name: 'Product Owners / BAs', count: 2 },
-    { name: 'QA / Release Leads', count: 2 }
-  ]},
-  { name: 'Technology / Engineering', color: 'var(--c-tech)', purpose: 'Kernen i BCT. To karrierespor: Specialist og Leadership.', roles: [
-    { name: '— Specialist Track —', count: null, divider: true },
-    { name: 'Principal Engineers', count: 2 }, { name: 'Staff Engineers', count: 2 },
-    { name: 'Senior Developers', count: 11 }, { name: 'Developers / Mid-level', count: 14 },
-    { name: 'Junior Developers', count: 5 }, { name: 'Praktikanter', count: 3 },
-    { name: '— Leadership Track —', count: null, divider: true },
-    { name: 'Engineering Manager', count: 1 }, { name: 'Tech Leads', count: 7 },
-    { name: '— Domain Specialists —', count: null, divider: true },
-    { name: 'DevOps / Platform', count: 2 }, { name: 'AI / ML Engineers', count: 2 }
-  ]},
-  { name: 'Productisation', color: 'var(--c-product)', purpose: 'Genbrug, hurtigere salg, lavere leveranceomkostninger.', roles: [
-    { name: 'Productisation Lead', count: 1 }, { name: 'Product Manager', count: 1 },
-    { name: 'Product Tech Lead', count: 1 }, { name: 'Product Designer', count: 1 },
-    { name: 'Product Marketing / Enablement', count: 1 }
-  ]},
-  { name: 'LiveOps / Drift', color: 'var(--c-liveops)', purpose: 'Recurring revenue — løsninger bliver ikke afleveret og glemt.', roles: [
-    { name: 'Head of LiveOps', count: 1 }, { name: 'Support Engineers', count: 2 },
-    { name: 'Reliability / Platform', count: 1 }, { name: 'LiveOps Account Owner', count: 1 }
-  ]},
-  { name: 'Operations', color: 'var(--c-operations)', purpose: 'AI gør operations let — systemejerskab, ikke admin-bemanding.', roles: [
-    { name: 'Business Operations Manager', count: 1 }, { name: 'Systems & Tooling Owner', count: 1 },
-    { name: 'Documentation / Knowledge', count: 1 }
-  ]},
-  { name: 'People & Culture', color: 'var(--c-people)', purpose: 'Lille team — AI assisterer onboarding, learning og people ops.', roles: [
-    { name: 'Head of People & Culture', count: 1 }, { name: 'Talent / Onboarding / Learning Lead', count: 1 }
-  ]},
-  { name: 'Finance / Legal / Admin', color: 'var(--c-finance)', purpose: 'Automation håndterer bogføring, fakturering og kontrakter — minimum bemanding.', roles: [
-    { name: 'CFO / Controller', count: 1 }, { name: 'Billing / Contracts / Admin Specialist', count: 1 }
-  ]}
+  {
+    name: 'Executive Leadership', color: 'var(--c-exec)',
+    purpose: 'Ejer virksomhedens samlede retning, strategiske prioriteringer, kultur, økonomiske ansvar, tekniske retning og organisatoriske operating model.',
+    deepPurpose: 'Executive Leadership ejer virksomhedens samlede retning, strategiske prioriteringer, kultur, økonomiske ansvar, tekniske retning og organisatoriske operating model. Rollen er ikke at være flaskehals i daglig drift, men at sætte rammerne, træffe de svære beslutninger og sikre, at organisationen kan skalere uden at miste kvalitet.',
+    roles: [
+      { id: 'executive-ceo', title: 'CEO / Managing Director', name: 'CEO / Managing Director', count: 1, area: 'Executive Leadership',
+        shortDescription: 'Ejer virksomhedens overordnede vision, strategi, kultur og langsigtede retning.',
+        detailedDescription: 'CEO\'en har det samlede ansvar for BCT\'s strategiske udvikling, markedsposition, kultur og overordnede beslutninger. Rollen skal sikre, at organisationen bevæger sig i én klar retning, og at vækst ikke sker på bekostning af kvalitet, kultur eller forretningsmæssig disciplin. CEO\'en skal ikke eje alle operationelle beslutninger, men skal sikre alignment mellem kommerciel retning, teknologisk retning, økonomi og organisation.',
+        owns: 'Vision, strategi, kultur, større beslutninger og samlet virksomhedsretning.',
+        aiSupport: 'AI understøtter med strategiske briefs, markedsopsummeringer, mødeopsamlinger, beslutningsgrundlag og tracking af strategiske initiativer.',
+        interfaces: ['COO', 'CTO', 'CCO', 'Finance Lead', 'Head of Solution & Value Design'],
+        successMetrics: ['Strategisk fremdrift', 'Kultur og alignment', 'Vækst med kvalitet', 'Profitabel skalering'] },
+      { id: 'executive-coo', title: 'COO / Head of Operations', name: 'COO / Head of Operations', count: 1, area: 'Executive Leadership',
+        shortDescription: 'Ejer operating model, organisatorisk skalerbarhed, processer og tværgående fremdrift.',
+        detailedDescription: 'COO\'en sikrer, at BCT fungerer som en sammenhængende organisation og ikke som en samling stærke enkeltpersoner. Rollen ejer operating model, systemstruktur, governance, kapacitet, tværgående processer og organisatorisk fremdrift. COO\'en skal sikre, at sales, solution, delivery, tech, customer operations og business platform hænger sammen i praksis.',
+        owns: 'Operating model, processer, systemlandskab, kapacitet, governance og tværgående struktur.',
+        aiSupport: 'AI understøtter med proceskortlægning, statusopsamlinger, systemoverblik, mødenoter, opgaveopfølgning og intern rapportering.',
+        interfaces: ['CEO', 'Head of Business Platform', 'Head of Delivery', 'CTO', 'Revenue & Market'],
+        successMetrics: ['Mindre personafhængighed', 'Bedre tværgående flow', 'Højere transparens', 'Skalerbar drift'] },
+      { id: 'executive-cto', title: 'CTO', name: 'CTO', count: 1, area: 'Executive Leadership',
+        shortDescription: 'Ejer teknisk retning, arkitekturprincipper, kvalitet, stack og tech-organisationen som system.',
+        detailedDescription: 'CTO\'en skal ikke være den nye centrale brandslukker eller backup-projektleder på alle projekter. Rollen ejer tech-organisationen som system: tekniske standarder, arkitekturprincipper, stack-valg, kvalitet, kompetenceudvikling, sparring til Tech Leads og langsigtet teknologisk retning. CTO\'en skal reducere personafhængighed ved at gøre teknisk kvalitet gentagelig gennem standarder, playbooks og stærke Tech Leads.',
+        owns: 'Teknisk strategi, standarder, arkitekturprincipper, kvalitet, stack og teknisk capability-building.',
+        aiSupport: 'AI understøtter med architecture reviews, kodeanalyse, standardforslag, teknisk dokumentation, ADR-drafts og mønsteridentifikation på tværs af projekter.',
+        interfaces: ['CEO', 'COO', 'Tech Leads', 'Principal Engineers', 'Solution Architects'],
+        successMetrics: ['Teknisk kvalitet', 'Færre tekniske flaskehalse', 'Stærkere Tech Leads', 'Genbrugelige standarder'] },
+      { id: 'executive-cco', title: 'CCO / Head of Commercial', name: 'CCO / Head of Commercial', count: 1, area: 'Executive Leadership',
+        shortDescription: 'Ejer kommerciel strategi, pipeline, revenue, partnerskaber og salgsperformance.',
+        detailedDescription: 'CCO\'en har ansvar for, at BCT\'s kommercielle motor er struktureret, prioriteret og skalerbar. Rollen ejer pipeline, salgsstrategi, forecast, revenue targets, partnerskaber og kommerciel retning. CCO\'en skal sikre, at salg ikke er personbåret, og at markedet modnes gennem tydelig positioning, cases og value communication.',
+        owns: 'Commercial strategy, pipeline, revenue, partnerskaber og forecast.',
+        aiSupport: 'AI understøtter med pipeline summaries, lead scoring, account research, salgsforberedelse, forecast-input og udarbejdelse af kommercielle briefs.',
+        interfaces: ['CEO', 'Head of Revenue & Market', 'Solution & Value Design', 'Finance Lead'],
+        successMetrics: ['Omsætning', 'Pipeline quality', 'Win rate', 'Forecast accuracy'] },
+      { id: 'executive-finance-lead', title: 'Finance Lead / CFO-function', name: 'Finance Lead / CFO-function', count: 1, area: 'Executive Leadership',
+        shortDescription: 'Ejer økonomisk kontrol, cashflow, margin, forecast, pricing support og finansiel governance.',
+        detailedDescription: 'Finance Lead/CFO-funktionen bliver ikke overflødig i en AI-first organisation. Den bliver mindre administrativ og mere strategisk. Rollen ejer økonomisk dømmekraft, budget, cashflow, margin, pricing support, projektøkonomi, forecast, vendor cost control og ledelsesrapportering. AI kan automatisere meget finance-arbejde, men ansvaret for økonomiske beslutninger, risiko og governance skal ligge hos et menneske.',
+        owns: 'Cashflow, budget, margin, forecast, pricing, projektprofitabilitet, økonomisk governance og finansiel risikostyring.',
+        aiSupport: 'AI understøtter med forecast-drafts, budgetafvigelser, fakturakontrol, vendor spend summaries, marginanalyse og rapportudkast.',
+        interfaces: ['CEO', 'COO', 'Business Control', 'Revenue & Market', 'Delivery'],
+        successMetrics: ['Likviditet', 'Margin', 'Forecast accuracy', 'Projektprofitabilitet'] }
+    ]
+  },
+  {
+    name: 'Revenue & Market', color: 'var(--c-commercial)',
+    purpose: 'Samler salg, business development, account ownership, market education, revenue enablement og CRM/revops.',
+    deepPurpose: 'Revenue & Market samler salg, business development, account ownership, market education, revenue enablement og CRM/revops. Funktionen skal skabe pipeline, modne markedet, lukke deals og udvikle kunder uden at opbygge separate tunge marketing- og sales ops-afdelinger.',
+    roles: [
+      { id: 'revenue-head', title: 'Head of Revenue & Market', name: 'Head of Revenue & Market', count: 1, area: 'Revenue & Market',
+        shortDescription: 'Ejer samlet kommerciel eksekvering på tværs af salg, marked, pipeline og revenue enablement.',
+        detailedDescription: 'Head of Revenue & Market omsætter den kommercielle strategi til daglig eksekvering. Rollen sikrer, at pipeline, market education, account management, CRM og salgsunderstøttelse hænger sammen. Personen skal sikre, at BCT ikke bare genererer leads, men modner kunder til at forstå AI, Shadow Walk og investeringens forretningsværdi.',
+        owns: 'Daglig kommerciel eksekvering, pipelinekvalitet, market education og salgsunderstøttelse.',
+        aiSupport: 'AI understøtter med pipeline-overblik, lead research, kampagneinput, sales briefs, mødeopsamlinger og CRM-kvalitet.',
+        interfaces: ['CCO', 'Account Executives', 'Solution Architects', 'Revenue Operations Owner'],
+        successMetrics: ['Qualified pipeline', 'Conversion', 'Pipeline health', 'Commercial execution'] },
+      { id: 'revenue-account-executives', title: 'Account Executives', name: 'Account Executives', count: 3, area: 'Revenue & Market',
+        shortDescription: 'Ejer nye deals fra kvalificeret mulighed til closing.',
+        detailedDescription: 'Account Executives driver kundedialog, behovsafdækning, tilbud, forhandling og closing. De skal ikke alene sælge teknologi, men hjælpe kunden med at forstå problem, potentiale, investering og næste realistiske skridt. De arbejder tæt sammen med Solution & Value Design for at sikre, at salget bliver konkret, leverbart og økonomisk sundt.',
+        owns: 'Kundedialog, deal progression, tilbud, forhandling og closing.',
+        aiSupport: 'AI understøtter med account research, mødeforberedelse, opfølgningsudkast, CRM-noter, tilbudsinput og objection handling.',
+        interfaces: ['Head of Revenue & Market', 'Solution Architects', 'Proposal / Bid Manager', 'Finance Lead'],
+        successMetrics: ['Won deals', 'Deal velocity', 'Conversion rate', 'Average deal quality'] },
+      { id: 'revenue-business-developers', title: 'Business Developers', name: 'Business Developers', count: 2, area: 'Revenue & Market',
+        shortDescription: 'Ejer nye markedsåbninger, partnerskaber og kvalificeret leadgenerering.',
+        detailedDescription: 'Business Developers arbejder med at finde og modne nye muligheder, partnerskaber og segmenter. Rollen er ikke bare outbound salg, men systematisk markedsudvikling: hvem skal BCT tale med, hvorfor nu, og hvilket problem kan BCT gøre konkret for dem?',
+        owns: 'Leadgenerering, partnerskaber, segmentudvikling og første kommercielle åbninger.',
+        aiSupport: 'AI understøtter med listebygning, research, segmentanalyse, outreach drafts, partner mapping og trigger-based opportunity spotting.',
+        interfaces: ['Head of Revenue & Market', 'Revenue Enablement', 'Account Executives'],
+        successMetrics: ['Qualified meetings', 'New opportunities', 'Partner leads', 'Segment traction'] },
+      { id: 'revenue-account-managers', title: 'Account Managers / Customer Growth', name: 'Account Managers / Customer Growth', count: 2, area: 'Revenue & Market',
+        shortDescription: 'Ejer udvikling af eksisterende kunder og kommerciel videreudvikling efter første projekt.',
+        detailedDescription: 'Account Managers sikrer, at eksisterende kunder udvikles kommercielt og relationelt. Rollen arbejder tæt med Customer Operations og Delivery for at identificere nye behov, udvide samarbejdet, sikre renewal og skabe sammenhæng mellem leveret værdi og næste mulighed.',
+        owns: 'Kundeudvikling, mersalg, relation, renewal-input og kommerciel kontinuitet.',
+        aiSupport: 'AI understøtter med kundeoverblik, historik, service review input, expansion ideas, renewal reminders og mødeforberedelse.',
+        interfaces: ['Customer Operations', 'Service Delivery Managers', 'Revenue & Market', 'Solution Architects'],
+        successMetrics: ['Expansion revenue', 'Retention', 'Renewals', 'Customer health'] },
+      { id: 'revenue-enablement-lead', title: 'Revenue Enablement Lead', name: 'Revenue Enablement Lead', count: 1, area: 'Revenue & Market',
+        shortDescription: 'Ejer salgsmateriale, cases, market education, kampagneinput og kommercielle assets.',
+        detailedDescription: 'Revenue Enablement kombinerer klassisk marketing, sales ops og salgsunderstøttelse. Rollen sikrer, at BCT har de rigtige cases, pitch-materialer, one-pagers, kampagnebudskaber, AI-formidling og content assets til at modne markedet og understøtte salg. Funktionen skal være tæt på både Sales og Solution.',
+        owns: 'Cases, pitchmateriale, market education, salgsunderstøttelse og kommercielle assets.',
+        aiSupport: 'AI understøtter med content drafts, case-udkast, kampagnevarianter, pitch decks, LinkedIn-posts, landing page drafts og genbrug af tidligere materiale.',
+        interfaces: ['Head of Revenue & Market', 'Account Executives', 'Solution & Value Design'],
+        successMetrics: ['Content output', 'Sales asset quality', 'Lead support', 'Market education impact'] },
+      { id: 'revenue-operations-owner', title: 'CRM / Revenue Operations Owner', name: 'CRM / Revenue Operations Owner', count: 1, area: 'Revenue & Market',
+        shortDescription: 'Ejer CRM, pipeline-hygiejne, datakvalitet, aktivitetstracking og revenue reporting.',
+        detailedDescription: 'Revenue Operations sikrer, at CRM og pipeline fungerer som styringsværktøj og ikke bare som kontaktarkiv. Rollen ejer datakvalitet, stages, aktivitetstracking, forecast-input og rapportering. Personen skal sikre, at ingen væsentlige deals lever usynligt i hovederne på enkeltpersoner.',
+        owns: 'CRM, pipeline stages, datakvalitet, aktivitetstracking og revenue reporting.',
+        aiSupport: 'AI understøtter med CRM-enrichment, missing-data alerts, pipeline summaries, aktivitetsforslag, deal health scoring og forecast drafts.',
+        interfaces: ['Head of Revenue & Market', 'CCO', 'Account Executives', 'Finance Lead'],
+        successMetrics: ['CRM hygiene', 'Forecast reliability', 'Activity tracking', 'Pipeline visibility'] }
+    ]
+  },
+  {
+    name: 'Solution & Value Design', color: 'var(--c-solution)',
+    purpose: 'Det strategiske bindeled mellem Revenue & Market og Delivery & Technology.',
+    deepPurpose: 'Solution & Value Design er det strategiske bindeled mellem Revenue & Market og Delivery & Technology. Funktionen skal lukke hullet mellem salg og delivery ved at omsætte kundens virkelighed, Shadow Walk-indsigter og AI-muligheder til konkrete, køb-bare og leverbare projekter.',
+    roles: [
+      { id: 'solution-head', title: 'Head of Solution & Value Design', name: 'Head of Solution & Value Design', count: 1, area: 'Solution & Value Design',
+        shortDescription: 'Ejer standarder for løsningsdesign, scope, estimater, value cases og handover til delivery.',
+        detailedDescription: 'Head of Solution & Value Design sikrer, at BCT\'s pre-sales arbejde ikke bliver personbåret eller tilfældigt. Rollen ejer metoder, templates, kvalitet, estimation, value case-struktur og overdragelse til Delivery & Technology. Funktionen skal sikre, at gode Shadow Walk-indsigter bliver til konkrete projekter med klart scope, realistisk estimat og stærk forretningsværdi.',
+        owns: 'Solution-standarder, value design, estimatmodel, scope-kvalitet og sales-to-delivery handover.',
+        aiSupport: 'AI understøtter med scope-drafts, value case-udkast, estimation references, tidligere projektmønstre, rapportopsummeringer og template-genbrug.',
+        interfaces: ['Revenue & Market', 'Solution Architects', 'Delivery & Technology', 'Productisation / Template Owner'],
+        successMetrics: ['Shadow Walk to project conversion', 'Scope quality', 'Estimate accuracy', 'Handover quality'] },
+      { id: 'solution-architects', title: 'Solution Architects', name: 'Solution Architects', count: 3, area: 'Solution & Value Design',
+        shortDescription: 'Oversætter kundebehov til konkret løsning, scope, estimat, arkitektur og delivery-oplæg.',
+        detailedDescription: 'Solution Architects står i krydsfeltet mellem forretning, teknologi og levering. De skal forstå kundens processer, identificere de rigtige problemer, afgrænse løsningen, vurdere teknisk mulighedsrum og formulere et projekt, som kunden kan købe, og delivery kan overtage. Rollen er kritisk for at reducere afhængighed af tekniske orakler og sikre bedre konvertering fra indsigt til projekt.',
+        owns: 'Løsningsdesign, scope, estimat, arkitekturinput og konkret projektoplæg.',
+        aiSupport: 'AI understøtter med process summaries, technical option mapping, estimation comparisons, architecture drafts, risk lists og proposal components.',
+        interfaces: ['Account Executives', 'Shadow Walk Leads', 'Tech Leads', 'Proposal / Bid Manager'],
+        successMetrics: ['Project conversion', 'Scope clarity', 'Delivery readiness', 'Margin predictability'] },
+      { id: 'solution-shadow-walk-leads', title: 'Shadow Walk Leads', name: 'Shadow Walk Leads', count: 2, area: 'Solution & Value Design',
+        shortDescription: 'Ejer diagnostisk fase, observation, rapport og anbefalinger.',
+        detailedDescription: 'Shadow Walk Leads gennemfører BCT\'s diagnostiske kundedage og sikrer, at observationer fra kundens virkelighed bliver fanget, struktureret og omsat til anbefalinger. Rollen skal skabe tryghed, klarhed og retning for kunden og samtidig levere et stærkt grundlag for Solution Architect og Account Executive.',
+        owns: 'Shadow Walk-forberedelse, gennemførsel, observationer, rapport og anbefalinger.',
+        aiSupport: 'AI understøtter med research, mini-SWOT, transskription, proceskortlægning, rapportudkast, pain mapping og anbefalingsstruktur.',
+        interfaces: ['Account Executives', 'Solution Architects', 'AI / Process Consultants'],
+        successMetrics: ['Report quality', 'Customer clarity', 'Actionable findings', 'Next-step conversion'] },
+      { id: 'solution-ai-process-consultants', title: 'AI / Process Consultants', name: 'AI / Process Consultants', count: 2, area: 'Solution & Value Design',
+        shortDescription: 'Ejer procesanalyse, AI-use cases, workshops og kundemodning.',
+        detailedDescription: 'AI / Process Consultants hjælper kunder med at forstå, hvor AI faktisk kan skabe værdi. Rollen arbejder med procesanalyse, workshops, use case-identifikation, modenhedsvurdering og forretningsmæssig prioritering. De skal gøre AI konkret, trygt og kommercielt forståeligt for kunden.',
+        owns: 'Procesanalyse, use case mapping, AI-modning og workshopfacilitering.',
+        aiSupport: 'AI understøtter med use case libraries, process summaries, workshop-output, prioritization matrices og business case drafts.',
+        interfaces: ['Shadow Walk Leads', 'Solution Architects', 'Revenue Enablement'],
+        successMetrics: ['Use case quality', 'Customer maturity', 'Workshop outcomes', 'Value clarity'] },
+      { id: 'solution-proposal-bid-manager', title: 'Proposal / Bid Manager', name: 'Proposal / Bid Manager', count: 1, area: 'Solution & Value Design',
+        shortDescription: 'Ejer tilbud, projektbeskrivelser, business cases og udbudsmateriale.',
+        detailedDescription: 'Proposal / Bid Manager sikrer, at BCT\'s løsningsforslag bliver præsenteret klart, professionelt og salgbart. Rollen arbejder tæt med Sales, Solution Architects og Finance for at sikre, at tilbud har tydelig værdi, scope, pris, risiko, leveranceform og kommerciel logik.',
+        owns: 'Tilbudsmateriale, proposal quality, business case-formulering og udbudsdokumentation.',
+        aiSupport: 'AI understøtter med tilbudsudkast, formuleringer, kravudtræk, compliance-mapping, case references og kvalitetstjek.',
+        interfaces: ['Account Executives', 'Solution Architects', 'Finance Lead', 'Revenue Enablement'],
+        successMetrics: ['Proposal quality', 'Deadline compliance', 'Win support', 'Reusability'] },
+      { id: 'solution-productisation-template-owner', title: 'Productisation / Template Owner', name: 'Productisation / Template Owner', count: 1, area: 'Solution & Value Design',
+        shortDescription: 'Ejer gentagende mønstre, templates, reusable assets og standardiserede løsningsspor.',
+        detailedDescription: 'Productisation / Template Owner sikrer, at BCT lærer af gentagende kundebehov og ikke starter fra nul hver gang. Rollen ligger tæt på Solution & Value Design, fordi produktisering skal udspringe af Shadow Walks, salgsdialoger og projektleverancer. Målet er at skabe genbrugelige moduler, templates og løsningspakker, som gør salg hurtigere og delivery mere effektiv.',
+        owns: 'Templates, reusable assets, standardiserede løsningsspor og læring fra gentagende kundebehov.',
+        aiSupport: 'AI understøtter med pattern detection på tværs af rapporter/projekter, template drafts, module descriptions, pricing inputs og reuse suggestions.',
+        interfaces: ['Head of Solution & Value Design', 'Tech Leads', 'Revenue Enablement', 'Principal Engineers'],
+        successMetrics: ['Reusable assets', 'Reduced delivery cost', 'Faster scoping', 'Template adoption'] }
+    ]
+  },
+  {
+    name: 'Delivery & Technology', color: 'var(--c-tech)',
+    purpose: 'BCT\'s største kapabilitetsområde og den primære værdiskabelse.',
+    deepPurpose: 'Delivery & Technology er BCT\'s største kapabilitetsområde og den primære værdiskabelse. Funktionen samler engineering, Tech Leads, specialistspor, AI engineering, DevOps, QA og delivery enablement. Tech Leads ejer projektets Pulse, mens CTO og delivery enablement sikrer standarder, kvalitet, porteføljeoverblik og skalerbarhed.',
+    roles: [
+      { id: 'delivery-head', title: 'Head of Delivery / Delivery Lead', name: 'Head of Delivery / Delivery Lead', count: 1, area: 'Delivery & Technology',
+        shortDescription: 'Ejer samlet leverancekapacitet, porteføljeoverblik, delivery performance og støtte til Tech Leads.',
+        detailedDescription: 'Head of Delivery sikrer, at projekter leveres med kvalitet, fremdrift og overblik på tværs af organisationen. Rollen skal ikke overtage Tech Leadens projektansvar, men skabe rammerne omkring portefølje, ressourcer, risiko, prioritering og leverancekapacitet.',
+        owns: 'Delivery performance, kapacitetsstyring, porteføljeoverblik, risiko og tværgående delivery-rammer.',
+        aiSupport: 'AI understøtter med porteføljesummaries, risikoindikatorer, ressourceoverblik, statusudtræk, scope drift alerts og ledelsesrapportering.',
+        interfaces: ['COO', 'CTO', 'Tech Leads', 'Delivery Managers'],
+        successMetrics: ['Delivery predictability', 'Capacity control', 'Risk visibility', 'On-time progress'] },
+      { id: 'delivery-managers-pmo', title: 'Delivery Managers / PMO', name: 'Delivery Managers / PMO', count: 2, area: 'Delivery & Technology',
+        shortDescription: 'Understøtter projektportefølje, ressourcer, risiko, budget og tværgående transparens.',
+        detailedDescription: 'Delivery Managers/PMO skaber overblik på tværs af projekter uden at gøre organisationen tung. Rollen understøtter Tech Leads med porteføljeoverblik, status, risici, afhængigheder, budget og ressourceallokering. PMO skal være enablement — ikke bureaukrati.',
+        owns: 'Projektportefølje, ressourceoverblik, risici, afhængigheder og tværgående status.',
+        aiSupport: 'AI understøtter med projektstatus, budgetafvigelser, dependency mapping, meeting summaries, risk detection og weekly delivery reports.',
+        interfaces: ['Head of Delivery', 'Tech Leads', 'Finance Lead', 'Project Coordinator'],
+        successMetrics: ['Portfolio visibility', 'Risk control', 'Resource clarity', 'Low bureaucracy'] },
+      { id: 'delivery-tech-leads', title: 'Tech Leads / Project Leads', name: 'Tech Leads / Project Leads', count: 8, area: 'Delivery & Technology',
+        shortDescription: 'Ejer projektets Pulse, scope, fremdrift, kundedialog, teamkoordinering og tekniske beslutninger i projektet.',
+        detailedDescription: 'Tech Lead er en projektbærende rolle — ikke bare en seniorudvikler. Rollen ejer projektets daglige fremdrift, Pulse-rytme, kundedialog i delivery, scope-beslutninger, unblocking, teamkoordinering, teknisk retning i projektet og ugentlig demo/update. Tech Lead skal sikre, at projektet lever i teamet og ikke eskalerer til CTO eller central ledelse ved hver udfordring.',
+        owns: 'Projektets Pulse, scope, teknisk projektretning, teamfremdrift og kundeupdate.',
+        aiSupport: 'AI understøtter med Monday planning-drafts, standup summaries, Friday demo notes, kundeupdate-udkast, blocker tracking, scope drift detection og technical decision logs.',
+        interfaces: ['CTO', 'Head of Delivery', 'Developers', 'Product Owners', 'Customer Operations'],
+        successMetrics: ['Weekly progress', 'Scope control', 'Customer clarity', 'Team flow'] },
+      { id: 'delivery-principal-staff-engineers', title: 'Principal / Staff Engineers', name: 'Principal / Staff Engineers', count: 3, area: 'Delivery & Technology',
+        shortDescription: 'Ejer dyb teknisk ekspertise, arkitektur, komplekse tekniske valg og sparring på tværs.',
+        detailedDescription: 'Principal / Staff Engineers er specialistsporet for ekstrem teknisk tyngde uden nødvendigvis at have projektledelsesansvar. Rollen hjælper med arkitektur, komplekse tekniske problemstillinger, kvalitet, standarder og sparring til Tech Leads og seniorudviklere. Rollen skal give teknisk dybde uden at skabe en ny flaskehals.',
+        owns: 'Arkitektonisk kvalitet, teknisk dybde, komplekse beslutninger og specialist-sparring.',
+        aiSupport: 'AI understøtter med architecture analysis, codebase review, ADR-drafts, pattern detection, performance insights og teknisk dokumentation.',
+        interfaces: ['CTO', 'Tech Leads', 'Senior Developers', 'Solution Architects'],
+        successMetrics: ['Architecture quality', 'Technical leverage', 'Reduced key-person risk', 'Reusable standards'] },
+      { id: 'delivery-senior-developers', title: 'Senior Developers', name: 'Senior Developers', count: 10, area: 'Delivery & Technology',
+        shortDescription: 'Ejer komplekse udviklingsopgaver, mentoring, review og faglig kvalitet.',
+        detailedDescription: 'Senior Developers løser komplekse opgaver selvstændigt, støtter juniorer og developers, bidrager til tekniske beslutninger og sikrer høj kodekvalitet. En senior er ikke automatisk Tech Lead. Senioritet handler primært om faglig kompleksitet, selvstændighed, kvalitet og evnen til at løfte andre fagligt.',
+        owns: 'Komplekse features, teknisk kvalitet, review, mentoring og faglig sparring.',
+        aiSupport: 'AI understøtter med kodegenerering, testforslag, refactoring, dokumentation, review assistance og tekniske spikes.',
+        interfaces: ['Tech Leads', 'Developers', 'Junior Developers', 'Principal Engineers'],
+        successMetrics: ['Code quality', 'Complex feature delivery', 'Mentoring quality', 'Review impact'] },
+      { id: 'delivery-developers', title: 'Developers / Mid-level', name: 'Developers / Mid-level', count: 14, area: 'Delivery & Technology',
+        shortDescription: 'Ejer selvstændig udvikling og stabil feature-levering.',
+        detailedDescription: 'Developers er organisationens stabile leverancekraft. De kan selvstændigt tage features, bugs, integrationer og produktforbedringer fra opgave til færdig leverance inden for projektets rammer. De arbejder tæt med Tech Lead og seniorer og bidrager til ugentlig fremdrift under Pulse.',
+        owns: 'Selvstændige udviklingsopgaver, features, bugs, integrationer og stabil levering.',
+        aiSupport: 'AI understøtter med implementation drafts, debugging, testcases, documentation snippets, code explanations og task breakdowns.',
+        interfaces: ['Tech Leads', 'Senior Developers', 'QA / Release Specialists'],
+        successMetrics: ['Feature throughput', 'Quality', 'Independence', 'Predictable delivery'] },
+      { id: 'delivery-junior-developers', title: 'Junior Developers', name: 'Junior Developers', count: 5, area: 'Delivery & Technology',
+        shortDescription: 'Ejer læring, mindre opgaver og gradvis selvstændighed.',
+        detailedDescription: 'Junior Developers bidrager til projekter gennem afgrænsede opgaver, læring og gradvis større ansvar. Rollen skal understøttes af klare onboardingforløb, mentoring, code review og realistiske forventninger. Juniorer er en del af BCT\'s fremtidige kapabilitetsopbygning.',
+        owns: 'Læring, mindre udviklingsopgaver, progression og gradvis selvstændighed.',
+        aiSupport: 'AI understøtter med læringsforklaringer, kodeeksempler, debugging-hjælp, task clarification og onboarding-guides.',
+        interfaces: ['Senior Developers', 'Tech Leads', 'People & Capability Lead'],
+        successMetrics: ['Learning progression', 'Task completion', 'Code quality improvement', 'Independence over time'] },
+      { id: 'delivery-interns-students', title: 'Praktikanter / Student Developers', name: 'Praktikanter / Student Developers', count: 3, area: 'Delivery & Technology',
+        shortDescription: 'Ejer læring, assisterende udviklingsopgaver og afprøvning af fagligt potentiale.',
+        detailedDescription: 'Praktikanter og student developers bidrager med mindre, afgrænsede opgaver og fungerer som en talentpipeline. Rollen skal have tydelig mentor, klare forventninger og opgaver, der skaber læring uden at belaste projektets kritiske fremdrift.',
+        owns: 'Læring, assisterende opgaver og talentpipeline.',
+        aiSupport: 'AI understøtter med onboarding, læringsmateriale, kodeforklaringer og simple task guides.',
+        interfaces: ['Mentor', 'Senior Developers', 'People & Capability Lead'],
+        successMetrics: ['Learning outcome', 'Potential identification', 'Mentor feedback', 'Small task contribution'] },
+      { id: 'delivery-ai-ml-engineers', title: 'AI / ML Engineers', name: 'AI / ML Engineers', count: 3, area: 'Delivery & Technology',
+        shortDescription: 'Ejer AI-agenter, LLM-integration, data pipelines, modelintegration og AI-driftbarhed.',
+        detailedDescription: 'AI / ML Engineers bygger og operationaliserer de AI-komponenter, der indgår i BCT\'s løsninger og interne værktøjer. Rollen handler ikke kun om prompts, men om integration, driftbarhed, dataflow, kvalitet, evaluering, sikkerhed og governance i AI-løsninger.',
+        owns: 'AI-komponenter, LLM-integrationer, data pipelines, evaluering, AI-drift og model governance.',
+        aiSupport: 'AI understøtter naturligt rollen med prototyping, prompt iteration, eval design, testdata, agent flows og dokumentation.',
+        interfaces: ['Solution Architects', 'Tech Leads', 'DevOps / Platform', 'CTO'],
+        successMetrics: ['AI reliability', 'Solution quality', 'Evaluation quality', 'Operational AI performance'] },
+      { id: 'delivery-devops-platform', title: 'DevOps / Platform Engineers', name: 'DevOps / Platform Engineers', count: 2, area: 'Delivery & Technology',
+        shortDescription: 'Ejer CI/CD, environments, hosting, secrets, observability og platformstabilitet.',
+        detailedDescription: 'DevOps / Platform Engineers sikrer, at BCT\'s løsninger kan deployes, driftes og monitoreres stabilt. Rollen ejer miljøer, pipelines, secrets, observability, hosting og teknisk driftbarhed. De arbejder tæt med Tech Leads, AI Engineers og LiveOps.',
+        owns: 'CI/CD, hosting, environments, secrets, observability, deployment stability og platform practices.',
+        aiSupport: 'AI understøtter med config-drafts, incident analysis, log summaries, pipeline debugging, runbook generation og infrastructure documentation.',
+        interfaces: ['Tech Leads', 'AI / ML Engineers', 'Customer Operations', 'CTO'],
+        successMetrics: ['Deployment stability', 'Uptime support', 'Pipeline reliability', 'Incident reduction'] },
+      { id: 'delivery-qa-release', title: 'QA / Release Specialists', name: 'QA / Release Specialists', count: 2, area: 'Delivery & Technology',
+        shortDescription: 'Ejer teststrategi, releaseklarhed, kvalitetssikring og release-flow.',
+        detailedDescription: 'QA / Release Specialists sikrer, at leverancer kan frigives med tillid. Rollen arbejder med teststrategi, regression, release notes, acceptkriterier, kvalitetstjek og release signoff. Funktionen skal være let og effektiv, stærkt understøttet af AI og automation.',
+        owns: 'Teststrategi, releaseklarhed, regression, acceptkriterier og release signoff.',
+        aiSupport: 'AI understøtter med testcases, regression checklists, release notes, bug clustering, changelog summaries og quality gates.',
+        interfaces: ['Tech Leads', 'Developers', 'Customer Operations'],
+        successMetrics: ['Release quality', 'Bug reduction', 'Regression control', 'Acceptance clarity'] },
+      { id: 'delivery-product-owners-bas', title: 'Product Owners / Business Analysts', name: 'Product Owners / Business Analysts', count: 4, area: 'Delivery & Technology',
+        shortDescription: 'Ejer backlog, krav, prioritering, forretningsværdi og scope trade-offs.',
+        detailedDescription: 'Product Owners / Business Analysts hjælper med at omsætte kundens behov og projektets mål til prioriteret backlog, krav, user stories, acceptkriterier og scope trade-offs. Rollen arbejder tæt med Tech Lead, Solution Architect og kunden.',
+        owns: 'Backlog, krav, prioritering, acceptkriterier, forretningsværdi og scope trade-offs.',
+        aiSupport: 'AI understøtter med user story drafts, requirements extraction, prioritization matrices, acceptance criteria og change impact summaries.',
+        interfaces: ['Tech Leads', 'Solution Architects', 'Customers', 'QA'],
+        successMetrics: ['Backlog clarity', 'Requirement quality', 'Scope discipline', 'Value alignment'] },
+      { id: 'delivery-project-coordinator', title: 'Project Coordinator', name: 'Project Coordinator', count: 1, area: 'Delivery & Technology',
+        shortDescription: 'Understøtter praktisk projektopfølgning, møder, noter og dokumentation.',
+        detailedDescription: 'Project Coordinator hjælper med praktisk koordinering på tværs af projekter, men rollen skal holdes slank og AI-understøttet. Formålet er at fjerne friktion for Tech Leads uden at skabe et tungt projektadministrativt lag.',
+        owns: 'Møder, noter, opfølgning, dokumentation og praktisk koordinering.',
+        aiSupport: 'AI understøtter med meeting summaries, action items, status drafts, documentation updates og reminder flows.',
+        interfaces: ['Tech Leads', 'Delivery Managers', 'Product Owners'],
+        successMetrics: ['Reduced admin load', 'Follow-up quality', 'Documentation completeness', 'Meeting clarity'] }
+    ]
+  },
+  {
+    name: 'Customer Operations', color: 'var(--c-liveops)',
+    purpose: 'Samler LiveOps, support, customer success, renewals, service reviews og ongoing value.',
+    deepPurpose: 'Customer Operations samler LiveOps, support, customer success, renewals, service reviews og ongoing value. Funktionen sikrer, at kunder ikke bare får leveret projekter, men får løbende værdi, stabil drift, support, videreudvikling og kommerciel kontinuitet.',
+    roles: [
+      { id: 'customerops-head', title: 'Head of Customer Operations / LiveOps Lead', name: 'Head of Customer Operations / LiveOps Lead', count: 1, area: 'Customer Operations',
+        shortDescription: 'Ejer samlet kundeoplevelse efter levering, drift, support, renewals og ongoing value.',
+        detailedDescription: 'Head of Customer Operations sikrer, at BCT\'s kunder oplever sammenhæng efter projektlevering. Rollen samler drift, support, customer success, service reviews og renewal. Formålet er at undgå, at kunden splittes mellem teknisk drift og kommerciel relation.',
+        owns: 'Post-delivery kundeoplevelse, drift, support, renewals og ongoing value.',
+        aiSupport: 'AI understøtter med service review summaries, renewal alerts, support trends, incident summaries og customer health overblik.',
+        interfaces: ['Account Managers', 'Service Delivery Managers', 'Support Engineers', 'LiveOps'],
+        successMetrics: ['Retention', 'Customer health', 'SLA performance', 'Expansion readiness'] },
+      { id: 'customerops-service-delivery-managers', title: 'Service Delivery Managers', name: 'Service Delivery Managers', count: 2, area: 'Customer Operations',
+        shortDescription: 'Ejer SLA, service reviews, driftsopfølgning og kundens løbende serviceoplevelse.',
+        detailedDescription: 'Service Delivery Managers følger op på drift, support, SLA, incidents og løbende værdi. Rollen sikrer, at kunden har et tydeligt kontaktpunkt efter levering, og at drift ikke bliver usynlig intern teknik.',
+        owns: 'SLA, service reviews, driftsopfølgning, kundeoverblik og servicekvalitet.',
+        aiSupport: 'AI understøtter med service review drafts, SLA summaries, incident timelines, customer health scoring og meeting prep.',
+        interfaces: ['Support Engineers', 'Account Managers', 'Reliability / Platform Support'],
+        successMetrics: ['SLA compliance', 'Customer satisfaction', 'Incident communication', 'Service review quality'] },
+      { id: 'customerops-support-engineers', title: 'Support Engineers', name: 'Support Engineers', count: 2, area: 'Customer Operations',
+        shortDescription: 'Ejer incident handling, bug triage, supportflow og mindre tekniske rettelser.',
+        detailedDescription: 'Support Engineers håndterer kundehenvendelser, incidents, bug triage og mindre rettelser. Rollen arbejder tæt med LiveOps, DevOps og relevante Tech Leads for at sikre hurtig og kvalificeret afklaring.',
+        owns: 'Support tickets, incidents, triage, mindre rettelser og teknisk afklaring.',
+        aiSupport: 'AI understøtter med ticket classification, suggested replies, runbook lookup, incident summaries, log analysis og root-cause drafts.',
+        interfaces: ['Service Delivery Managers', 'Tech Leads', 'Reliability / Platform Support'],
+        successMetrics: ['Response time', 'Resolution time', 'Ticket quality', 'Incident reduction'] },
+      { id: 'customerops-growth-renewal-owner', title: 'Customer Growth / Renewal Owner', name: 'Customer Growth / Renewal Owner', count: 1, area: 'Customer Operations',
+        shortDescription: 'Ejer renewal, mersalg og kommerciel videreudvikling af eksisterende kunder.',
+        detailedDescription: 'Customer Growth / Renewal Owner sikrer, at eksisterende kunder udvikles kommercielt på baggrund af faktisk leveret værdi, driftsindsigter og nye behov. Rollen arbejder tæt med Revenue & Market og Service Delivery.',
+        owns: 'Renewals, mersalg, customer expansion og kommerciel kundeværdi efter levering.',
+        aiSupport: 'AI understøtter med expansion ideas, usage summaries, customer history, renewal reminders og meeting prep.',
+        interfaces: ['Account Managers', 'Service Delivery Managers', 'Revenue & Market'],
+        successMetrics: ['Renewal rate', 'Expansion revenue', 'Customer value growth', 'Churn reduction'] },
+      { id: 'customerops-reliability-platform-support', title: 'Reliability / Platform Support', name: 'Reliability / Platform Support', count: 1, area: 'Customer Operations',
+        shortDescription: 'Ejer stabilitet, monitoring, performance og teknisk driftsunderstøttelse i Customer Operations.',
+        detailedDescription: 'Reliability / Platform Support sikrer teknisk stabilitet på løsninger i drift. Rollen arbejder med monitoring, performance, deployments, incident prevention og teknisk support til LiveOps.',
+        owns: 'Monitoring, performance, incident prevention og teknisk driftsstabilitet.',
+        aiSupport: 'AI understøtter med log summaries, incident detection, performance anomaly hints, runbook generation og deployment notes.',
+        interfaces: ['Support Engineers', 'DevOps / Platform', 'Service Delivery Managers'],
+        successMetrics: ['Uptime', 'Incident prevention', 'Performance stability', 'Monitoring quality'] }
+    ]
+  },
+  {
+    name: 'Business Platform', color: 'var(--c-operations)',
+    purpose: 'BCT\'s interne skaleringsmotor — operations, people, finance, legal, vendor, systems og tooling samles i én lille stærk platformfunktion.',
+    deepPurpose: 'Business Platform er BCT\'s interne skaleringsmotor. Funktionen samler operations, people, onboarding, knowledge, finance, legal, vendor management, systems og internal tooling. Målet er at skabe en lille, stærk platformfunktion, hvor AI og interne værktøjer gør få mennesker i stand til at bære meget ansvar.',
+    roles: [
+      { id: 'platform-head', title: 'Head of Business Platform', name: 'Head of Business Platform', count: 1, area: 'Business Platform',
+        shortDescription: 'Ejer den samlede interne platform for operations, people, systems, knowledge, finance coordination og AI enablement.',
+        detailedDescription: 'Head of Business Platform sikrer, at BCT\'s interne drift er skalerbar, sammenhængende og effektiv. Rollen samler klassiske supportfunktioner i én platformlogik, så organisationen undgår tunge siloer og i stedet bygger stærke interne systemer.',
+        owns: 'Business platform, interne systemer, operations, people-processer, knowledge, tooling og intern skalerbarhed.',
+        aiSupport: 'AI understøtter med operations reporting, task follow-up, process documentation, internal search, onboarding flows og management briefs.',
+        interfaces: ['COO', 'Business Operations Manager', 'Systems & Knowledge Owner', 'Finance Lead'],
+        successMetrics: ['Internal efficiency', 'System adoption', 'Reduced friction', 'Scalable support'] },
+      { id: 'platform-business-operations-manager', title: 'Business Operations Manager', name: 'Business Operations Manager', count: 1, area: 'Business Platform',
+        shortDescription: 'Ejer tværgående processer, governance, mødestruktur og organisatorisk fremdrift.',
+        detailedDescription: 'Business Operations Manager sikrer, at organisationens centrale arbejdsgange fungerer i praksis. Rollen arbejder med processer, mødestruktur, governance, opfølgning og koordinering på tværs af funktioner.',
+        owns: 'Tværgående processer, governance, mødestruktur, opfølgning og organisatorisk fremdrift.',
+        aiSupport: 'AI understøtter med meeting summaries, process maps, follow-up reminders, decision logs og status reports.',
+        interfaces: ['Head of Business Platform', 'COO', 'Delivery Managers', 'Revenue Operations'],
+        successMetrics: ['Process clarity', 'Follow-up quality', 'Reduced friction', 'Governance adoption'] },
+      { id: 'platform-systems-knowledge-owner', title: 'Systems & Knowledge Owner', name: 'Systems & Knowledge Owner', count: 1, area: 'Business Platform',
+        shortDescription: 'Ejer Notion/source of truth, playbooks, templates, dokumentation og systemstruktur.',
+        detailedDescription: 'Systems & Knowledge Owner sikrer, at organisationens viden, playbooks og systemer er opdaterede, tilgængelige og anvendelige. Rollen skal reducere implicit viden og gøre det let for medarbejdere at finde svar, processer og templates.',
+        owns: 'Source of truth, Notion, playbooks, templates, dokumentationsstandarder og systemstruktur.',
+        aiSupport: 'AI understøtter med knowledge base search, auto-tagging, dokumentationsforslag, template maintenance og gap detection.',
+        interfaces: ['Internal Tooling & Automation Lead', 'People & Capability Lead', 'COO'],
+        successMetrics: ['Knowledge findability', 'Documentation quality', 'Template adoption', 'Reduced implicit knowledge'] },
+      { id: 'platform-tooling-automation-lead', title: 'Internal Tooling & Automation Lead', name: 'Internal Tooling & Automation Lead', count: 1, area: 'Business Platform',
+        shortDescription: 'Ejer interne værktøjer, automation, AI workflows og procesoptimering.',
+        detailedDescription: 'Internal Tooling & Automation Lead bygger og vedligeholder interne værktøjer, automatiseringer og AI-workflows, der gør BCT mere effektiv. Rollen arbejder tæt med COO, CTO, Sales, Delivery og Business Platform for at fjerne gentagende manuelt arbejde.',
+        owns: 'Interne værktøjer, automation, AI workflows, workflow-optimering og intern effektivitet.',
+        aiSupport: 'Rollen bruger AI direkte til prototyping, workflow generation, automation design, scripts, integrations og tool documentation.',
+        interfaces: ['CTO', 'COO', 'Systems & Knowledge Owner', 'Revenue Operations'],
+        successMetrics: ['Time saved', 'Automation adoption', 'Workflow quality', 'Reduced manual work'] },
+      { id: 'platform-people-capability-lead', title: 'People & Capability Lead', name: 'People & Capability Lead', count: 1, area: 'Business Platform',
+        shortDescription: 'Ejer onboarding, learning paths, medarbejderudvikling, capability-building og kultur i praksis.',
+        detailedDescription: 'People & Capability Lead sikrer, at BCT kan udvikle mennesker og ikke kun ansætte færdige profiler. Rollen ejer onboarding, learning paths, performance rhythms, medarbejderudvikling og kulturinitiativer. Rollen er lille men strategisk vigtig, fordi bredere rekruttering kræver stærkere udviklingssystem.',
+        owns: 'Onboarding, learning paths, capability-building, medarbejderudvikling og kultur.',
+        aiSupport: 'AI understøtter med onboarding plans, role-based learning paths, feedback summaries, check-in prompts og development plans.',
+        interfaces: ['Head of Business Platform', 'CTO', 'Head of Delivery', 'Talent Acquisition'],
+        successMetrics: ['Ramp-up speed', 'Retention', 'Capability growth', 'Onboarding quality'] },
+      { id: 'platform-talent-acquisition', title: 'Talent Acquisition / Employer Brand', name: 'Talent Acquisition / Employer Brand', count: 1, area: 'Business Platform',
+        shortDescription: 'Ejer rekruttering, kandidatpipeline og employer branding.',
+        detailedDescription: 'Talent Acquisition / Employer Brand sikrer, at BCT har adgang til relevante kandidater og kan fortælle en attraktiv historie om virksomheden. Rollen arbejder tæt med CTO, Delivery, Revenue og People & Capability.',
+        owns: 'Kandidatpipeline, rekruttering, employer branding og hiring coordination.',
+        aiSupport: 'AI understøtter med candidate screening support, job ad drafts, outreach drafts, interview kits og pipeline summaries.',
+        interfaces: ['People & Capability Lead', 'CTO', 'Head of Delivery', 'Revenue & Market'],
+        successMetrics: ['Time to hire', 'Candidate quality', 'Pipeline strength', 'Employer brand reach'] },
+      { id: 'platform-business-control-finance-partner', title: 'Business Control / Finance Partner', name: 'Business Control / Finance Partner', count: 1, area: 'Business Platform',
+        shortDescription: 'Ejer økonomisk kontrol i praksis, projektøkonomi, marginopfølgning og finansiel rapportering.',
+        detailedDescription: 'Business Control / Finance Partner understøtter Finance Lead/CFO-funktionen med projektøkonomi, margin, budgetopfølgning, forecast, rapportering og økonomisk beslutningsgrundlag. Rollen er ikke klassisk bogholderi, men økonomisk kontrol og business support.',
+        owns: 'Projektøkonomi, marginopfølgning, budgetkontrol, forecast og finansiel rapportering.',
+        aiSupport: 'AI understøtter med budgetafvigelser, margin dashboards, forecast drafts, project profitability summaries og reporting packs.',
+        interfaces: ['Finance Lead', 'Head of Delivery', 'Revenue Operations', 'COO'],
+        successMetrics: ['Margin visibility', 'Forecast quality', 'Budget control', 'Project profitability insight'] },
+      { id: 'platform-legal-contract-vendor-manager', title: 'Legal / Contract & Vendor Manager', name: 'Legal / Contract & Vendor Manager', count: 1, area: 'Business Platform',
+        shortDescription: 'Ejer kontrakter, DPA/MSA, leverandører, licenser, compliance og vendor spend.',
+        detailedDescription: 'Legal / Contract & Vendor Manager sikrer, at BCT\'s kontrakter, leverandører, softwareaftaler og juridiske grundlag er strukturerede og risikobevidste. Rollen samler legal, procurement og vendor management i én AI-understøttet funktion.',
+        owns: 'Kontrakter, DPA/MSA, leverandører, licenser, compliance, procurement og vendor cost control.',
+        aiSupport: 'AI understøtter med kontraktudtræk, risikoindikatorer, clause comparison, vendor spend summaries, renewal alerts og compliance checklists.',
+        interfaces: ['Finance Lead', 'Account Executives', 'Proposal / Bid Manager', 'COO'],
+        successMetrics: ['Contract clarity', 'Vendor cost control', 'Risk reduction', 'Renewal visibility'] },
+      { id: 'platform-finance-admin-coordinator', title: 'Finance / Admin Coordinator', name: 'Finance / Admin Coordinator', count: 1, area: 'Business Platform',
+        shortDescription: 'Ejer fakturering, udlæg, administrative flows og praktisk finance/admin support.',
+        detailedDescription: 'Finance / Admin Coordinator håndterer de praktiske administrative flows omkring fakturering, udlæg, betalinger, dataopsamling og intern koordinering. Rollen er stærkt AI- og systemunderstøttet og skal ikke vokse lineært med organisationen.',
+        owns: 'Fakturering, udlæg, betalinger, administrative flows og praktisk support.',
+        aiSupport: 'AI understøtter med fakturakladder, udlægskategorisering, reminder flows, data checks og admin summaries.',
+        interfaces: ['Business Control / Finance Partner', 'Finance Lead', 'Operations Coordinator'],
+        successMetrics: ['Admin accuracy', 'Invoice timeliness', 'Reduced manual work', 'Payment flow quality'] },
+      { id: 'platform-operations-coordinator', title: 'Operations Coordinator', name: 'Operations Coordinator', count: 1, area: 'Business Platform',
+        shortDescription: 'Understøtter praktisk koordinering, onboarding-logistik, interne flows og tværgående opfølgning.',
+        detailedDescription: 'Operations Coordinator hjælper med praktisk koordinering på tværs af Business Platform, onboarding, interne initiativer, møder, dokumentation og opfølgningsflows. Rollen skal frigøre tid fra ledelse og nøglepersoner uden at skabe administrativ tyngde.',
+        owns: 'Praktisk koordinering, onboarding-logistik, interne flows og opfølgning.',
+        aiSupport: 'AI understøtter med task tracking, meeting notes, onboarding checklists, reminders og documentation drafts.',
+        interfaces: ['Business Operations Manager', 'People & Capability Lead', 'Systems & Knowledge Owner'],
+        successMetrics: ['Coordination quality', 'Follow-up completion', 'Internal service level', 'Reduced leadership admin'] }
+    ]
+  }
 ];
 
 // ════════════════════════════════════════════════════════════════
@@ -1990,13 +2373,12 @@ function renderStats() {
   `;
 
   const total = sumTotal(state.real);
-  const eng = sumFunc(state.real.find(f => f.name.toLowerCase().includes('engineering')) || { roles: [] });
-  const sol = sumFunc(state.real.find(f => f.name.toLowerCase().includes('solution')) || { roles: [] });
+  const delivery = sumFunc(state.real.find(f => /delivery.*technology|delivery & tech/i.test(f.name)) || { roles: [] });
   document.getElementById('real-stats').innerHTML = `
-    <div class="stat"><div class="stat-value">${total}</div><div class="stat-label">Medarbejdere</div></div>
-    <div class="stat"><div class="stat-value">${eng}</div><div class="stat-label">Engineering</div></div>
-    <div class="stat"><div class="stat-value">${sol}</div><div class="stat-label">Solution & Value</div></div>
-    <div class="stat" style="border-color: var(--c-ai);"><div class="stat-value" style="color: var(--c-ai);">AI</div><div class="stat-label">På tværs af alt</div></div>
+    <div class="stat"><div class="stat-value">${total}</div><div class="stat-label">Medarbejdere total</div></div>
+    <div class="stat"><div class="stat-value">${state.real.length}</div><div class="stat-label">Kapabilitetsområder</div></div>
+    <div class="stat"><div class="stat-value">${delivery}</div><div class="stat-label">Delivery & Tech</div></div>
+    <div class="stat" style="border-color: var(--c-ai);"><div class="stat-value" style="color: var(--c-ai);">AI</div><div class="stat-label">Enablement Layer</div></div>
   `;
 }
 
@@ -2008,13 +2390,17 @@ function renderFunction(f, fIdx, isReal) {
         <button class="del-btn role-controls" style="float:right;" onclick="deleteRole(${fIdx},${rIdx},${isReal})" title="Slet skillelinje">×</button>
       </li>`;
     }
+    const idAttr = r.id ? `data-role-id="${escapeHtml(r.id)}"` : '';
+    const clickHandler = r.id
+      ? `if(!state.editMode){event.stopPropagation();openRoleModalById('${r.id}');}`
+      : `if(!state.editMode){event.stopPropagation();openRoleModal(${fIdx},${rIdx},${isReal});}`;
     return `
       <li class="role-item" draggable="true"
-          data-fidx="${fIdx}" data-ridx="${rIdx}"
+          ${idAttr} data-fidx="${fIdx}" data-ridx="${rIdx}"
           ondragstart="onDragStart(event)" ondragend="onDragEnd(event)">
         <span class="role-handle" title="Træk for at flytte">⋮⋮</span>
         <span class="role-title" contenteditable="${state.editMode}"
-              onclick="if(!state.editMode){event.stopPropagation();openRoleModal(${fIdx},${rIdx},${isReal});}"
+              onclick="${clickHandler}"
               onblur="updateRoleName(${fIdx},${rIdx},${isReal},this.textContent)"
               onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">${escapeHtml(r.name)}</span>
         ${isReal ? `
@@ -2068,7 +2454,12 @@ function renderDream() {
   document.getElementById('dream-functions').innerHTML = html + addFunctionCardHTML('dream');
 }
 function renderReal() {
-  const html = state.real.map((f, i) => renderFunction(f, i, true)).join('');
+  // Executive Leadership shown as hero+exec_row at top — skip in grid
+  const html = state.real
+    .map((f, i) => ({ f, i }))
+    .filter(x => !/executive/i.test(x.f.name))
+    .map(x => renderFunction(x.f, x.i, true))
+    .join('');
   document.getElementById('real-functions').innerHTML = html + addFunctionCardHTML('real');
 }
 function addFunctionCardHTML(which) {
@@ -2238,23 +2629,58 @@ function exportJSON() {
 // Modal logic
 let modalContext = null;
 
+// Lookup helper: find role by id in either scenario
+function findRoleAndArea(roleId, isRealOnly = true) {
+  const arrays = isRealOnly ? [state.real] : [state.real, state.dream];
+  for (const arr of arrays) {
+    for (let fIdx = 0; fIdx < arr.length; fIdx++) {
+      const area = arr[fIdx];
+      for (let rIdx = 0; rIdx < area.roles.length; rIdx++) {
+        if (area.roles[rIdx].id === roleId) {
+          return { role: area.roles[rIdx], area, fIdx, rIdx, isReal: arr === state.real };
+        }
+      }
+    }
+  }
+  return null;
+}
+
+function openRoleModalById(roleId) {
+  const hit = findRoleAndArea(roleId, true);
+  if (!hit) {
+    // Show fallback modal with explicit error
+    const modal = document.getElementById('modal');
+    modal.style.setProperty('--modal-color', 'var(--danger)');
+    document.getElementById('modal-kicker').textContent = 'Mangler';
+    document.getElementById('modal-title').textContent = roleId;
+    document.getElementById('modal-sub').textContent = 'roleDetails entry not found';
+    document.getElementById('modal-func-section').style.display = 'none';
+    document.getElementById('modal-short-section').style.display = 'none';
+    document.getElementById('modal-role-text').textContent = 'Beskrivelse mangler for denne rolle.';
+    document.getElementById('modal-role-view').style.display = 'block';
+    document.getElementById('modal-owns-section').style.display = 'none';
+    document.getElementById('modal-ai-section').style.display = 'none';
+    document.getElementById('modal-interfaces-section').style.display = 'none';
+    document.getElementById('modal-success-section').style.display = 'none';
+    document.getElementById('modal-edit-btn').style.display = 'none';
+    document.getElementById('modal-save-btn').style.display = 'none';
+    document.getElementById('modal-backdrop').classList.add('open');
+    return;
+  }
+  openRoleModal(hit.fIdx, hit.rIdx, hit.isReal);
+}
+
+// Legacy: open by exec key — now resolves to id
 function openExecModal(key) {
-  const d = EXEC_DESCRIPTIONS[key];
-  if (!d) return;
-  modalContext = { type: 'exec', key };
-  const modal = document.getElementById('modal');
-  modal.style.setProperty('--modal-color', d.color);
-  document.getElementById('modal-kicker').textContent = 'Executive Leadership';
-  document.getElementById('modal-kicker').style.color = d.color;
-  document.getElementById('modal-title').textContent = d.title;
-  document.getElementById('modal-sub').textContent = d.sub;
-  document.getElementById('modal-func-section').style.display = 'none';
-  document.getElementById('modal-role-text').textContent = d.text;
-  document.getElementById('modal-role-view').style.display = 'block';
-  document.getElementById('modal-role-edit').style.display = 'none';
-  document.getElementById('modal-edit-btn').style.display = 'none';
-  document.getElementById('modal-save-btn').style.display = 'none';
-  document.getElementById('modal-backdrop').classList.add('open');
+  const idMap = {
+    'CEO': 'executive-ceo',
+    'COO': 'executive-coo',
+    'CTO': 'executive-cto',
+    'CCO': 'executive-cco',
+    'CFO': 'executive-finance-lead'
+  };
+  const id = idMap[key];
+  if (id) openRoleModalById(id);
 }
 
 function openRoleModal(fIdx, rIdx, isReal) {
@@ -2265,35 +2691,43 @@ function openRoleModal(fIdx, rIdx, isReal) {
 
   modalContext = { type: 'role', fIdx, rIdx, isReal };
 
-  // Check if this role is actually a known executive
-  const upperName = role.name.toUpperCase();
-  for (const key of ['CEO', 'COO', 'CTO', 'CCO', 'CFO']) {
-    if (upperName.includes(key) && !upperName.includes('CFO/CONTROLLER')) {
-      openExecModal(key);
-      return;
-    }
-  }
-
   const modal = document.getElementById('modal');
   modal.style.setProperty('--modal-color', func.color);
   const kicker = document.getElementById('modal-kicker');
-  kicker.textContent = func.name;
+  kicker.textContent = role.area || func.name;
   kicker.style.color = func.color;
-  document.getElementById('modal-title').textContent = role.name;
+  document.getElementById('modal-title').textContent = role.title || role.name;
   document.getElementById('modal-sub').textContent =
-    (isReal && typeof role.count === 'number' ? role.count + ' personer · ' : '') + func.purpose;
+    (typeof role.count === 'number' ? role.count + (role.count === 1 ? ' person · ' : ' personer · ') : '') + func.purpose;
 
-  document.getElementById('modal-func-section').style.display = 'block';
-  document.getElementById('modal-func-text').textContent = matchFunctionDescription(func.name) || 'Ingen funktionsbeskrivelse endnu.';
+  // Function deep description
+  const funcText = func.deepPurpose || matchFunctionDescription(func.name) || '';
+  if (funcText) {
+    document.getElementById('modal-func-section').style.display = 'block';
+    document.getElementById('modal-func-text').textContent = funcText;
+  } else {
+    document.getElementById('modal-func-section').style.display = 'none';
+  }
 
-  const roleText = role.description || '';
+  // Short description (supports both shortDescription and shortDesc legacy)
+  const shortText = role.shortDescription || role.shortDesc || '';
+  if (shortText) {
+    document.getElementById('modal-short-section').style.display = 'block';
+    document.getElementById('modal-short-text').textContent = shortText;
+  } else {
+    document.getElementById('modal-short-section').style.display = 'none';
+  }
+
+  // Detailed description (supports both detailedDescription and description legacy)
+  document.getElementById('modal-role-h4').textContent = 'Detaljeret beskrivelse';
+  const roleText = role.detailedDescription || role.description || '';
   const view = document.getElementById('modal-role-view');
   const textEl = document.getElementById('modal-role-text');
   if (roleText) {
     textEl.textContent = roleText;
     textEl.classList.remove('muted');
   } else {
-    textEl.textContent = 'Ingen specifik beskrivelse endnu. Klik "Rediger beskrivelse" for at tilføje en.';
+    textEl.textContent = 'Beskrivelse mangler for denne rolle.';
     textEl.classList.add('muted');
   }
   view.style.display = 'block';
@@ -2302,6 +2736,41 @@ function openRoleModal(fIdx, rIdx, isReal) {
   document.getElementById('modal-edit-btn').style.display = 'inline-flex';
   document.getElementById('modal-edit-btn').textContent = '✎ Rediger beskrivelse';
   document.getElementById('modal-save-btn').style.display = 'none';
+
+  // Owns
+  if (role.owns) {
+    document.getElementById('modal-owns-section').style.display = 'block';
+    document.getElementById('modal-owns-text').textContent = role.owns;
+  } else {
+    document.getElementById('modal-owns-section').style.display = 'none';
+  }
+
+  // AI support
+  if (role.aiSupport) {
+    document.getElementById('modal-ai-section').style.display = 'block';
+    document.getElementById('modal-ai-text').textContent = role.aiSupport;
+  } else {
+    document.getElementById('modal-ai-section').style.display = 'none';
+  }
+
+  // Interfaces
+  if (Array.isArray(role.interfaces) && role.interfaces.length) {
+    document.getElementById('modal-interfaces-section').style.display = 'block';
+    document.getElementById('modal-interfaces-list').innerHTML =
+      role.interfaces.map(i => `<span>${escapeHtml(i)}</span>`).join('');
+  } else {
+    document.getElementById('modal-interfaces-section').style.display = 'none';
+  }
+
+  // Success metrics
+  if (Array.isArray(role.successMetrics) && role.successMetrics.length) {
+    document.getElementById('modal-success-section').style.display = 'block';
+    document.getElementById('modal-success-list').innerHTML =
+      role.successMetrics.map(m => `<span>${escapeHtml(m)}</span>`).join('');
+  } else {
+    document.getElementById('modal-success-section').style.display = 'none';
+  }
+
   document.getElementById('modal-backdrop').classList.add('open');
 }
 
@@ -2318,9 +2787,15 @@ function saveModalEdit() {
   if (!modalContext || modalContext.type !== 'role') return;
   const { fIdx, rIdx, isReal } = modalContext;
   const arr = isReal ? state.real : state.dream;
-  arr[fIdx].roles[rIdx].description = document.getElementById('modal-role-edit').value.trim();
+  const val = document.getElementById('modal-role-edit').value.trim();
+  // Write to detailedDescription if role has new schema, else fall back to description
+  if (arr[fIdx].roles[rIdx].id) {
+    arr[fIdx].roles[rIdx].detailedDescription = val;
+  } else {
+    arr[fIdx].roles[rIdx].description = val;
+  }
   save();
-  openRoleModal(fIdx, rIdx, isReal); // re-render modal
+  openRoleModal(fIdx, rIdx, isReal);
   renderAll();
 }
 
