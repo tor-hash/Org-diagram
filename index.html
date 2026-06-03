@@ -991,6 +991,87 @@ footer .motto {
   resize: vertical;
 }
 .modal-textarea:focus { outline: 1px solid var(--modal-color, var(--gold)); border-color: var(--modal-color, var(--gold)); }
+/* Ownership badges */
+.ownership-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  border: 1px solid;
+  flex-shrink: 0;
+}
+.ownership-badge.central { color: #61afef; border-color: #61afef; background: rgba(97, 175, 239, 0.08); }
+.ownership-badge.local   { color: #98c379; border-color: #98c379; background: rgba(152, 195, 121, 0.08); }
+.ownership-badge.hybrid  { color: #e5c07b; border-color: #e5c07b; background: rgba(229, 192, 123, 0.08); }
+.ownership-badge.lg {
+  font-size: 11px;
+  padding: 4px 10px;
+  letter-spacing: 0.15em;
+}
+
+/* Operating model 3-column layout */
+.op-model-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  margin-top: 20px;
+}
+.op-col {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  border-top: 3px solid var(--op-color);
+}
+.op-col h3 {
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--op-color);
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+.op-item {
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed var(--border);
+}
+.op-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.op-item-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.op-item-desc {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.op-headline {
+  text-align: center;
+  font-size: 18px;
+  color: var(--gold);
+  font-weight: 600;
+  font-style: italic;
+  margin-bottom: 8px;
+}
+.op-description {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+  max-width: 820px;
+  margin: 0 auto 16px;
+  line-height: 1.6;
+}
+@media (max-width: 880px) {
+  .op-model-grid { grid-template-columns: 1fr; }
+}
+
 .chip-list {
   display: flex;
   flex-wrap: wrap;
@@ -1261,6 +1342,18 @@ body.edit-mode .role-title { cursor: text; }
       </div>
     </div>
 
+    <!-- Central / Local / Hybrid Operating Model -->
+    <div class="section">
+      <div class="section-title">
+        <h2>Central vs. Local Operating Model</h2>
+        <p>Internationalt skaleringslag — hvor BCT bygger global skala uden at miste lokal tillid</p>
+      </div>
+      <div class="op-headline" id="op-headline"></div>
+      <div class="op-description" id="op-description"></div>
+      <div class="op-model-grid" id="op-model-grid"></div>
+      <div class="callout" style="margin-top: 22px; text-align: center;" id="op-closing"></div>
+    </div>
+
     <div class="section">
       <div class="section-title">
         <h2>Ledelseslag</h2>
@@ -1278,7 +1371,7 @@ body.edit-mode .role-title { cursor: text; }
 
     <div class="section">
       <div class="section-title">
-        <h2>Ti Bærende Principper</h2>
+        <h2>Elleve Bærende Principper</h2>
         <p>Tribens kodeks · Hvorfor modellen ser sådan ud</p>
       </div>
       <div class="principles-grid">
@@ -1292,6 +1385,7 @@ body.edit-mode .role-title { cursor: text; }
         <div class="principle"><div class="principle-num">PRINCIP VIII</div><h3>Business Platform er skaleringsmotoren</h3><p>Operations, people, finance, legal, systems og knowledge samles som en lille, stærk intern platformfunktion.</p></div>
         <div class="principle"><div class="principle-num">PRINCIP IX</div><h3>Productisation skal fødes af virkeligheden</h3><p>Templates og reusable assets skal opstå fra Shadow Walks, projekter og gentagende kundebehov — ikke som isoleret produktteori.</p></div>
         <div class="principle"><div class="principle-num">PRINCIP X</div><h3>Pulse før proces</h3><p>BCT skal have en fast let rytme for projekter: kickoff, Monday planning, korte standups, Friday demo, summary og kundeupdate — uden tungt bureaukrati.</p></div>
+        <div class="principle" style="border-left-color: var(--c-ai);"><div class="principle-num" style="color: var(--c-ai);">PRINCIP XI</div><h3>Centralisér skala, lokalisér tillid</h3><p>Brand, templates, AI enablement, tech standards og business platform centraliseres. Salg, relationer, Shadow Walk execution og kundetillid lokaliseres.</p></div>
       </div>
     </div>
   </div>
@@ -1955,6 +2049,192 @@ window.setupCloud = function(url, key, passphrase) {
   setTimeout(() => location.reload(), 800);
 };
 
+// ════════════════════════════════════════════════════════════════
+// 3. EDIT HERE: Ownership tags (CENTRAL / LOCAL / HYBRID)
+// Mapping fra role.id → ownershipType. Bruges automatisk via apply.
+// ════════════════════════════════════════════════════════════════
+const OWNERSHIP_MAP = {
+  // Executive Leadership
+  'executive-ceo':                                'central',
+  'executive-coo':                                'central',
+  'executive-cto':                                'central',
+  'executive-cco':                                'hybrid',
+  'executive-finance-lead':                       'central',
+  // Revenue & Market
+  'revenue-head':                                 'hybrid',
+  'revenue-account-executives':                   'local',
+  'revenue-business-developers':                  'local',
+  'revenue-account-managers':                     'local',
+  'revenue-enablement-lead':                      'central',
+  'revenue-operations-owner':                     'central',
+  // Solution & Value Design
+  'solution-head':                                'central',
+  'solution-architects':                          'hybrid',
+  'solution-shadow-walk-leads':                   'local',
+  'solution-ai-process-consultants':              'hybrid',
+  'solution-proposal-bid-manager':                'central',
+  'solution-productisation-template-owner':       'central',
+  // Delivery & Technology
+  'delivery-head':                                'hybrid',
+  'delivery-managers-pmo':                        'central',
+  'delivery-tech-leads':                          'hybrid',
+  'delivery-principal-staff-engineers':           'central',
+  'delivery-senior-developers':                   'hybrid',
+  'delivery-developers':                          'hybrid',
+  'delivery-junior-developers':                   'hybrid',
+  'delivery-interns-students':                    'local',
+  'delivery-ai-ml-engineers':                     'central',
+  'delivery-devops-platform':                     'central',
+  'delivery-qa-release':                          'hybrid',
+  'delivery-product-owners-bas':                  'hybrid',
+  'delivery-project-coordinator':                 'hybrid',
+  // Customer Operations
+  'customerops-head':                             'hybrid',
+  'customerops-service-delivery-managers':        'local',
+  'customerops-support-engineers':                'hybrid',
+  'customerops-growth-renewal-owner':             'local',
+  'customerops-reliability-platform-support':     'central',
+  // Business Platform
+  'platform-head':                                'central',
+  'platform-business-operations-manager':         'central',
+  'platform-systems-knowledge-owner':             'central',
+  'platform-tooling-automation-lead':             'central',
+  'platform-people-capability-lead':              'hybrid',
+  'platform-talent-acquisition':                  'hybrid',
+  'platform-business-control-finance-partner':    'central',
+  'platform-legal-contract-vendor-manager':       'central',
+  'platform-finance-admin-coordinator':           'hybrid',
+  'platform-operations-coordinator':              'hybrid'
+};
+
+// ════════════════════════════════════════════════════════════════
+// 5. EDIT HERE: Central / Local / Hybrid Operating Model
+// ════════════════════════════════════════════════════════════════
+const OPERATING_MODEL = {
+  headline: 'Centralisér det, der skaber skala. Lokalisér det, der skaber tillid.',
+  description: 'Når BCT skalerer på tværs af lande, skal organisationen ikke kopieres fuldt ud i hvert land. I stedet skal centrale platformfunktioner skabe skala, genbrug, kvalitet og ensartethed, mens lokale teams ejer marked, relationer, kultur, sprog og kundetillid.',
+  central: [
+    { title: 'Brand / visual identity / layout',  description: 'Centraliseres for at sikre ensartet BCT-identitet, visuelt udtryk, kvalitet og genkendelighed på tværs af lande.' },
+    { title: 'Website / digital presence',        description: 'Centraliseres, fordi website, landing pages, SEO-struktur, tracking og conversion framework bør bygges én gang og tilpasses lokalt efter behov.' },
+    { title: 'Revenue Enablement',                description: 'Centraliseres for at sikre genbrug af cases, pitch decks, one-pagers, proposal templates, sales assets og market education-materiale.' },
+    { title: 'Productisation / Templates',        description: 'Centraliseres, fordi reusable assets, standardmoduler og template-løsninger skal bygges på tværs af markeder og ikke genopfindes i hvert land.' },
+    { title: 'AI Enablement Layer',               description: 'Centraliseres, fordi interne AI-tools, automations, prompts, workflows, knowledge retrieval og best practices bør udvikles centralt og distribueres til alle lande.' },
+    { title: 'CTO / Tech Standards',              description: 'Centraliseres for at sikre fælles stack, arkitekturprincipper, kvalitet, sikkerhed, tekniske playbooks og engineering standards.' },
+    { title: 'Business Platform',                 description: 'Centraliseres for at sikre fælles systemer, knowledge base, onboarding framework, legal templates, finance governance, vendor management og internal tooling.' },
+    { title: 'Finance Governance',                description: 'Centraliseres for at sikre fælles budgetprincipper, marginstyring, pricing frameworks, reporting, cashflow-disciplin og økonomisk governance.' },
+    { title: 'People / Onboarding Framework',     description: 'Centraliseres som globalt framework, så alle lande onboarder og udvikler medarbejdere efter samme grundprincipper, men med lokal tilpasning.' }
+  ],
+  local: [
+    { title: 'Country Lead / Market Lead',        description: 'Lokal ejer af marked, P&L, relationer, partnerskaber, lokal prioritering og eksekvering.' },
+    { title: 'Local Sales / Account Executives',  description: 'Ligger lokalt, fordi salg er relationelt, sprogligt og kulturelt afhængigt af markedet.' },
+    { title: 'Local Business Development',        description: 'Ligger lokalt, fordi nye markedsåbninger, netværk og partnerskaber kræver lokal forståelse.' },
+    { title: 'Local Account Management',          description: 'Ligger lokalt, fordi eksisterende kunder kræver nærhed, tillid og løbende relationel opfølgning.' },
+    { title: 'Shadow Walk Execution',             description: 'Ligger lokalt eller hybrid, fordi observation hos kunden kræver lokal tilstedeværelse, sprogforståelse og kulturel forståelse.' },
+    { title: 'Customer Relationship / Service Meetings', description: 'Ligger lokalt, fordi kunden skal opleve et nært og ansvarligt kontaktpunkt efter levering.' }
+  ],
+  hybrid: [
+    { title: 'Solution & Value Design',           description: 'Central metode og templates, men lokal kundekontekst. Solution Architects kan arbejde på tværs, men skal forstå det lokale marked.' },
+    { title: 'Delivery & Technology',             description: 'Fælles tekniske standarder og central kapacitetsstyring, men delivery teams kan sammensættes på tværs af lande afhængigt af kunde, kompetencer og kapacitet.' },
+    { title: 'Marketing Execution',               description: 'Central brand og core assets, men lokal tilpasning af sprog, cases, events og markedskampagner.' },
+    { title: 'Customer Operations',               description: 'Central SLA-model, tooling og supportprocesser, men lokal relation og servicekommunikation.' },
+    { title: 'People & Culture',                  description: 'Central kultur, onboarding og leadership principles, men lokal tilpasning til arbejdsmarked, regler og kultur.' },
+    { title: 'Finance Operations',                description: 'Central finance governance og reporting, men lokal regnskabs-/compliance-tilpasning efter landets regler.' }
+  ],
+  closing: 'Den internationale model er ikke HQ vs. lande. Det er en platformmodel: centralt ejede kapabiliteter gør lokale teams stærkere.'
+};
+
+// ════════════════════════════════════════════════════════════════
+// orgConfig — samlet adgang til hele konfigurationen
+// Brug: orgConfig.roles[roleId] for direkte lookup.
+// ════════════════════════════════════════════════════════════════
+const orgConfig = {
+  meta: {
+    scenarioName: 'Realistisk model — ca. 100 medarbejdere',
+    totalEmployees: 100
+  },
+  get capabilities() { return DEFAULT_REAL; },
+  get roles() {
+    const map = {};
+    DEFAULT_REAL.forEach(c => c.roles.forEach(r => {
+      if (r.id) map[r.id] = r;
+    }));
+    return map;
+  },
+  ownershipMap: OWNERSHIP_MAP,
+  operatingModel: OPERATING_MODEL
+};
+
+// ════════════════════════════════════════════════════════════════
+// Rendering logic below — normally do not edit
+// ════════════════════════════════════════════════════════════════
+
+// Expected employee counts pr. capability (for validation)
+const CAPABILITY_EXPECTED = {
+  'Executive Leadership':    5,
+  'Revenue & Market':       10,
+  'Solution & Value Design':10,
+  'Delivery & Technology':  58,
+  'Customer Operations':     7,
+  'Business Platform':      10
+};
+
+// Apply ownership map, rolePurpose fallback, and expected counts
+function enrichRoleData() {
+  DEFAULT_REAL.forEach(area => {
+    if (CAPABILITY_EXPECTED[area.name] !== undefined) {
+      area.expectedCount = CAPABILITY_EXPECTED[area.name];
+    }
+    area.roles.forEach(r => {
+      if (!r.id) return;
+      if (OWNERSHIP_MAP[r.id] && !r.ownershipType) r.ownershipType = OWNERSHIP_MAP[r.id];
+      if (!r.rolePurpose && r.shortDescription) r.rolePurpose = r.shortDescription;
+    });
+  });
+}
+enrichRoleData();
+
+// Validation — runs at page load, writes console.warn for issues
+function validateOrgConfig() {
+  const issues = [];
+  const seenIds = new Set();
+  let totalCount = 0;
+
+  DEFAULT_REAL.forEach(area => {
+    let areaSum = 0;
+    area.roles.forEach(r => {
+      if (r.divider) return;
+      if (!r.id) { issues.push('Role missing id in area: ' + area.name + ' (' + r.name + ')'); return; }
+      if (seenIds.has(r.id)) issues.push('Duplicate roleId: ' + r.id);
+      seenIds.add(r.id);
+      ['title', 'count', 'area', 'ownershipType', 'shortDescription', 'detailedDescription', 'owns', 'aiSupport', 'interfaces', 'successMetrics'].forEach(field => {
+        if (r[field] === undefined || r[field] === null || (Array.isArray(r[field]) && r[field].length === 0)) {
+          issues.push('Role ' + r.id + ' is missing ' + field);
+        }
+      });
+      if (typeof r.count === 'number') { areaSum += r.count; totalCount += r.count; }
+    });
+    if (area.expectedCount && areaSum !== area.expectedCount) {
+      issues.push('Capability count mismatch in ' + area.name + ': actual ' + areaSum + ', expected ' + area.expectedCount);
+    }
+  });
+
+  if (totalCount !== orgConfig.meta.totalEmployees) {
+    issues.push('Total employees mismatch: actual ' + totalCount + ', expected ' + orgConfig.meta.totalEmployees);
+  }
+
+  // Tech Lead and Principal/Staff must be separate roles
+  if (orgConfig.roles['delivery-tech-leads'] === orgConfig.roles['delivery-principal-staff-engineers']) {
+    issues.push('Tech Lead and Principal/Staff Engineers must not be the same role');
+  }
+
+  if (issues.length) {
+    console.warn('🟡 orgConfig validation found ' + issues.length + ' issue(s):');
+    issues.forEach(i => console.warn('  -', i));
+  } else {
+    console.log('✅ orgConfig validation passed (' + totalCount + ' employees, ' + DEFAULT_REAL.length + ' capabilities, ' + Object.keys(orgConfig.roles).length + ' unique roles)');
+  }
+}
+
 const STORAGE_KEY = 'bct-org-v2';
 const VERSIONS_KEY = 'bct-org-versions';
 
@@ -2408,6 +2688,7 @@ function renderFunction(f, fIdx, isReal) {
               onclick="${clickHandler}"
               onblur="updateRoleName(${fIdx},${rIdx},${isReal},this.textContent)"
               onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">${escapeHtml(r.name)}</span>
+        ${isReal && r.ownershipType ? `<span class="ownership-badge ${r.ownershipType}" title="${r.ownershipType.toUpperCase()}">${r.ownershipType[0].toUpperCase()}</span>` : ''}
         ${isReal ? `
           <span class="role-count">${r.count}</span>
           <span class="role-count-edit">
@@ -2472,10 +2753,37 @@ function addFunctionCardHTML(which) {
   return `<div class="add-function-card" onclick="addFunction('${which}')">+ Tilføj funktion</div>`;
 }
 
+function renderOperatingModel() {
+  const op = orgConfig.operatingModel;
+  if (!op) return;
+  const headline = document.getElementById('op-headline');
+  const desc = document.getElementById('op-description');
+  const grid = document.getElementById('op-model-grid');
+  const closing = document.getElementById('op-closing');
+  if (!grid) return;
+  headline.textContent = '"' + op.headline + '"';
+  desc.textContent = op.description;
+  const colors = { central: '#61afef', local: '#98c379', hybrid: '#e5c07b' };
+  const labels = { central: 'CENTRAL / GLOBAL', local: 'LOCAL / COUNTRY', hybrid: 'HYBRID' };
+  grid.innerHTML = ['central', 'local', 'hybrid'].map(key => `
+    <div class="op-col" style="--op-color: ${colors[key]};">
+      <h3>${labels[key]}</h3>
+      ${op[key].map(item => `
+        <div class="op-item">
+          <div class="op-item-title">${escapeHtml(item.title)}</div>
+          <div class="op-item-desc">${escapeHtml(item.description)}</div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+  closing.innerHTML = '<strong>' + escapeHtml(op.closing) + '</strong>';
+}
+
 function renderAll() {
   renderDream();
   renderReal();
   renderStats();
+  renderOperatingModel();
 }
 
 // Mutators
@@ -2750,10 +3058,12 @@ function openRoleModal(fIdx, rIdx, isReal) {
   kicker.textContent = role.area || func.name;
   kicker.style.color = func.color;
   document.getElementById('modal-title').textContent = role.title || role.name;
-  // Sub: kun count + areal-tilhør. Aldrig area.purpose her — rolle-formål kommer øverst.
+  // Sub: kun count + areal-tilhør + ownership badge. Aldrig area.purpose her.
   const countTxt = typeof role.count === 'number' ? role.count + (role.count === 1 ? ' person' : ' personer') : '';
   const areaTxt = role.area || func.name;
-  document.getElementById('modal-sub').textContent = [countTxt, 'Del af ' + areaTxt].filter(Boolean).join(' · ');
+  const subEl = document.getElementById('modal-sub');
+  subEl.innerHTML = [countTxt, 'Del af ' + areaTxt].filter(Boolean).join(' · ') +
+    (role.ownershipType ? ' <span class="ownership-badge lg ' + role.ownershipType + '" style="margin-left: 10px;">' + role.ownershipType.toUpperCase() + '</span>' : '');
 
   // Rollens formål — ONLY role.rolePurpose. Never area.purpose or func.deepPurpose.
   if (role.rolePurpose) {
@@ -2864,6 +3174,9 @@ document.addEventListener('keydown', (e) => {
 });
 
 loadLocal();
+// Re-apply enrichment in case loaded state from localStorage doesn't have ownershipType
+enrichRoleData();
+validateOrgConfig();
 renderAll();
 initCloud();
 </script>
