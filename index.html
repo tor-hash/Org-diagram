@@ -1668,8 +1668,8 @@ body.edit-mode .role-title { cursor: text; }
         <span id="cloud-status-text">Lokal</span>
       </div>
       <div class="toggle">
-        <button id="btn-dream" class="active" onclick="switchScenario('dream')">Drøm</button>
-        <button id="btn-real" onclick="switchScenario('real')">Realistisk</button>
+        <button id="btn-dream" onclick="switchScenario('dream')">Drøm</button>
+        <button id="btn-real" class="active" onclick="switchScenario('real')">Realistisk</button>
       </div>
       <button id="btn-edit" class="btn primary" onclick="toggleEditMode()">✎ Rediger</button>
       <button class="btn" onclick="toggleVersions()" title="Versioner">⎘ Versioner</button>
@@ -1695,7 +1695,7 @@ body.edit-mode .role-title { cursor: text; }
   </div>
 
   <!-- DREAM SCENARIO -->
-  <div id="scenario-dream" class="scenario active">
+  <div id="scenario-dream" class="scenario">
     <section class="hero">
       <div class="kicker">Scenario I · Målarkitektur</div>
       <h1>Drømmescenariet</h1>
@@ -1725,7 +1725,7 @@ body.edit-mode .role-title { cursor: text; }
   </div>
 
   <!-- REALISTIC SCENARIO -->
-  <div id="scenario-real" class="scenario">
+  <div id="scenario-real" class="scenario active">
     <section class="hero">
       <div class="kicker">Scenario II · AI-first operating architecture</div>
       <h1>Realistisk model — ca. 100 medarbejdere</h1>
@@ -2986,7 +2986,7 @@ let lastSyncedHash = '';
 let isApplyingRemote = false;
 
 let state = {
-  scenario: 'dream',
+  scenario: 'real',
   editMode: false,
   cardEdits: new Set(),  // keys: "real:fIdx" / "dream:fIdx" — per-card edit mode
   dream: clone(DEFAULT_DREAM),
