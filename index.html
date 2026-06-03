@@ -1564,6 +1564,7 @@ const DEFAULT_REAL = [
     deepPurpose: 'Executive Leadership ejer virksomhedens samlede retning, strategiske prioriteringer, kultur, økonomiske ansvar, tekniske retning og organisatoriske operating model. Rollen er ikke at være flaskehals i daglig drift, men at sætte rammerne, træffe de svære beslutninger og sikre, at organisationen kan skalere uden at miste kvalitet.',
     roles: [
       { id: 'executive-ceo', title: 'CEO / Managing Director', name: 'CEO / Managing Director', count: 1, area: 'Executive Leadership',
+        rolePurpose: 'CEO\'en sikrer, at BCT har en klar samlet retning, stærk kultur og strategisk sammenhæng mellem marked, teknologi, organisation og økonomi. Rollen ejer ikke alle operationelle beslutninger, men sætter retning, prioriterer de største valg og sikrer, at vækst sker uden at udvande virksomhedens styrke.',
         shortDescription: 'Ejer virksomhedens overordnede vision, strategi, kultur og langsigtede retning.',
         detailedDescription: 'CEO\'en har det samlede ansvar for BCT\'s strategiske udvikling, markedsposition, kultur og overordnede beslutninger. Rollen skal sikre, at organisationen bevæger sig i én klar retning, og at vækst ikke sker på bekostning af kvalitet, kultur eller forretningsmæssig disciplin. CEO\'en skal ikke eje alle operationelle beslutninger, men skal sikre alignment mellem kommerciel retning, teknologisk retning, økonomi og organisation.',
         owns: 'Vision, strategi, kultur, større beslutninger og samlet virksomhedsretning.',
@@ -1571,6 +1572,7 @@ const DEFAULT_REAL = [
         interfaces: ['COO', 'CTO', 'CCO', 'Finance Lead', 'Head of Solution & Value Design'],
         successMetrics: ['Strategisk fremdrift', 'Kultur og alignment', 'Vækst med kvalitet', 'Profitabel skalering'] },
       { id: 'executive-coo', title: 'COO / Head of Operations', name: 'COO / Head of Operations', count: 1, area: 'Executive Leadership',
+        rolePurpose: 'COO\'en sikrer, at BCT fungerer som én sammenhængende organisation i praksis. Rollen ejer operating model, processer, systemstruktur, governance og tværgående fremdrift, så organisationen ikke bliver afhængig af implicit viden eller enkelte nøglepersoner.',
         shortDescription: 'Ejer operating model, organisatorisk skalerbarhed, processer og tværgående fremdrift.',
         detailedDescription: 'COO\'en sikrer, at BCT fungerer som en sammenhængende organisation og ikke som en samling stærke enkeltpersoner. Rollen ejer operating model, systemstruktur, governance, kapacitet, tværgående processer og organisatorisk fremdrift. COO\'en skal sikre, at sales, solution, delivery, tech, customer operations og business platform hænger sammen i praksis.',
         owns: 'Operating model, processer, systemlandskab, kapacitet, governance og tværgående struktur.',
@@ -1578,6 +1580,7 @@ const DEFAULT_REAL = [
         interfaces: ['CEO', 'Head of Business Platform', 'Head of Delivery', 'CTO', 'Revenue & Market'],
         successMetrics: ['Mindre personafhængighed', 'Bedre tværgående flow', 'Højere transparens', 'Skalerbar drift'] },
       { id: 'executive-cto', title: 'CTO', name: 'CTO', count: 1, area: 'Executive Leadership',
+        rolePurpose: 'CTO\'en sikrer, at BCT\'s tekniske kvalitet, arkitektur og udviklingsorganisation kan skalere. Rollen ejer tech som system: standarder, stack, arkitekturprincipper, teknisk capability-building og sparring til Tech Leads — uden at blive daglig brandslukker på alle projekter.',
         shortDescription: 'Ejer teknisk retning, arkitekturprincipper, kvalitet, stack og tech-organisationen som system.',
         detailedDescription: 'CTO\'en skal ikke være den nye centrale brandslukker eller backup-projektleder på alle projekter. Rollen ejer tech-organisationen som system: tekniske standarder, arkitekturprincipper, stack-valg, kvalitet, kompetenceudvikling, sparring til Tech Leads og langsigtet teknologisk retning. CTO\'en skal reducere personafhængighed ved at gøre teknisk kvalitet gentagelig gennem standarder, playbooks og stærke Tech Leads.',
         owns: 'Teknisk strategi, standarder, arkitekturprincipper, kvalitet, stack og teknisk capability-building.',
@@ -1585,6 +1588,7 @@ const DEFAULT_REAL = [
         interfaces: ['CEO', 'COO', 'Tech Leads', 'Principal Engineers', 'Solution Architects'],
         successMetrics: ['Teknisk kvalitet', 'Færre tekniske flaskehalse', 'Stærkere Tech Leads', 'Genbrugelige standarder'] },
       { id: 'executive-cco', title: 'CCO / Head of Commercial', name: 'CCO / Head of Commercial', count: 1, area: 'Executive Leadership',
+        rolePurpose: 'CCO\'en sikrer, at BCT har en struktureret og skalerbar kommerciel motor. Rollen ejer pipeline, revenue, forecast, partnerskaber og kommerciel retning, så salg ikke bliver personbåret, og markedet modnes systematisk.',
         shortDescription: 'Ejer kommerciel strategi, pipeline, revenue, partnerskaber og salgsperformance.',
         detailedDescription: 'CCO\'en har ansvar for, at BCT\'s kommercielle motor er struktureret, prioriteret og skalerbar. Rollen ejer pipeline, salgsstrategi, forecast, revenue targets, partnerskaber og kommerciel retning. CCO\'en skal sikre, at salg ikke er personbåret, og at markedet modnes gennem tydelig positioning, cases og value communication.',
         owns: 'Commercial strategy, pipeline, revenue, partnerskaber og forecast.',
@@ -1592,6 +1596,7 @@ const DEFAULT_REAL = [
         interfaces: ['CEO', 'Head of Revenue & Market', 'Solution & Value Design', 'Finance Lead'],
         successMetrics: ['Omsætning', 'Pipeline quality', 'Win rate', 'Forecast accuracy'] },
       { id: 'executive-finance-lead', title: 'Finance Lead / CFO-function', name: 'Finance Lead / CFO-function', count: 1, area: 'Executive Leadership',
+        rolePurpose: 'Finance Lead / CFO-funktionen sikrer, at BCT har økonomisk overblik, sund marginstyring og et realistisk beslutningsgrundlag for vækst. Rollen er ikke tænkt som en tung finance-afdeling, men som en strategisk kontrolfunktion, hvor AI og automatisering reducerer manuelt arbejde, mens det menneskelige ansvar for økonomiske beslutninger, risiko og governance fastholdes.',
         shortDescription: 'Ejer økonomisk kontrol, cashflow, margin, forecast, pricing support og finansiel governance.',
         detailedDescription: 'Finance Lead/CFO-funktionen bliver ikke overflødig i en AI-first organisation. Den bliver mindre administrativ og mere strategisk. Rollen ejer økonomisk dømmekraft, budget, cashflow, margin, pricing support, projektøkonomi, forecast, vendor cost control og ledelsesrapportering. AI kan automatisere meget finance-arbejde, men ansvaret for økonomiske beslutninger, risiko og governance skal ligge hos et menneske.',
         owns: 'Cashflow, budget, margin, forecast, pricing, projektprofitabilitet, økonomisk governance og finansiel risikostyring.',
@@ -2426,6 +2431,7 @@ function renderFunction(f, fIdx, isReal) {
          ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event,${isReal})">
       <div class="func-header">
         <div class="func-name" contenteditable="${state.editMode}"
+             onclick="if(!state.editMode){event.stopPropagation();openAreaModal(${fIdx},${isReal});}"
              onblur="updateFuncName(${fIdx},${isReal},this.textContent)"
              onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">${escapeHtml(f.name)}</div>
         ${isReal ? `<div class="func-count">${count}<small>pers</small></div>` : ''}
@@ -2670,6 +2676,53 @@ function openRoleModalById(roleId) {
   openRoleModal(hit.fIdx, hit.rIdx, hit.isReal);
 }
 
+// Open capability area modal (klik på selve området, ikke en rolle)
+function openAreaModal(fIdx, isReal) {
+  const arr = isReal ? state.real : state.dream;
+  const area = arr[fIdx];
+  if (!area) return;
+  const totalCount = area.roles.reduce((s, r) => s + (typeof r.count === 'number' ? r.count : 0), 0);
+  modalContext = { type: 'area', fIdx, isReal };
+
+  const modal = document.getElementById('modal');
+  modal.style.setProperty('--modal-color', area.color);
+  document.getElementById('modal-kicker').textContent = 'Kapabilitetsområde';
+  document.getElementById('modal-kicker').style.color = area.color;
+  document.getElementById('modal-title').textContent = area.name;
+  document.getElementById('modal-sub').textContent =
+    totalCount > 0 ? totalCount + ' personer · ' + area.roles.filter(r => !r.divider).length + ' roller' : area.purpose;
+
+  // Funktionens formål (kun her vises area.purpose/deepPurpose)
+  document.getElementById('modal-func-section').style.display = 'block';
+  document.querySelector('#modal-func-section h4').textContent = 'Funktionens formål';
+  document.getElementById('modal-func-text').textContent = area.deepPurpose || area.purpose || '';
+
+  // Hide role-specific sections
+  document.getElementById('modal-short-section').style.display = 'none';
+  document.getElementById('modal-owns-section').style.display = 'none';
+  document.getElementById('modal-ai-section').style.display = 'none';
+  document.getElementById('modal-interfaces-section').style.display = 'none';
+  document.getElementById('modal-success-section').style.display = 'none';
+
+  // Use the detailed-description slot for "Roller i området"
+  document.getElementById('modal-role-h4').textContent = 'Roller i området';
+  const rolesHTML = area.roles
+    .filter(r => !r.divider)
+    .map(r => {
+      const c = typeof r.count === 'number' ? r.count : '';
+      const safeId = r.id ? `onclick="openRoleModalById('${r.id}')" style="cursor:pointer; color: ${area.color}; text-decoration: underline; text-decoration-style: dotted;"` : '';
+      return `<div style="padding: 4px 0;"><span ${safeId}>${escapeHtml(r.title || r.name)}</span>${c !== '' ? ' <span style="color: var(--text-muted); font-size: 12px;">— ' + c + (c === 1 ? ' person' : ' personer') + '</span>' : ''}</div>`;
+    }).join('');
+  document.getElementById('modal-role-text').innerHTML = rolesHTML;
+  document.getElementById('modal-role-text').classList.remove('muted');
+  document.getElementById('modal-role-view').style.display = 'block';
+  document.getElementById('modal-role-edit').style.display = 'none';
+  document.getElementById('modal-edit-btn').style.display = 'none';
+  document.getElementById('modal-save-btn').style.display = 'none';
+
+  document.getElementById('modal-backdrop').classList.add('open');
+}
+
 // Legacy: open by exec key — now resolves to id
 function openExecModal(key) {
   const idMap = {
@@ -2697,14 +2750,16 @@ function openRoleModal(fIdx, rIdx, isReal) {
   kicker.textContent = role.area || func.name;
   kicker.style.color = func.color;
   document.getElementById('modal-title').textContent = role.title || role.name;
-  document.getElementById('modal-sub').textContent =
-    (typeof role.count === 'number' ? role.count + (role.count === 1 ? ' person · ' : ' personer · ') : '') + func.purpose;
+  // Sub: kun count + areal-tilhør. Aldrig area.purpose her — rolle-formål kommer øverst.
+  const countTxt = typeof role.count === 'number' ? role.count + (role.count === 1 ? ' person' : ' personer') : '';
+  const areaTxt = role.area || func.name;
+  document.getElementById('modal-sub').textContent = [countTxt, 'Del af ' + areaTxt].filter(Boolean).join(' · ');
 
-  // Function deep description
-  const funcText = func.deepPurpose || matchFunctionDescription(func.name) || '';
-  if (funcText) {
+  // Rollens formål — ONLY role.rolePurpose. Never area.purpose or func.deepPurpose.
+  if (role.rolePurpose) {
     document.getElementById('modal-func-section').style.display = 'block';
-    document.getElementById('modal-func-text').textContent = funcText;
+    document.querySelector('#modal-func-section h4').textContent = 'Rollens formål';
+    document.getElementById('modal-func-text').textContent = role.rolePurpose;
   } else {
     document.getElementById('modal-func-section').style.display = 'none';
   }
