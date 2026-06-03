@@ -1757,6 +1757,26 @@ body.edit-mode .role-title { cursor: text; }
       <div class="functions-grid" id="real-functions"></div>
     </div>
 
+    <!-- Geographic Distribution — kontorer og lande -->
+    <div class="section">
+      <div class="section-title">
+        <h2>Geografi & lokalitetsfordeling</h2>
+        <p>Realistisk fordeling af 100 medarbejdere på Danmark og Norge — Danmark som platform-/playbook-motor, Norge som selvstændigt markedskontor.</p>
+      </div>
+      <div class="callout" style="margin-bottom: 20px; line-height: 1.7;">
+        <strong>Danmark</strong> fungerer som BCT's primære platform- og playbook-motor: operating model, Pulse, Shadow Walk-metode, pricing/value design, productisation, tech standards, business platform og interne AI-workflows udvikles og testes her.<br><br>
+        <strong>Norge</strong> fungerer som et selvstændigt markeds- og leverancekontor: lokal ledelse, salg, relationer, Shadow Walk execution, customer operations og egen delivery-kapacitet sikrer, at Norge ikke kun er afhængig af Danmark.<br><br>
+        Modellen er derfor <em>ikke HQ vs. filial</em>. Det er en platformmodel: Danmark udvikler og stabiliserer mange af systemerne, mens Norge lokaliserer dem og beviser, at de kan eksporteres.
+      </div>
+      <div id="world-map"></div>
+      <div class="geo-totals" id="geo-totals"></div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+        <div style="font-size: 12px; color: var(--text-muted);" id="geo-summary"></div>
+        <button class="btn" onclick="addOffice()">+ Tilføj kontor</button>
+      </div>
+      <div class="geo-grid" id="geo-grid"></div>
+    </div>
+
     <div class="section">
       <div class="section-title">
         <h2>Værdiflowet</h2>
@@ -1840,26 +1860,6 @@ body.edit-mode .role-title { cursor: text; }
         <div class="ai-card" style="--c-fn: var(--c-liveops);"><div class="ai-fn">Support & LiveOps</div><div class="ai-use">AI understøtter triage, incident summaries, runbook lookup, support drafts, service review preparation og root-cause dokumentation.</div></div>
         <div class="ai-card" style="--c-fn: var(--c-tech);"><div class="ai-fn">QA & release support</div><div class="ai-use">AI hjælper med testcases, release notes, regressionsoverblik, changelogs og kvalitetstjek før deployment.</div></div>
       </div>
-    </div>
-
-    <!-- Geographic Distribution — kontorer og lande -->
-    <div class="section">
-      <div class="section-title">
-        <h2>Geografi & lokalitetsfordeling</h2>
-        <p>Realistisk fordeling af 100 medarbejdere på Danmark og Norge — Danmark som platform-/playbook-motor, Norge som selvstændigt markedskontor.</p>
-      </div>
-      <div class="callout" style="margin-bottom: 20px; line-height: 1.7;">
-        <strong>Danmark</strong> fungerer som BCT's primære platform- og playbook-motor: operating model, Pulse, Shadow Walk-metode, pricing/value design, productisation, tech standards, business platform og interne AI-workflows udvikles og testes her.<br><br>
-        <strong>Norge</strong> fungerer som et selvstændigt markeds- og leverancekontor: lokal ledelse, salg, relationer, Shadow Walk execution, customer operations og egen delivery-kapacitet sikrer, at Norge ikke kun er afhængig af Danmark.<br><br>
-        Modellen er derfor <em>ikke HQ vs. filial</em>. Det er en platformmodel: Danmark udvikler og stabiliserer mange af systemerne, mens Norge lokaliserer dem og beviser, at de kan eksporteres.
-      </div>
-      <div id="world-map"></div>
-      <div class="geo-totals" id="geo-totals"></div>
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-        <div style="font-size: 12px; color: var(--text-muted);" id="geo-summary"></div>
-        <button class="btn" onclick="addOffice()">+ Tilføj kontor</button>
-      </div>
-      <div class="geo-grid" id="geo-grid"></div>
     </div>
 
     <!-- Central / Local / Hybrid Operating Model -->
