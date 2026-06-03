@@ -1013,6 +1013,234 @@ footer .motto {
   letter-spacing: 0.15em;
 }
 
+/* Office badges */
+.office-badges {
+  display: inline-flex;
+  gap: 3px;
+  align-items: center;
+  flex-shrink: 0;
+}
+.office-badge {
+  font-size: 10px;
+  padding: 2px 5px;
+  border-radius: 4px;
+  border: 1px solid var(--office-color, var(--border));
+  color: var(--office-color, var(--text-muted));
+  background: rgba(255,255,255,0.02);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-weight: 500;
+}
+.office-badge .flag { font-size: 11px; }
+.office-badge .n { font-weight: 700; }
+
+body.edit-mode .ownership-badge,
+body.edit-mode .office-badges {
+  cursor: pointer;
+}
+body.edit-mode .ownership-badge:hover { box-shadow: 0 0 0 2px currentColor; }
+
+/* Ownership popover */
+.ownership-popover {
+  position: fixed;
+  background: var(--bg-card);
+  border: 1px solid var(--gold);
+  border-radius: 10px;
+  padding: 14px;
+  z-index: 250;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.6);
+  min-width: 280px;
+}
+.ownership-popover h5 {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 8px;
+  font-weight: 600;
+}
+.ownership-popover .own-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.ownership-popover .own-btn {
+  flex: 1;
+  padding: 6px 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.ownership-popover .own-btn.active.central { background: rgba(97,175,239,0.2); border-color: #61afef; color: #61afef; }
+.ownership-popover .own-btn.active.local   { background: rgba(152,195,121,0.2); border-color: #98c379; color: #98c379; }
+.ownership-popover .own-btn.active.hybrid  { background: rgba(229,192,123,0.2); border-color: #e5c07b; color: #e5c07b; }
+.ownership-popover .office-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 0;
+  border-top: 1px dashed var(--border);
+}
+.ownership-popover .office-row:first-of-type { border-top: none; }
+.ownership-popover .office-row .lbl {
+  font-size: 12px;
+  display: flex; align-items: center; gap: 6px;
+}
+.ownership-popover .office-row .ctrls {
+  display: flex; align-items: center; gap: 4px;
+}
+.ownership-popover .office-row input {
+  width: 44px;
+  height: 24px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  text-align: center;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 12px;
+}
+.ownership-popover .pop-sum {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.ownership-popover .pop-sum strong { color: var(--gold); }
+.ownership-popover .pop-sum.mismatch strong { color: var(--danger); }
+.ownership-popover .pop-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+.ownership-popover .pop-actions button {
+  flex: 1;
+  padding: 6px 10px;
+  font-family: inherit;
+  font-size: 12px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Geography section */
+.geo-totals {
+  display: flex;
+  align-items: stretch;
+  height: 38px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  border: 1px solid var(--border);
+}
+.geo-totals .geo-slice {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(0,0,0,0.85);
+  text-shadow: 0 0 4px rgba(255,255,255,0.4);
+  transition: flex 0.3s;
+  min-width: 4px;
+}
+.geo-totals .geo-slice.empty { background: var(--bg); color: var(--text-muted); flex: 1; text-shadow: none; }
+
+.geo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+  margin-top: 16px;
+}
+.geo-office {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  border-top: 3px solid var(--office-color);
+  position: relative;
+}
+.geo-office.inactive {
+  opacity: 0.45;
+  border-style: dashed;
+}
+.geo-office-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+.geo-office-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--office-color);
+  display: flex; align-items: center; gap: 8px;
+}
+.geo-office-count {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+}
+.geo-office-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+.geo-office-roles {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  max-height: 180px;
+  overflow-y: auto;
+}
+.geo-office-roles .gr {
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 0;
+  border-bottom: 1px dashed rgba(255,255,255,0.04);
+}
+.geo-office-roles .gr:last-child { border-bottom: none; }
+.geo-office-roles .gr-name { color: var(--text); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.geo-office-roles .gr-count { color: var(--office-color); font-weight: 600; margin-left: 8px; }
+.geo-office-toggle {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 18px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  display: none;
+}
+body.edit-mode .geo-office-toggle { display: block; }
+.geo-office-toggle::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px; height: 12px;
+  background: var(--text-muted);
+  border-radius: 50%;
+  transition: left 0.2s, background 0.2s;
+}
+.geo-office.active .geo-office-toggle::after {
+  left: 20px;
+  background: var(--office-color);
+}
+
 /* Operating model 3-column layout */
 .op-model-grid {
   display: grid;
@@ -1340,6 +1568,20 @@ body.edit-mode .role-title { cursor: text; }
         <div class="ai-card" style="--c-fn: var(--c-liveops);"><div class="ai-fn">Support & LiveOps</div><div class="ai-use">AI understøtter triage, incident summaries, runbook lookup, support drafts, service review preparation og root-cause dokumentation.</div></div>
         <div class="ai-card" style="--c-fn: var(--c-tech);"><div class="ai-fn">QA & release support</div><div class="ai-use">AI hjælper med testcases, release notes, regressionsoverblik, changelogs og kvalitetstjek før deployment.</div></div>
       </div>
+    </div>
+
+    <!-- Geographic Distribution — kontorer og lande -->
+    <div class="section">
+      <div class="section-title">
+        <h2>Geografi & kontorer</h2>
+        <p>Hvor sidder de 100 personer? Klik på et kontor for at se rollerne. Slå kontorer til/fra i edit-mode.</p>
+      </div>
+      <div class="geo-totals" id="geo-totals"></div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+        <div style="font-size: 12px; color: var(--text-muted);" id="geo-summary"></div>
+        <button class="btn" onclick="addOffice()" style="display: none;" id="add-office-btn">+ Tilføj kontor</button>
+      </div>
+      <div class="geo-grid" id="geo-grid"></div>
     </div>
 
     <!-- Central / Local / Hybrid Operating Model -->
@@ -2050,6 +2292,18 @@ window.setupCloud = function(url, key, passphrase) {
 };
 
 // ════════════════════════════════════════════════════════════════
+// 2b. EDIT HERE: Offices / lande BCT har kontor i
+// Sæt active: true når et nyt land åbner. Tilføj nye objekter for nye lande.
+// HQ peger på hvilket kontor der huser centrale (Central) roller by default.
+// ════════════════════════════════════════════════════════════════
+const DEFAULT_OFFICES = [
+  { id: 'DK', name: 'Danmark', city: 'Aalborg',   flag: '🇩🇰', color: '#c8102e', active: true,  isHQ: true  },
+  { id: 'NO', name: 'Norge',   city: 'Oslo',      flag: '🇳🇴', color: '#3a86ff', active: true,  isHQ: false },
+  { id: 'SE', name: 'Sverige', city: 'Stockholm', flag: '🇸🇪', color: '#ffd166', active: false, isHQ: false },
+  { id: 'DE', name: 'Tyskland',city: 'Hamburg',   flag: '🇩🇪', color: '#06d6a0', active: false, isHQ: false }
+];
+
+// ════════════════════════════════════════════════════════════════
 // 3. EDIT HERE: Ownership tags (CENTRAL / LOCAL / HYBRID)
 // Mapping fra role.id → ownershipType. Bruges automatisk via apply.
 // ════════════════════════════════════════════════════════════════
@@ -2178,7 +2432,44 @@ const CAPABILITY_EXPECTED = {
   'Business Platform':      10
 };
 
-// Apply ownership map, rolePurpose fallback, and expected counts
+// Active offices state — kan toggles fra UI; persisteres i localStorage
+let activeOffices = (function loadOffices() {
+  try {
+    const saved = localStorage.getItem('bct-offices');
+    if (saved) return JSON.parse(saved);
+  } catch(e) {}
+  return DEFAULT_OFFICES.map(o => ({...o}));
+})();
+
+function saveOffices() {
+  try { localStorage.setItem('bct-offices', JSON.stringify(activeOffices)); } catch(e) {}
+}
+
+function getActiveOffices() { return activeOffices.filter(o => o.active); }
+function getHQ() { return activeOffices.find(o => o.isHQ && o.active) || getActiveOffices()[0]; }
+
+// Default office distribution for a role based on ownership
+function defaultDistribution(role) {
+  const offices = getActiveOffices();
+  const count = typeof role.count === 'number' ? role.count : 0;
+  const dist = {};
+  if (!offices.length || !count) return dist;
+  const hq = getHQ();
+  if (role.ownershipType === 'central') {
+    dist[hq.id] = count;
+  } else if (role.ownershipType === 'local' || role.ownershipType === 'hybrid') {
+    // Split as evenly as possible; HQ gets any remainder
+    const each = Math.floor(count / offices.length);
+    const remainder = count - each * offices.length;
+    offices.forEach(o => dist[o.id] = each);
+    if (remainder > 0) dist[hq.id] = (dist[hq.id] || 0) + remainder;
+  } else {
+    dist[hq.id] = count;
+  }
+  return dist;
+}
+
+// Apply ownership map, rolePurpose fallback, expected counts, and office distribution
 function enrichRoleData() {
   DEFAULT_REAL.forEach(area => {
     if (CAPABILITY_EXPECTED[area.name] !== undefined) {
@@ -2188,6 +2479,13 @@ function enrichRoleData() {
       if (!r.id) return;
       if (OWNERSHIP_MAP[r.id] && !r.ownershipType) r.ownershipType = OWNERSHIP_MAP[r.id];
       if (!r.rolePurpose && r.shortDescription) r.rolePurpose = r.shortDescription;
+      // Office distribution — only init if missing or sum doesn't match count
+      const currentSum = r.officeDistribution
+        ? Object.values(r.officeDistribution).reduce((a, b) => a + b, 0)
+        : -1;
+      if (!r.officeDistribution || currentSum !== r.count) {
+        r.officeDistribution = defaultDistribution(r);
+      }
     });
   });
 }
@@ -2688,7 +2986,14 @@ function renderFunction(f, fIdx, isReal) {
               onclick="${clickHandler}"
               onblur="updateRoleName(${fIdx},${rIdx},${isReal},this.textContent)"
               onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">${escapeHtml(r.name)}</span>
-        ${isReal && r.ownershipType ? `<span class="ownership-badge ${r.ownershipType}" title="${r.ownershipType.toUpperCase()}">${r.ownershipType[0].toUpperCase()}</span>` : ''}
+        ${isReal && r.ownershipType ? `<span class="ownership-badge ${r.ownershipType}" title="${r.ownershipType.toUpperCase()} — klik i edit-mode for at ændre" onclick="if(state.editMode){event.stopPropagation();openOwnershipPopover('${r.id}', this);}">${r.ownershipType[0].toUpperCase()}</span>` : ''}
+        ${isReal && r.officeDistribution ? `<span class="office-badges" onclick="if(state.editMode && '${r.id}'){event.stopPropagation();openOwnershipPopover('${r.id}', this);}">${
+          Object.entries(r.officeDistribution).filter(([oid, n]) => n > 0).map(([oid, n]) => {
+            const o = activeOffices.find(x => x.id === oid);
+            if (!o) return '';
+            return `<span class="office-badge" style="--office-color: ${o.color};"><span class="flag">${o.flag}</span><span class="n">${n}</span></span>`;
+          }).join('')
+        }</span>` : ''}
         ${isReal ? `
           <span class="role-count">${r.count}</span>
           <span class="role-count-edit">
@@ -2779,11 +3084,247 @@ function renderOperatingModel() {
   closing.innerHTML = '<strong>' + escapeHtml(op.closing) + '</strong>';
 }
 
+// Compute people count per office across all roles
+function computeOfficeCounts() {
+  const counts = {};
+  state.real.forEach(area => area.roles.forEach(r => {
+    if (!r.officeDistribution) return;
+    Object.entries(r.officeDistribution).forEach(([oid, n]) => {
+      counts[oid] = (counts[oid] || 0) + n;
+    });
+  }));
+  return counts;
+}
+
+// Get roles per office (for office card listing)
+function rolesByOffice(officeId) {
+  const list = [];
+  state.real.forEach(area => area.roles.forEach(r => {
+    if (r.officeDistribution && r.officeDistribution[officeId] > 0) {
+      list.push({ title: r.title || r.name, count: r.officeDistribution[officeId], area: area.name, color: area.color, id: r.id });
+    }
+  }));
+  return list.sort((a, b) => b.count - a.count);
+}
+
+function renderGeography() {
+  const grid = document.getElementById('geo-grid');
+  if (!grid) return;
+  const counts = computeOfficeCounts();
+  const total = Object.values(counts).reduce((s, n) => s + n, 0);
+
+  // Stacked totals bar
+  const totalsEl = document.getElementById('geo-totals');
+  const activeOff = getActiveOffices();
+  if (total === 0 || !activeOff.length) {
+    totalsEl.innerHTML = '<div class="geo-slice empty">Ingen kontorer aktive</div>';
+  } else {
+    totalsEl.innerHTML = activeOff.map(o => {
+      const n = counts[o.id] || 0;
+      const pct = total ? (n / total * 100) : 0;
+      return `<div class="geo-slice" style="background: ${o.color}; flex: ${n};" title="${o.name}: ${n} personer (${pct.toFixed(0)}%)">${pct >= 6 ? n : ''}</div>`;
+    }).join('');
+  }
+
+  document.getElementById('geo-summary').textContent =
+    activeOff.length + ' aktive kontor' + (activeOff.length === 1 ? '' : 'er') + ' · ' + total + ' personer distribueret';
+  document.getElementById('add-office-btn').style.display = state.editMode ? 'inline-flex' : 'none';
+
+  // Office cards (active + inactive)
+  grid.innerHTML = activeOffices.map(o => {
+    const n = counts[o.id] || 0;
+    const roles = rolesByOffice(o.id);
+    const hqBadge = o.isHQ ? ' <span style="font-size: 10px; padding: 1px 6px; background: rgba(212,166,85,0.15); color: var(--gold); border-radius: 3px; letter-spacing: 0.1em;">HQ</span>' : '';
+    return `
+      <div class="geo-office ${o.active ? 'active' : 'inactive'}" style="--office-color: ${o.color};">
+        <div class="geo-office-toggle" onclick="toggleOffice('${o.id}')" title="${o.active ? 'Slå fra' : 'Slå til'}"></div>
+        <div class="geo-office-head">
+          <div class="geo-office-name">${o.flag} ${escapeHtml(o.name)}${hqBadge}</div>
+          <div class="geo-office-count">${n}</div>
+        </div>
+        <div class="geo-office-meta">${escapeHtml(o.city)} ${o.active ? '' : '· (ikke aktiv)'}</div>
+        ${o.active && roles.length ? `
+          <div class="geo-office-roles">
+            ${roles.map(r => `<div class="gr"><span class="gr-name" style="border-left: 2px solid ${r.color}; padding-left: 6px;">${escapeHtml(r.title)}</span><span class="gr-count">${r.count}</span></div>`).join('')}
+          </div>
+        ` : (o.active ? '<div class="geo-office-meta" style="font-style: italic;">Ingen personer placeret her endnu</div>' : '')}
+      </div>
+    `;
+  }).join('');
+}
+
+function toggleOffice(officeId) {
+  const o = activeOffices.find(x => x.id === officeId);
+  if (!o) return;
+  o.active = !o.active;
+  saveOffices();
+  // Re-distribute if a new office became active
+  if (o.active) {
+    state.real.forEach(area => area.roles.forEach(r => {
+      // Only re-init for local/hybrid roles (central stays at HQ)
+      if (r.ownershipType === 'local' || r.ownershipType === 'hybrid') {
+        r.officeDistribution = defaultDistribution(r);
+      }
+    }));
+    save();
+  }
+  renderAll();
+}
+
+function addOffice() {
+  const id = prompt('Landekode (2 bogstaver, fx FI for Finland):');
+  if (!id || id.length !== 2) return;
+  const name = prompt('Land/by-navn (fx Finland):');
+  if (!name) return;
+  const city = prompt('By (fx Helsinki):') || name;
+  if (activeOffices.find(o => o.id === id.toUpperCase())) {
+    alert('Et kontor med koden ' + id.toUpperCase() + ' findes allerede.');
+    return;
+  }
+  const colors = ['#ff6b9d', '#06d6a0', '#ffd166', '#9b5de5', '#00bbf9', '#f15bb5'];
+  const usedColors = activeOffices.map(o => o.color);
+  const newColor = colors.find(c => !usedColors.includes(c)) || colors[0];
+  activeOffices.push({
+    id: id.toUpperCase(),
+    name: name.trim(),
+    city: city.trim(),
+    flag: '🏢',
+    color: newColor,
+    active: true,
+    isHQ: false
+  });
+  saveOffices();
+  // Re-distribute local/hybrid roles
+  state.real.forEach(area => area.roles.forEach(r => {
+    if (r.ownershipType === 'local' || r.ownershipType === 'hybrid') {
+      r.officeDistribution = defaultDistribution(r);
+    }
+  }));
+  save();
+  renderAll();
+}
+
+// ─── Ownership popover (klik på badge i edit mode) ──────────────
+function openOwnershipPopover(roleId, anchorEl) {
+  if (!state.editMode) return;
+  const role = orgConfig.roles[roleId];
+  if (!role) return;
+  closeOwnershipPopover();
+
+  const pop = document.createElement('div');
+  pop.className = 'ownership-popover';
+  pop.id = 'ownership-popover';
+
+  const rect = anchorEl.getBoundingClientRect();
+  pop.style.top = (rect.bottom + 8) + 'px';
+  pop.style.left = Math.min(rect.left, window.innerWidth - 320) + 'px';
+
+  pop.innerHTML = `
+    <h5>Ownership for ${escapeHtml(role.title || role.name)}</h5>
+    <div class="own-row">
+      ${['central','local','hybrid'].map(t => `
+        <button class="own-btn ${t} ${role.ownershipType === t ? 'active' : ''}"
+                onclick="setOwnership('${roleId}', '${t}')">${t.toUpperCase()}</button>
+      `).join('')}
+    </div>
+    <h5>Fordel ${role.count} personer på kontorer</h5>
+    <div id="office-dist-rows"></div>
+    <div class="pop-sum" id="pop-sum"></div>
+    <div class="pop-actions">
+      <button class="btn" onclick="closeOwnershipPopover()">Annullér</button>
+      <button class="btn primary" onclick="saveDistribution('${roleId}')">Gem</button>
+    </div>
+  `;
+  document.body.appendChild(pop);
+  renderOfficeDistRows(roleId);
+
+  // Close on outside click
+  setTimeout(() => {
+    document.addEventListener('click', popOutsideClickHandler);
+  }, 0);
+}
+
+function popOutsideClickHandler(e) {
+  const pop = document.getElementById('ownership-popover');
+  if (pop && !pop.contains(e.target) && !e.target.classList.contains('ownership-badge') && !e.target.classList.contains('office-badge') && !e.target.closest('.office-badges')) {
+    closeOwnershipPopover();
+  }
+}
+
+function closeOwnershipPopover() {
+  const pop = document.getElementById('ownership-popover');
+  if (pop) pop.remove();
+  document.removeEventListener('click', popOutsideClickHandler);
+}
+
+function renderOfficeDistRows(roleId) {
+  const role = orgConfig.roles[roleId];
+  const offices = getActiveOffices();
+  const dist = role.officeDistribution || {};
+  document.getElementById('office-dist-rows').innerHTML = offices.map(o => `
+    <div class="office-row">
+      <div class="lbl"><span style="color: ${o.color};">${o.flag}</span> ${escapeHtml(o.name)}</div>
+      <div class="ctrls">
+        <button class="count-btn" onclick="adjustDist('${roleId}','${o.id}',-1)">−</button>
+        <input type="number" min="0" value="${dist[o.id] || 0}"
+               onchange="setDist('${roleId}','${o.id}',this.value)" />
+        <button class="count-btn" onclick="adjustDist('${roleId}','${o.id}',1)">+</button>
+      </div>
+    </div>
+  `).join('');
+  updatePopSum(roleId);
+}
+
+function adjustDist(roleId, officeId, delta) {
+  const role = orgConfig.roles[roleId];
+  role.officeDistribution = role.officeDistribution || {};
+  role.officeDistribution[officeId] = Math.max(0, (role.officeDistribution[officeId] || 0) + delta);
+  renderOfficeDistRows(roleId);
+}
+function setDist(roleId, officeId, val) {
+  const role = orgConfig.roles[roleId];
+  role.officeDistribution = role.officeDistribution || {};
+  role.officeDistribution[officeId] = Math.max(0, parseInt(val, 10) || 0);
+  renderOfficeDistRows(roleId);
+}
+function updatePopSum(roleId) {
+  const role = orgConfig.roles[roleId];
+  const sum = Object.values(role.officeDistribution || {}).reduce((a,b) => a+b, 0);
+  const target = role.count;
+  const el = document.getElementById('pop-sum');
+  if (!el) return;
+  el.classList.toggle('mismatch', sum !== target);
+  el.innerHTML = 'Sum: <strong>' + sum + '</strong> / ' + target + (sum !== target ? ' ⚠ må gerne stemme med antal' : ' ✓');
+}
+
+function setOwnership(roleId, type) {
+  const role = orgConfig.roles[roleId];
+  role.ownershipType = type;
+  // Re-distribute when switching to central (all to HQ) or from central
+  if (type === 'central') {
+    role.officeDistribution = defaultDistribution(role);
+  }
+  save();
+  renderOfficeDistRows(roleId);
+  // Update popover buttons highlight
+  document.querySelectorAll('.ownership-popover .own-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.ownership-popover .own-btn.' + type)?.classList.add('active');
+  renderAll();
+}
+
+function saveDistribution(roleId) {
+  save();
+  closeOwnershipPopover();
+  renderAll();
+  showToast('Fordeling gemt');
+}
+
 function renderAll() {
   renderDream();
   renderReal();
   renderStats();
   renderOperatingModel();
+  renderGeography();
 }
 
 // Mutators
